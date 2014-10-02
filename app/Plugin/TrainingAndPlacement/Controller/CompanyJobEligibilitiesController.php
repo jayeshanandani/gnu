@@ -1,0 +1,200 @@
+<?php
+App::uses('TrainingAndPlacementAppController', 'TrainingAndPlacement.Controller');
+
+class CompanyJobEligibilitiesController extends TrainingAndPlacementAppController {
+
+	public $helpers = array('Js');
+
+
+/**
+ * index method
+ *
+ * @return void
+ */
+	public function index() {
+		$this->loadModel('Setting');
+		$data = $this->Setting->find('first');
+		$pagination_value = $data['Setting']['pagination_value'];
+		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1, 'contain' => ['CompanyMaster','CompanyJob']);
+		$this->set('companyJobEligibilities', $this->Paginator->paginate());
+	}
+
+	public function import() {
+		if ($this->request->is('post')) {
+          	
+          	$filename = 'C:\Apache24\htdocs\cakephp\app\tmp\uploads\CompanyJobEligibility\\'.$this->data['CompanyJobEligibilities']['file']['name']; 
+          	$file = $this->data['CompanyJobEligibilities']['file']['name'];
+          	$extension = pathinfo($file, PATHINFO_EXTENSION);
+        	if($extension == 'csv'){
+        	    if (move_uploaded_file($this->data['CompanyJobEligibilities']['file']['tmp_name'],$filename)) {
+            	$messages = $this->CompanyJobEligibility->import($this->data['CompanyJobEligibilities']['file']['name']);
+            	/* save message to session */
+            	$this->Session->setFlash('File uploaded successfuly. You can view it <a href="C:\Apache24\htdocs\cakephp\app\tmp\uploads\CompanyJobEligibility\\'.$this->data['CompanyJobEligibilities']['file']['name'].'">here</a>.');
+            	/* redirect */
+            	$this->redirect(array('action' => 'index'));
+        		}
+        		else {
+            	/* save message to session */
+            	$this->Session->setFlash('There was a problem uploading file. Please try again.');
+        		}
+     		}
+     		else{
+     			$this->Session->setFlash("Extension error");
+     		}
+     	}
+    }
+	
+	public function export_all() {     
+  		$this->set('companyJobEligibilities', $this->CompanyJobEligibility->find('all',[ 
+			'fields' => ['CompanyJobEligibility.company_master_id','CompanyJobEligibility.company_job_id','CompanyJobEligibility.min_eligible_10','CompanyJobEligibility.min_eligible_12','CompanyJobEligibility.min_eligible_degree','CompanyJobEligibility.interestedin','CompanyJobEligibility.hiring','CompanyJobEligibility.verbal','CompanyJobEligibility.aptitude','CompanyJobEligibility.interview','CompanyJobEligibility.gd','CompanyJobEligibility.gd','CompanyJobEligibility.hr'] 	
+  		]));
+    	$this->layout = null;
+   		$this->autoLayout = false;
+  		Configure::write('debug', '0');
+	}
+
+	public function company_list() {
+		$this->CompanyJobEligibility->recursive = -1;
+
+		$this->loadModel('Student');
+		$degree = $this->Student->find('list',[
+			'conditions'=>['Student.id'=> $this->Auth->user('student_id')],
+			'fields' => ['degree_id']
+			]);
+
+		$this->loadModel('CompanyCampus');
+		$company_ids = $this->CompanyCampus->find('list',[
+			'conditions'=>['CompanyCampus.degree_id' => $degree,'CompanyCampus.recstatus' => 1],
+			'fields' => ['CompanyCampus.company_master_id']			
+		]);
+		$this->loadModel('Setting');
+		$data = $this->Setting->find('first');
+		$pagination_value = $data['Setting']['pagination_value'];
+		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1,
+            'contain'=>['CompanyMaster'=>['conditions'=>['CompanyMaster.id'=>$company_ids]],
+            			'CompanyJob'=>['fields' => ['CompanyJob.name','CompanyJob.id']]],
+            'conditions' => ['CompanyJobEligibility.company_master_id' => $company_ids,'CompanyJobEligibility.recstatus' => 1]
+            );
+		$this->set('CompanyJobEligibilities', $this->Paginator->paginate());
+	}
+
+/**
+ * view method
+ *
+ * @throws NotFoundException
+ * @param string $id
+ * @return void
+ */
+	public function view($id = null) {
+		if (!$this->CompanyJobEligibility->exists($id)) {
+			throw new NotFoundException(__('Invalid company job eligibility'));
+		}
+		$options = array('conditions' => array('CompanyJobEligibility.' . $this->CompanyJobEligibility->primaryKey => $id),'contain' => ['CompanyMaster','CompanyJob']);
+		$this->set('companyJobEligibility', $this->CompanyJobEligibility->find('first', $options));
+	}
+
+/**
+ * add method
+ *
+ * @return void
+ */
+	public function add() {
+		if ($this->request->is('post')&& $this->request->data['CompanyJobEligibility']['company_job_id']!=0) {
+			$this->CompanyJobEligibility->create();
+			if ($this->CompanyJobEligibility->save($this->request->data)) {
+				$this->Session->setFlash('The company job eligibility has been saved.');
+				return $this->redirect( array('controller' => 'CompanyCampuses', 'action' => 'add'));
+			} else {
+				$this->Session->setFlash(__('The company job eligibility could not be saved. Please, try again.'));
+			}
+		}
+		unset($this->request->data['CompanyJobEligibility']['company_master_id']);
+		$company_masters = $this->CompanyJobEligibility->CompanyMaster->find('list');
+		$company_jobs = array();
+		$this->set(compact('company_masters', 'company_jobs'));
+	}
+
+/**
+ * edit method
+ *
+ * @throws NotFoundException
+ * @param string $id
+ * @return void
+ */
+	public function edit($id = null) {
+		if (!$this->CompanyJobEligibility->exists($id)) {
+			throw new NotFoundException(__('Invalid company job eligibility'));
+		}
+		if ($this->request->is(array('post', 'put'))) {
+
+			if ($this->CompanyJobEligibility->save($this->request->data)) {
+				$this->Session->setFlash(__('The company job eligibility has been saved.'));
+				return $this->redirect(array('action' => 'index'));
+			} else {
+				$this->Session->setFlash(__('The company job eligibility could not be saved. Please, try again.'));
+			}
+		} else {
+			$options = array('conditions' => array('CompanyJobEligibility.' . $this->CompanyJobEligibility->primaryKey => $id));
+			$this->request->data = $this->CompanyJobEligibility->find('first', $options);
+		}
+		$companyMasters = $this->CompanyJobEligibility->CompanyMaster->find('list');
+		$companyJobs = $this->CompanyJobEligibility->CompanyJob->find('list');
+		$this->set(compact('companyMasters', 'companyJobs'));
+	}
+
+/**
+ * delete method
+ *
+ * @throws NotFoundException
+ * @param string $id
+ * @return void
+ */ // Important Note : Not currently used
+/*	public function delete($id = null) {
+		$this->CompanyJobEligibility->id = $id;
+		if (!$this->CompanyJobEligibility->exists()) {
+			throw new NotFoundException(__('Invalid company job eligibility'));
+		}
+		$this->request->onlyAllow('post', 'delete');
+		if ($this->CompanyJobEligibility->delete()) {
+			$this->Session->setFlash(__('The company job eligibility has been deleted.'));
+		} else {
+			$this->Session->setFlash(__('The company job eligibility could not be deleted. Please, try again.'));
+		}
+		return $this->redirect(array('action' => 'index'));
+	}
+*/	
+
+	public function deactivate($id = null) {
+		if ($this->request->is(array('post', 'put'))){
+			$this->CompanyJobEligibility->id = $id;
+		if (!$this->CompanyJobEligibility->exists()) {
+			throw new NotFoundException(__('Invalid company'));
+		}
+		$this->request->data['CompanyJobEligibility']['id']=$id;
+		$this->request->data['CompanyJobEligibility']['recstatus']= 0;
+		if ($this->CompanyJobEligibility->save($this->request->data,true,array('id','recstatus'))) {
+			$this->Session->setFlash(__('The company has been deactivated.'));
+		} else {
+			$this->Session->setFlash(__('The company could not be deactivated. Please, try again.'));
+		}
+		return $this->redirect(array('action' => 'index'));
+		}
+	}
+	
+	public function activate($id = null) {
+		if ($this->request->is(array('post', 'put'))){
+			$this->CompanyJobEligibility->id = $id;
+		if (!$this->CompanyJobEligibility->exists()) {
+			throw new NotFoundException(__('Invalid company'));
+		}
+		$this->request->data['CompanyJobEligibility']['id']=$id;
+		$this->request->data['CompanyJobEligibility']['recstatus']= 1;
+		if ($this->CompanyJobEligibility->save($this->request->data,true,array('id','recstatus'))) {
+			$this->Session->setFlash(__('The company has been activated.'));
+		} else {
+			$this->Session->setFlash(__('The company could not be activated. Please, try again.'));
+		}
+		return $this->redirect(array('action' => 'index'));
+		}
+	}	
+}
