@@ -3,11 +3,6 @@
 	<table cellpadding="0" cellspacing="0">
 	<tr>
 			<th><?php echo $this->Paginator->sort('id'); ?></th>
-			<th><?php echo $this->Paginator->sort('created'); ?></th>
-			<th><?php echo $this->Paginator->sort('creator_id'); ?></th>
-			<th><?php echo $this->Paginator->sort('modified'); ?></th>
-			<th><?php echo $this->Paginator->sort('modifier_id'); ?></th>
-			<th><?php echo $this->Paginator->sort('recstatus'); ?></th>
 			<th><?php echo $this->Paginator->sort('alias'); ?></th>
 			<th><?php echo $this->Paginator->sort('role'); ?></th>
 			<th class="actions"><?php echo __('Actions'); ?></th>
@@ -15,17 +10,11 @@
 	<?php foreach ($roles as $role): ?>
 	<tr>
 		<td><?php echo h($role['Role']['id']); ?>&nbsp;</td>
-		<td><?php echo h($role['Role']['created']); ?>&nbsp;</td>
-		<td><?php echo h($role['Role']['creator_id']); ?>&nbsp;</td>
-		<td><?php echo h($role['Role']['modified']); ?>&nbsp;</td>
-		<td><?php echo h($role['Role']['modifier_id']); ?>&nbsp;</td>
-		<td><?php echo h($role['Role']['recstatus']); ?>&nbsp;</td>
 		<td><?php echo h($role['Role']['alias']); ?>&nbsp;</td>
 		<td><?php echo h($role['Role']['role']); ?>&nbsp;</td>
 		<td class="actions">
 			<?php echo $this->Html->link(__('View'), array('action' => 'view', $role['Role']['id'])); ?>
 			<?php echo $this->Html->link(__('Edit'), array('action' => 'edit', $role['Role']['id'])); ?>
-			<?php echo $this->Form->postLink(__('Delete'), array('action' => 'delete', $role['Role']['id']), null, __('Are you sure you want to delete # %s?', $role['Role']['id'])); ?>
 		</td>
 	</tr>
 <?php endforeach; ?>

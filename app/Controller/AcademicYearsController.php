@@ -96,7 +96,7 @@ public function list_years() {
           throw new NotFoundException();
         }
 	  	$this->disableCache();
-		$academicYears = $this->AcademicYear->getListByInstitution($id);
+		$academicyears = $this->AcademicYear->getListByInstitution($id);
 
         $this->set(compact('academicyears'));
         $this->set('_serialize', array('academicyears'));
