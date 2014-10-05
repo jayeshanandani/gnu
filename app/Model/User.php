@@ -60,7 +60,7 @@ public $validate = [
  * @var array
  */
 
-    public $hasMany = ['Ticket'];
+    public $hasMany = ['SupportTicketSystem.Ticket'];
 
     public $hasAndBelongsToMany = [
         'Role' =>

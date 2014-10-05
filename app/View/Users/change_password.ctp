@@ -15,7 +15,7 @@
 
 <div class="actions">
 	<ul>
-		<li>I do remember again. <?php echo $this->Html->link(__('Abort'), ['action' => 'lost_password', '?' => ['abort'=>1]], null, __('Sure?'));?></li>
+		<li>I do remember again. <?php echo $this->Html->link(__('Abort'), ['action' => 'lost_password', '?' => ['abort' => 1]], null, __('Sure?'));?></li>
 		<li><?php echo $this->Html->link(__('Login instead'), ['action' => 'login']);?></li>
 	</ul>
 </div>

@@ -108,7 +108,7 @@ class DepartmentsController extends AppController {
 	}
 
 	public function list_departments() {
-		$this->request->onlyAllow('ajax');
+    	$this->request->onlyAllow('ajax');
 		$id = $this->request->query('id');
 		if (!$id) {
 			throw new NotFoundException();

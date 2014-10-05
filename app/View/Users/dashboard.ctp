@@ -1,17 +1,13 @@
 <br>
 <p>
-<?php
-echo "Welcome ".AuthComponent::user('fullname');
-?>
+<?php print "Welcome {$fullname}"; ?>
 </p>
 <p>
-<?php
-echo  "Your last login was at ".$this->Time->nice(AuthComponent::user('modified'));
-?>
+<?php print  "Your last login was at ".$this->Time->nice($modified); ?>
 </p>
 <p>
-<?php    echo $this->Html->link('Logout',['controller' => 'users' ,'action'=>'logout']); ?>
-    </p>
+<?php print $this->Html->link('Logout',['controller' => 'users' ,'action'=>'logout']); ?>
+</p>
 <p>
 <?php
 echo $this->Html->link(

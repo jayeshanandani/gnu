@@ -1,6 +1,5 @@
-<?php
-echo $this->Html->css('navigation');
-?><br>
+<?php echo $this->Html->css('navigation'); ?>
+<br>
 <div class="navbar navbar-default navbar-static-top" style="background-color:#fff;">
       <div class="container">
         <div class="navbar-header">

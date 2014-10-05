@@ -7,7 +7,7 @@ $(function() {
                 xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
             },
             success: function(response) {
-				if (response.academicYears) {
+				if (response) {
 					destination.empty(),
 					destination.append('<option value="Please Select">Please Select</option>');
 					appendData(response.academicYears, destination);
