@@ -13,6 +13,7 @@
 	<fieldset>
 		<legend><?php echo __('Edit Status'); ?></legend>
 	<?php
+		echo $this->Form->input('id');
 		echo $this->Form->input('name',['autocomplete' => 'off','label'=>'New Status']);
 	?>
 	<?php echo $this->Form->submit('Submit', array(

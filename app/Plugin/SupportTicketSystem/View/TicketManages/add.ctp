@@ -1,6 +1,6 @@
 <div class="row">
           <div class="col-lg-6">
-<?php echo $this->Html->script('SupportTicketSystem.staff');?>
+<?php echo $this->Html->script('SupportTicketSystem.chained_dropdown');?>
 <div class="ticketManages form">
 <?php echo $this->Form->create('TicketManage', array(
 	'inputDefaults' => array(

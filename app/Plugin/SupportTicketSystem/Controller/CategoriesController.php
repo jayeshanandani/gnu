@@ -67,14 +67,13 @@ class CategoriesController extends SupportTicketSystemAppController {
  * edit method
  *
  * @throws NotFoundException
- * @param string $id
+ * @param int $id
  * @return void
  */
 	public function edit($id = null) {
 		if (!$this->Category->exists($id)) {
 			throw new NotFoundException(__('Invalid category'));
 		}
-		$this->request->data['Category']['id'] = $id;
 		if ($this->request->is(array('post', 'put'))) {
 			if ($this->Category->save($this->request->data,true,array('id','name'))) {
 				$this->Session->setFlash(__('The category has been saved.'));
@@ -88,31 +87,50 @@ class CategoriesController extends SupportTicketSystemAppController {
 		}
 	}
 
+/**
+ * deactivate method
+ *
+ * @param int $id
+ * @return void
+ */
 	public function deactivate($id = null) {
         if ($this->request->is(array('post', 'put'))) {
             $this->Category->id = $id;
+            
             if (!$this->Category->exists()) {
                 throw new NotFoundException(__('Invalid Category'));
             }
+
             $this->request->data['Category']['id'] = $id;
             $this->request->data['Category']['recstatus'] = 0;
+            
             if ($this->Category->save($this->request->data,true,array('id','recstatus'))) {
                 $this->Session->setFlash(__('The category has been deactivated.'));
             } else {
                 $this->Session->setFlash(__('The category cannot be deactivated. Please, try again.'));
             }
+            
             return $this->redirect(array('action' => 'index'));
         }
     }
     
+/**
+ * activate method
+ *
+ * @param int $id
+ * @return void
+ */
     public function activate($id = null) {
         if ($this->request->is(array('post', 'put'))) {
             $this->Category->id = $id;
+            
             if (!$this->Category->exists()) {
                 throw new NotFoundException(__('Invalid category'));
             }
+
             $this->request->data['Category']['id'] = $id;
             $this->request->data['Category']['recstatus'] = 1;
+            
             if ($this->Category->save($this->request->data,true,array('id','recstatus'))) {
                 $this->Session->setFlash(__('The category has been activated.'));
             } else {

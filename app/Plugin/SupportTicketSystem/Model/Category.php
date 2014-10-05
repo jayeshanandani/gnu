@@ -40,6 +40,6 @@ public $validate = array(
  *
  * @var array
  */
-	public $hasMany = array('SupportTicketSystem.Ticket','SupportTicketSystem.TicketManage');
+	public $hasMany = ['SupportTicketSystem.Ticket','SupportTicketSystem.TicketManage'];
 
 }

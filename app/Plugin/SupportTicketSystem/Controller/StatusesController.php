@@ -79,7 +79,13 @@ class StatusesController extends SupportTicketSystemAppController {
 		}
 	}
 
-public function deactivate($id = null) {
+/**
+ * deactivate method
+ *
+ * @param int $id
+ * @return void
+ */
+	public function deactivate($id = null) {
         if ($this->request->is(array('post', 'put'))) {
             $this->Status->id = $id;
             if (!$this->Status->exists()) {
@@ -95,6 +101,13 @@ public function deactivate($id = null) {
             return $this->redirect(array('action' => 'index'));
         }
     }
+
+/**
+ * activate method
+ *
+ * @param int $id
+ * @return void
+ */    
     public function activate($id = null) {
         if ($this->request->is(array('post', 'put'))) {
             $this->Status->id = $id;

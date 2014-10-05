@@ -13,6 +13,7 @@
 	<fieldset>
 		<legend><?php echo __('Edit Category'); ?></legend>
 	<?php
+		echo $this->Form->input('id');
 		echo $this->Form->input('name',['autocomplete' => 'off','label'=>'New Category']);
 	?>
 	<?php echo $this->Form->submit('Submit', array(

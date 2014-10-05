@@ -21,7 +21,11 @@ class TicketsController extends SupportTicketSystemAppController {
 																					'conditions'=>['Ticket.user_id'=>$this->Auth->user('id')]);
 		$this->set('tickets', $this->Paginator->paginate());
 	}
-
+/**
+ * adminindex method
+ *
+ * @return void
+ */
 	public function adminindex() {
 		$this->loadModel('Setting');
 		$data = $this->Setting->find('first');
@@ -30,6 +34,11 @@ class TicketsController extends SupportTicketSystemAppController {
 		$this->set('tickets', $this->Paginator->paginate());
 	}
 
+/**
+ * manage_tickets method
+ *
+ * @return void
+ */
 	public function manage_tickets() {
 		$this->loadModel('Setting');
 		$data = $this->Setting->find('first');
@@ -39,6 +48,12 @@ class TicketsController extends SupportTicketSystemAppController {
 		$this->set('tickets', $this->Paginator->paginate());
 	}
 
+/**
+ * change_status method
+ *
+ * @param int $id
+ * @return void
+ */
 	public function change_status($id = null) {
 		if (!$this->Ticket->exists($id)) {
 			throw new NotFoundException(__('Invalid ticket'));
@@ -149,7 +164,7 @@ class TicketsController extends SupportTicketSystemAppController {
 		$this->set(compact('categories', 'statuses'));
 	}
 
-		public function column_tickets() {
+	public function column_tickets() {
      	$this->loadModel('Category');       
         $categories = $this->Category->find('list');
         $tickets = [];
