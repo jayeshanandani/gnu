@@ -17,7 +17,7 @@
 'action' => 'list_departments',
 'ext' => 'json'
 ));
-$urla            = $this->Html->url(array('controller' => 'staffs', 'plugin'=>'support_ticket_system',
+$urla            = $this->Html->url(array('controller' => 'staffs', 'plugin'=>false,
 'action' => 'list_staff',
 'ext' => 'json'
 ));

@@ -1,1 +1,1 @@
-This project covers up Training and Placement Module. It also has module which can be used to generate images. Facility of feedback is also being added to support users.
+This project covers up Training and Placement Module and Support Ticket.
