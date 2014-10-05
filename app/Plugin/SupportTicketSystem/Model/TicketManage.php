@@ -28,6 +28,6 @@ public $validate = array(
  *
  * @var array
  */
-	public $belongsTo = array('SupportTicketSystem.Category','SupportTicketSystem.Staff');
+	public $belongsTo = ['SupportTicketSystem.Category','Staff'];
 
 }

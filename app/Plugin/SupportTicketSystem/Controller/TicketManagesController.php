@@ -75,32 +75,12 @@ class TicketManagesController extends SupportTicketSystemAppController {
 	}
 
 /**
- * edit method
+ * deactivate method
  *
  * @throws NotFoundException
  * @param string $id
  * @return void
  */
-	public function edit($id = null) {
-		if (!$this->TicketManage->exists($id)) {
-			throw new NotFoundException(__('Invalid ticket manage'));
-		}
-		if ($this->request->is(['post', 'put'])) {
-			if ($this->TicketManage->save($this->request->data)) {
-				$this->Session->setFlash(__('The ticket manage has been saved.'));
-				return $this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash(__('The ticket manage could not be saved. Please, try again.'));
-			}
-		} else {
-			$options = array('conditions' => array('TicketManage.' . $this->TicketManage->primaryKey => $id));
-			$this->request->data = $this->TicketManage->find('first', $options);
-		}
-		$categories = $this->TicketManage->Category->find('list');
-		$staffs = $this->TicketManage->Staff->find('list');
-		$this->set(compact('categories', 'staffs'));
-	}
-
 	public function deactivate($id = null) {
         if ($this->request->is(['post', 'put'])) {
             $this->TicketManage->id = $id;
@@ -135,7 +115,14 @@ class TicketManagesController extends SupportTicketSystemAppController {
             return $this->redirect(['action' => 'index']);
         }
     }
-    
+
+/**
+ * activate method
+ *
+ * @throws NotFoundException
+ * @param string $id
+ * @return void
+ */
     public function activate($id = null) {
         if ($this->request->is(['post', 'put'])) {
             $this->TicketManage->id = $id;

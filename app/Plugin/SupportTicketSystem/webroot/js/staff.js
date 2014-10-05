@@ -12,10 +12,10 @@ $(function() {
 					destination.append('<option value="Please Select">Please Select</option>');
 					appendData(response.departments, destination); // Another from duch with the appendData function added as well, but not working either.
                 }
-                if (response.degrees) {
+                if (response.staffs) {
 					destination.empty(),
 					destination.append('<option value="Please Select">Please Select</option>');
-					appendData(response.degrees, destination);
+					appendData(response.staffs, destination);
 				}
             },
 
@@ -37,7 +37,7 @@ $(function() {
     $('#institutions').change(function() {
         var selectedValue	=	$(this).val(),
             destination 	=	$('#departments'),
-            destcity		=	$('#degrees');
+            destcity		=	$('#staffs');
 
 		if(selectedValue != '')
 		{
@@ -56,7 +56,7 @@ $(function() {
 
     $('#departments').change(function() {
 		var selectedValue = $(this).val(),
-			  destination = $('#degrees');
+			  destination = $('#staffs');
 		if(selectedValue != 'Please Select')
 		{
 			targetUrl = $(this).attr('rel') + '?id=' + selectedValue;
