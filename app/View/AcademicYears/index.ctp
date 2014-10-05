@@ -3,27 +3,16 @@
 	<table cellpadding="0" cellspacing="0">
 	<tr>
 			<th><?php echo $this->Paginator->sort('id'); ?></th>
-			<th><?php echo $this->Paginator->sort('created'); ?></th>
-			<th><?php echo $this->Paginator->sort('creator_id'); ?></th>
-			<th><?php echo $this->Paginator->sort('modified'); ?></th>
-			<th><?php echo $this->Paginator->sort('modifier_id'); ?></th>
-			<th><?php echo $this->Paginator->sort('recstatus'); ?></th>
 			<th><?php echo $this->Paginator->sort('name'); ?></th>
 			<th class="actions"><?php echo __('Actions'); ?></th>
 	</tr>
 	<?php foreach ($academicYears as $academicYear): ?>
 	<tr>
 		<td><?php echo h($academicYear['AcademicYear']['id']); ?>&nbsp;</td>
-		<td><?php echo h($academicYear['AcademicYear']['created']); ?>&nbsp;</td>
-		<td><?php echo h($academicYear['AcademicYear']['creator_id']); ?>&nbsp;</td>
-		<td><?php echo h($academicYear['AcademicYear']['modified']); ?>&nbsp;</td>
-		<td><?php echo h($academicYear['AcademicYear']['modifier_id']); ?>&nbsp;</td>
-		<td><?php echo h($academicYear['AcademicYear']['recstatus']); ?>&nbsp;</td>
 		<td><?php echo h($academicYear['AcademicYear']['name']); ?>&nbsp;</td>
 		<td class="actions">
 			<?php echo $this->Html->link(__('View'), array('action' => 'view', $academicYear['AcademicYear']['id'])); ?>
 			<?php echo $this->Html->link(__('Edit'), array('action' => 'edit', $academicYear['AcademicYear']['id'])); ?>
-			<?php echo $this->Form->postLink(__('Delete'), array('action' => 'delete', $academicYear['AcademicYear']['id']), null, __('Are you sure you want to delete # %s?', $academicYear['AcademicYear']['id'])); ?>
 		</td>
 	</tr>
 <?php endforeach; ?>
@@ -41,10 +30,4 @@
 		echo $this->Paginator->next(__('next') . ' >', array(), null, array('class' => 'next disabled'));
 	?>
 	</div>
-</div>
-<div class="actions">
-	<h3><?php echo __('Actions'); ?></h3>
-	<ul>
-		<li><?php echo $this->Html->link(__('New Academic Year'), array('action' => 'add')); ?></li>
-	</ul>
 </div>

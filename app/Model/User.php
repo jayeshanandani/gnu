@@ -62,6 +62,10 @@ public $validate = [
 
     public $hasMany = ['SupportTicketSystem.Ticket'];
 
+/**
+ * hasAndBelongsToManyo associations
+ * @var array
+ */
     public $hasAndBelongsToMany = [
         'Role' =>
             [
@@ -72,5 +76,4 @@ public $validate = [
                 'unique' => true,
             ]
     ];
-
 }

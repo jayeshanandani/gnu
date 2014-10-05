@@ -12,17 +12,28 @@ class AcademicYear extends AppModel {
  * @var string
  */
 	public $displayField = 'name';
-	public $belongsTo = array(
-		'Institution'
-	);
 
+//The Associations below have been created with all possible keys, those that are not needed can be removed
+
+/**
+ * belongsTo associations
+ * @var array
+ */	
+	public $belongsTo = ['Institution'];
+
+/**
+ * getListByInstituion method
+ * Helps to get academic year according to particular id.
+ *
+ * @var id
+ * @return array
+ */	
 	public function getListByInstitution($cid = null) {
 		if (empty($cid)) {
 			return array();
 		}
 		return $this->find('list', array(
-			'conditions' => array($this->alias . '.institution_id' => $cid),
-			//'order' => array($this->alias.'.name'=>'ASC')
+			'conditions' => array($this->alias . '.institution_id' => $cid)
 		));
 	}
 }

@@ -86,24 +86,4 @@ class UserRolesController extends AppController {
 		$roles = $this->UserRole->Role->find('list');
 		$this->set(compact('users', 'roles'));
 	}
-
-/**
- * delete method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	public function delete($id = null) {
-		$this->UserRole->id = $id;
-		if (!$this->UserRole->exists()) {
-			throw new NotFoundException(__('Invalid user role'));
-		}
-		$this->request->onlyAllow('post', 'delete');
-		if ($this->UserRole->delete()) {
-			$this->Session->setFlash(__('The user role has been deleted.'));
-		} else {
-			$this->Session->setFlash(__('The user role could not be deleted. Please, try again.'));
-		}
-		return $this->redirect(array('action' => 'index'));
-	}}
+}

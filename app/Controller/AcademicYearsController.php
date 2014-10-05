@@ -14,6 +14,7 @@ class AcademicYearsController extends AppController {
  * @var array
  */
 public $components = array('Paginator','Session');
+
 /**
  * index method
  *
@@ -81,35 +82,23 @@ public $components = array('Paginator','Session');
 	}
 
 /**
- * delete method
+ * list_years method
+ * Method used to create json response of academic years according to id.
  *
  * @throws NotFoundException
  * @param string $id
- * @return void
+ * @return list of academic years
  */
-	public function delete($id = null) {
-		$this->AcademicYear->id = $id;
-		if (!$this->AcademicYear->exists()) {
-			throw new NotFoundException(__('Invalid academic year'));
-		}
-		$this->request->onlyAllow('post', 'delete');
-		if ($this->AcademicYear->delete()) {
-			$this->Session->setFlash(__('The academic year has been deleted.'));
-		} else {
-			$this->Session->setFlash(__('The academic year could not be deleted. Please, try again.'));
-		}
-		return $this->redirect(array('action' => 'index'));
-	}
 public function list_years() {
         $this->request->onlyAllow('ajax');
         $id = $this->request->query('id');
         if (!$id) {
           throw new NotFoundException();
         }
-	  	  $this->disableCache();
-		   $academicYears = $this->AcademicYear->getListByInstitution($id);
+	  	$this->disableCache();
+		$academicYears = $this->AcademicYear->getListByInstitution($id);
 
-        $this->set(compact('academicYears'));
-        $this->set('_serialize', array('academicYears'));
+        $this->set(compact('academicyears'));
+        $this->set('_serialize', array('academicyears'));
     }
 }
