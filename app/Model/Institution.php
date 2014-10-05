@@ -3,7 +3,6 @@ App::uses('AppModel', 'Model');
 /**
  * Institution Model
  *
- * @property Department $Department
  */
 class Institution extends AppModel {
 
@@ -13,10 +12,9 @@ class Institution extends AppModel {
  * @var string
  */
 	public $displayField = 'name';
-public $actsAs = ['WhoDidIt'];
 
 
-	//The Associations below have been created with all possible keys, those that are not needed can be removed
+//The Associations below have been created with all possible keys, those that are not needed can be removed
 
 /**
  * hasMany associations

@@ -87,25 +87,13 @@ class DepartmentsController extends AppController {
 	}
 
 /**
- * delete method
+ * list_departments method
+ * Method used to create json response of departments according to id.
  *
  * @throws NotFoundException
  * @param string $id
- * @return void
+ * @return list of departments
  */
-	public function delete($id = null) {
-		$this->Department->id = $id;
-		if (!$this->Department->exists()) {
-			throw new NotFoundException(__('Invalid department'));
-		}
-		$this->request->onlyAllow('post', 'delete');
-		if ($this->Department->delete()) {
-			$this->Session->setFlash(__('The department has been deleted.'));
-		} else {
-			$this->Session->setFlash(__('The department could not be deleted. Please, try again.'));
-		}
-		return $this->redirect(array('action' => 'index'));
-	}
 
 	public function list_departments() {
     	$this->request->onlyAllow('ajax');
@@ -117,7 +105,6 @@ class DepartmentsController extends AppController {
 		$this->disableCache();
 
 		$departments = $this->Department->getListByInstitution($id);
-
 		$this->set(compact('departments'));
 		$this->set('_serialize', array('departments'));
 	}

@@ -86,34 +86,23 @@ class DegreesController extends AppController {
 	}
 
 /**
- * delete method
+ * list_degrees method
+ * Method used to create json response of degrees according to id.
  *
  * @throws NotFoundException
  * @param string $id
- * @return void
+ * @return list of degrees
  */
-	public function delete($id = null) {
-		$this->Degree->id = $id;
-		if (!$this->Degree->exists()) {
-			throw new NotFoundException(__('Invalid degree'));
-		}
-		$this->request->onlyAllow('post', 'delete');
-		if ($this->Degree->delete()) {
-			$this->Session->setFlash(__('The degree has been deleted.'));
-		} else {
-			$this->Session->setFlash(__('The degree could not be deleted. Please, try again.'));
-		}
-		return $this->redirect(array('action' => 'index'));
-	}
-
 	public function list_degrees() {
         $this->request->onlyAllow('ajax');
         $id = $this->request->query('id');
+        
         if (!$id) {
           throw new NotFoundException();
         }
-	  	  $this->disableCache();
-		   $degrees = $this->Degree->getListByDepartment($id);
+	  	
+	  	$this->disableCache();
+		$degrees = $this->Degree->getListByDepartment($id);
 
         $this->set(compact('degrees'));
         $this->set('_serialize', array('degrees'));

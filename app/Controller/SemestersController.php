@@ -13,7 +13,8 @@ class SemestersController extends AppController {
  *
  * @var array
  */
-public $components = array('Paginator','Session');
+	public $components = array('Paginator','Session');
+
 /**
  * index method
  *
@@ -88,33 +89,24 @@ public $components = array('Paginator','Session');
 	}
 
 /**
- * delete method
+ * list_semesters method
+ * Method used to create json response of semesters according to id.
  *
  * @throws NotFoundException
  * @param string $id
- * @return void
+ * @return list of semesters
  */
-	public function delete($id = null) {
-		$this->Semester->id = $id;
-		if (!$this->Semester->exists()) {
-			throw new NotFoundException(__('Invalid semester'));
-		}
-		$this->request->onlyAllow('post', 'delete');
-		if ($this->Semester->delete()) {
-			$this->Session->setFlash(__('The semester has been deleted.'));
-		} else {
-			$this->Session->setFlash(__('The semester could not be deleted. Please, try again.'));
-		}
-		return $this->redirect(array('action' => 'index'));
-	}
-public function list_semesters() {
-        //$this->request->onlyAllow('ajax');
+
+	public function list_semesters() {
+        $this->request->onlyAllow('ajax');
         $id = $this->request->query('id');
+        
         if (!$id) {
           throw new NotFoundException();
         }
-	  	  $this->disableCache();
-		   $semesters = $this->Semester->getListByDegree($id);
+
+	  	$this->disableCache();
+		$semesters = $this->Semester->getListByDegree($id);
 
         $this->set(compact('semesters'));
         $this->set('_serialize', array('semesters'));

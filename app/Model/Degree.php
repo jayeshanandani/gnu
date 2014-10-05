@@ -22,21 +22,26 @@ class Degree extends AppModel {
  * @var array
  */
 	public $belongsTo = ['Department'];
-
-	public $hasMany = ['TrainingandPlacement.Student','SupportTicketSystem.Student'];
+/**
+ * hasMany associations
+ *
+ * @var array
+ */
+	public $hasMany = ['Student'];
 
 /**
- * getlistbydepartment
+ * getListByDepartment method
+ * Helps to get degree according to particular id.
  *
  * @var id
+ * @return array
  */
 	public function getListByDepartment($cid = null) {
 		if (empty($cid)) {
 			return array();
 		}
 		return $this->find('list', array(
-			'conditions' => array($this->alias . '.department_id' => $cid),
-			//'order' => array($this->alias.'.name'=>'ASC')
+			'conditions' => array($this->alias . '.department_id' => $cid)
 		));
 	}
 }
