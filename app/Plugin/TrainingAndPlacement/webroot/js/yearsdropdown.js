@@ -7,12 +7,11 @@ $(function() {
                 xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
             },
             success: function(response) {
-                if (response.companyJobs) {
+				if (response) {
 					destination.empty(),
 					destination.append('<option value="Please Select">Please Select</option>');
-					appendData(response.companyJobs, destination); // Another from duch with the appendData function added as well, but not working either.
-                }
-                
+					appendData(response.academicyears, destination);
+				}
             },
 
             error: function(response) {
@@ -30,19 +29,18 @@ $(function() {
 		}
 	}
 
-     $('#company_masters').change(function() {
-        var selectedValue = $(this).val(),
-              destination = $('#company_jobs');
-        if(selectedValue != 'Please Select')
-        {
-            targetUrl = $(this).attr('rel') + '?id=' + selectedValue;
-            getData(selectedValue, targetUrl, destination);
-        }   else {
-        destination.empty(),
-        destination.append('<option value="Select Company First">Select Company First</option>');
-        }
-    });
-    
-
-   
+  
+$('#institutions').change(function() {
+		var selectedValue = $(this).val(),
+			  destination = $('#academic_years');
+		if(selectedValue != 'Please Select')
+		{
+			targetUrl = $(this).attr('rel') + '?id=' + selectedValue;
+			getData(selectedValue, targetUrl, destination);
+		}	else {
+		destination.empty(),
+		destination.append('<option value="0">Select Institution First</option>');
+		}
+        
+    }); 
 });

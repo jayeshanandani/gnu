@@ -3,12 +3,12 @@
 	<h3><?php echo __('Company Campus'); ?></h3>
 	<table cellpadding="0" cellspacing="0" class="table table-striped">
 	<tr>
-			<th><?php echo $this->Paginator->sort('CompanyCampus.institution_id','Institution'); ?></th>
-			<th><?php echo $this->Paginator->sort('CompanyCampus.department_id','Department'); ?></th>
-			<th><?php echo $this->Paginator->sort('CompanyCampus.degree_id','Degree'); ?></th>
-			<th><?php echo $this->Paginator->sort('CompanyCampus.company_master_id','Company'); ?></th>
-			<th><?php echo $this->Paginator->sort('CompanyCampus.academic_year_id','Academic Year'); ?></th>
-			<th><?php echo $this->Paginator->sort('CompanyCampus.recstatus','Status'); ?>
+			<th><?php echo $this->Paginator->sort('institution_id','Institution'); ?></th>
+			<th><?php echo $this->Paginator->sort('department_id','Department'); ?></th>
+			<th><?php echo $this->Paginator->sort('degree_id','Degree'); ?></th>
+			<th><?php echo $this->Paginator->sort('company_master_id','Company'); ?></th>
+			<th><?php echo $this->Paginator->sort('academic_year_id','Academic Year'); ?></th>
+			<th><?php echo $this->Paginator->sort('recstatus','Status'); ?>
 			<th class="actions"><?php echo __('Actions'); ?></th>	
 	</tr>
 	<?php foreach ($CompanyCampuses as $companyCampus): ?>

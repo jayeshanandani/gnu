@@ -7,51 +7,72 @@ App::uses('TrainingAndPlacementAppModel', 'TrainingAndPlacement.Model');
 */
 class CompanyCampus extends TrainingAndPlacementAppModel {
 
-    /**
-     * Validate for uniqe records
-     *
-    */
-    public $validate = ['company_master_id' => ['rule' => ['validateUnique', ['company_master_id','institution_id','academic_year_id']]]];
+/**
+* Validate for uniqe records
+*
+*/
+    public $validate = [
+    			'company_master_id' => ['rule' => ['validateUnique', ['company_master_id','institution_id','academic_year_id']]]
+    		];
 
-    /**
-     * belongsTo associations
-     *
-     * @var array
-    */
+/**
+* belongsTo associations
+*
+* @var array
+*/
     public $belongsTo = ['Institution','Department','Degree','AcademicYear','TrainingAndPlacement.CompanyMaster'];
      
-    /**
-     * hasMany associations
-     *
-     * @var array
-    */
+/**
+* hasMany associations
+*
+* @var array
+*/
     public $hasMany = ['TrainingAndPlacement.PlacementResult'];
 
-    /**
-     * getListByDegree method
-     * Helps to get companies according to particular id.
-     *
-     * @var id
-     * @return array
-    */
+/**
+* getListByDegree method
+* Helps to get companies according to particular id.
+*
+* @var id
+* @return array
+*/
     public function getListByDegree($cid = null) {
     		if (empty($cid)) {
     			return array();
     		}
     		return $this->find('list', ['conditions' => [$this->alias . '.degree_id' => $cid]]);
-    	}
+    }
 
-    /**
-     * Import companycampus data using csv file
-     *
-    */
+/**
+* Check $_FILES[][name] length.
+*
+* @param (string) $filename - Uploaded file name.
+*/
+    public function check_file_uploaded_length ($filename) {
+        return (bool) ((mb_strlen($filename,"UTF-8") > 225) ? true : false);
+    }
+
+/**
+* Check $_FILES[][name]
+*
+* @param (string) $filename - Uploaded file name.
+* @author Yousef Ismaeil Cliprz
+*/
+    public function check_file_uploaded_name ($filename) {
+        (bool) ((preg_match("`^[-0-9A-Z_\.]+$`i",$filename)) ? true : false);
+    }
+
+/**
+* Import companycampus data using csv file
+*
+*/
     public function import($filename) {
         /** to avoid having to tweak the contents of
         * $data you should use your db field name as the heading name
         * eg: Post.id, Post.title, Post.description
         * set the filename to read CSV from
         */
-        $filename = TMP . 'uploads' . DS . 'CompanyCampus' . DS . $filename;
+        $filename = APP . 'uploads' . DS . 'CompanyCampus' . DS . $filename;
          
         // open the file
         $handle = fopen($filename, "r");
@@ -64,7 +85,7 @@ class CompanyCampus extends TrainingAndPlacementAppModel {
             'messages' => array(),
             'errors' => array(),
         );
-    		$i=0;
+    		$i = 0;
     		$error = null;
         // read each data row in the file
         while (($row = fgetcsv($handle)) !== FALSE) {
@@ -89,16 +110,6 @@ class CompanyCampus extends TrainingAndPlacementAppModel {
 
             // we have an id, so we update
             if ($id) {
-                // there is 2 options here,
-                  
-                // option 1:
-                // load the current row, and merge it with the new data
-                //$this->recursive = -1;
-                //$post = $this->read(null,$id);
-                //$data['Post'] = array_merge($post['Post'],$data['Post']);
-                 
-                // option 2:
-                // set the model id
                 $this->id = $id;
             }
              
@@ -107,13 +118,9 @@ class CompanyCampus extends TrainingAndPlacementAppModel {
                 $this->create();
             }
              
-            // see what we have
-            // debug($data);
-             
             // validate the row
             $this->set($data);
             if (!$this->validates()) {
-                //$this->setFlash(,'warning');
                 $return['errors'][] = __(sprintf('Post for Row %d failed to validate.',$i), true);
             }
 

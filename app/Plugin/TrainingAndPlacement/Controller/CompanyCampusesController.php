@@ -12,29 +12,26 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 
 	function import() {
 		if ($this->request->is('post')) {
-          	
-          	$filename = 'C:\Apache24\htdocs\cakephp\app\tmp\uploads\CompanyCampus\\'.$this->data['CompanyCampuses']['file']['name']; 
-          	$file = $this->data['CompanyCampuses']['file']['name'];
+          	$filename = APP . 'uploads' . DS . 'CompanyCampus' . DS . $this->request->data['CompanyCampus']['file']['name'];
+          	$file = $this->request->data['CompanyCampus']['file']['name'];
+          	$length = $this->CompanyCampus->check_file_uploaded_length($file);
+          	$name = $this->CompanyCampus->name($file);
           	$extension = pathinfo($file, PATHINFO_EXTENSION);
-        	if($extension == 'csv'){
-        	    if (move_uploaded_file($this->data['CompanyCampuses']['file']['tmp_name'],$filename)) {
-            	$messages = $this->CompanyCampus->import($this->data['CompanyCampuses']['file']['name']);
+        	if($extension === 'csv' && $length && $name){
+        	    if (move_uploaded_file($this->request->data['CompanyCampus']['file']['tmp_name'],$filename)) {
+            	$messages = $this->CompanyCampus->import($file);
             	/* save message to session */
-            	$this->Session->setFlash('File uploaded successfuly. You can view it <a href="C:\Apache24\htdocs\cakephp\app\tmp\uploads\CompanyCampus\\'.$this->data['CompanyCampuses']['file']['name'].'">here</a>.');
+            	$this->Session->setFlash('File uploaded successfuly.');
             	/* redirect */
             	$this->redirect(array('action' => 'index'));
-        		}
-        		else {
+        	} else {
             	/* save message to session */
             	$this->Session->setFlash('There was a problem uploading file. Please try again.', 'alert', array(
-    'class' => 'alert-danger'
-));
-        		}
-     		}
-     		else{
+   										 'class' => 'alert-danger'));
+        	}
+     	} else{
      			$this->Session->setFlash("Extension error", 'alert', array(
-    'class' => 'alert-danger'
-));
+    									'class' => 'alert-danger'));
      		}
      	}
     }
@@ -44,12 +41,12 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
         if ($this->request->is('post') && $this->request->data['CompanyCampus']['academic_year_id']!=0) {
             $institute = $this->request->data['CompanyCampus']['institution_id'];
             $year = $this->request->data['CompanyCampus']['academic_year_id'];
-            return $this->redirect(['action' => 'column_company_hiring',$institute,$year]);
+            	return $this->redirect(['action' => 'column_company_hiring',$institute,$year]);
         }
-        	unset($this->request->data['CompanyCampus']['institution_id']);
+        unset($this->request->data['CompanyCampus']['institution_id']);
      	$institutions = $this->CompanyCampus->Institution->find('list');
-		$academicYears = [];
-		$this->set(compact('institutions', 'academicYears'));	
+		$academicyears = [];
+		$this->set(compact('institutions', 'academicyears'));	
 	   
     }
 
@@ -67,8 +64,7 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
         	'fields' => ['CompanyMaster.name']
         ]);
         
-        $this->loadModel('CompanyJobEligibility');
-        $hire['hiring'] = $this->CompanyJobEligibility->find('list', [
+        $hire['hiring'] = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list', [
         	'conditions' => ['CompanyJobEligibility.company_master_id' => $company_id, 'CompanyJobEligibility.recstatus' => 1],	
         	'fields' => ['CompanyJobEligibility.hiring']
        	]);
@@ -119,7 +115,6 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
         $mychart->addSeries($series);
     }
 
-
 	public function pie_company_hiring_form() {
 
        if ($this->request->is('post') && $this->request->data['CompanyCampus']['academic_year_id']!=0) {
@@ -129,9 +124,10 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
         }
         unset($this->request->data['CompanyCampus']['institution_id']);
      	$institutions = $this->CompanyCampus->Institution->find('list');
-		$academicYears = [];
-		$this->set(compact('institutions','academicYears'));	   
+		$academicyears = [];
+		$this->set(compact('institutions','academicyears'));	   
     }
+
 	public function pie_company_hiring($institute = null, $year = null) {
 
         $company_id = $this->CompanyCampus->find('list', [
@@ -144,10 +140,9 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
         	'fields' => ['CompanyMaster.name']
         ]);
 
-        $this->loadModel('CompanyJobEligibility');
-            $hire = $this->CompanyJobEligibility->find('list', [
-            'conditions' => ['CompanyJobEligibility.company_master_id' => $company_id, 'CompanyJobEligibility.recstatus' => 1],	
-            'fields' => ['CompanyJobEligibility.hiring']]);
+        $hire = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list', [
+        	'conditions' => ['CompanyJobEligibility.company_master_id' => $company_id, 'CompanyJobEligibility.recstatus' => 1],	
+        	'fields' => ['CompanyJobEligibility.hiring']]);
 
 		$data = [];
 		$counter = 0;
@@ -217,8 +212,7 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 		$this->Paginator->settings = ['limit' => $pagination_value,'page' => 1];
 		$student_id = $this->Auth->user('student_id');
 
-		$this->loadModel('Student');
-		$degree = $this->Student->find('list',[
+		$degree = $this->CompanyCampus->Degree->Student->find('list',[
 			'conditions'=>['Student.id'=> $student_id],
 			'fields' => ['degree_id']
 			]);
@@ -235,15 +229,13 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 		$this->set('student_id',$student_id);
 		
 	//To get student is already appointed or not ??
-		$this->loadModel('PlacementResult');
-		$student_check = $this->PlacementResult->find('count',[
+		$student_check = $this->CompanyCampus->PlacementResult->find('count',[
 			'conditions' => ['PlacementResult.student_id' => $student_id, 'PlacementResult.status' => 'Appointed']
 			]);
 		$this->set('student_check',$student_check);		
 
 	//To get degree id	
-		$this->loadModel('Student');
-		$degree_id = $this->Student->find('list',[
+		$degree_id = $this->CompanyCampus->Degree->Student->find('list',[
 			'conditions'=>['Student.id'=> $student_id],
 			'fields' => ['degree_id']
 			]);
@@ -277,28 +269,27 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 		]);
 		
 	//To get companies eligibility for 10th	
-		$this->loadModel('CompanyJobEligibility');
-		$company_10 = $this->CompanyJobEligibility->find('list',[
+		$company_10 = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list',[
 			'conditions' => ['CompanyJobEligibility.company_master_id' => $companies],
 			'fields' => ['CompanyJobEligibility.min_eligible_10']
 			]);
 
 	//To get companies eligibility for 12th	
-		$company_12 = $this->CompanyJobEligibility->find('list',[
+		$company_12 = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list',[
 			'conditions' => ['CompanyJobEligibility.company_master_id' => $companies],
 			'fields' => ['CompanyJobEligibility.min_eligible_12']
 			]);
 
 	//To get companies eligibility for degree	
-		$company_degree = $this->CompanyJobEligibility->find('list',[
+		$company_degree = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list',[
 			'conditions' => ['CompanyJobEligibility.company_master_id' => $companies],
 			'fields' => ['CompanyJobEligibility.min_eligible_degree']
 			]);
 
 	//To get min_eligible_10th from companies based on student's 10th percentage	
-		$min_student_10=[];
-		$counter=0;
-		foreach($company_10 as $key=>$value){
+		$min_student_10 = [];
+		$counter = 0;
+		foreach($company_10 as $key => $value){
 			foreach ($student_10 as $key1 => $value1) {
 				if($value1 >= $value){
 					$min_student_10[$counter] = $value;
@@ -308,9 +299,9 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 		}
 
 	//To get min_eligible_12th from companies based on student's 12th percentage	
-		$min_student_12=[];
-		$counter=0;
-		foreach($company_12 as $key=>$value){
+		$min_student_12 = [];
+		$counter = 0;
+		foreach($company_12 as $key => $value){
 			foreach ($student_12 as $key1 => $value1) {
 				if($value1 >= $value){
 					$min_student_12[$counter] = $value;
@@ -330,10 +321,11 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 				}
 			}
 		}
-		$list = $this->CompanyJobEligibility->find('list',[
+		$list = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list',[
 			'conditions' => ['CompanyJobEligibility.min_eligible_10' => $min_student_10, 'CompanyJobEligibility.min_eligible_12' => $min_student_12, 'CompanyJobEligibility.min_eligible_degree' => $min_student_degree],
 			'fields' => ['CompanyJobEligibility.company_master_id']
 			]);
+
 		$this->loadModel('Setting');
 		$data = $this->Setting->find('first');
 		$pagination_value = $data['Setting']['pagination_value'];
@@ -396,8 +388,8 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 		$years = $this->request->data['CompanyCampus']['academic_year_id'];
 		$this->redirect(array('action' => 'find_company_year',$institute,$departments,$degrees,$years));
 	}
-	unset($this->request->data['CompanyCampus']['institution_id']);
-	$institutions = $this->CompanyCampus->Institution->find('list');
+		unset($this->request->data['CompanyCampus']['institution_id']);
+		$institutions = $this->CompanyCampus->Institution->find('list');
 		$departments = [];
 		$degrees = [];
 		$academic_years = [];
@@ -443,8 +435,7 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 			'fields' => ['CompanyCampus.company_master_id']
 		]);
 
-		$this->loadModel('PlacementResult');		
-		$data = $this->CompanyCampus->find('all',[
+		$data = $this->CompanyCampus->PlacementResult->find('all',[
 			'contain' => [
             	'CompanyMaster' => [
                 	'fields' => ['id','name']
@@ -457,23 +448,24 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 			 				  'CompanyMaster.recstatus' => 1],
 			'field' => ['CompanyMaster.name','CompanyMaster.id']]);
 
-		$this->loadModel('TrainingAndPlacement.CompanyJobEligibility');
-        $hiring = $this->CompanyJobEligibility->find('list',[
+        $hiring = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list',[
         		'conditions' => ['CompanyJobEligibility.company_master_id' => $companies,
         						 'CompanyJobEligibility.recstatus' => 1	],
         		'fields' => ['CompanyJobEligibility.hiring']				 
         	]);
         
       
-      	$e=[];
-        $p=0;
+      	$e = [];
+        $p = 0;
+
         foreach($hiring as $key=>$value) {
-        $e[$p] = $value;
-        $p++;
+        	$e[$p] = $value;
+        	$p++;
         }
+
         $total_hiring=0;
-        for($i=0;$i<$p;$i++)
-        {
+        
+        for($i = 0; $i < $p; $i++) {
             $total_hiring = $total_hiring + $e[$i];
         }
 		
@@ -493,19 +485,19 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 								 'CompanyCampus.recstatus' => 1	
 				],'fields' => ['CompanyCampus.id']
 			]);
-		$stu_list = $this->PlacementResult->find('count',[
+		$stu_list = $this->CompanyCampus->PlacementResult->find('count',[
 				'conditions' => ['PlacementResult.company_campus_id' => $campus_ids],
 
 			]);
-		$appointed_list = $this->PlacementResult->find('count',[
+		$appointed_list = $this->CompanyCampus->PlacementResult->find('count',[
 				'conditions' => ['PlacementResult.company_campus_id' => $campus_ids, 'PlacementResult.status' => 'Appointed'],
 
 			]);
-		$pending_list = $this->PlacementResult->find('count',[
+		$pending_list = $this->CompanyCampus->PlacementResult->find('count',[
 				'conditions' => ['PlacementResult.company_campus_id' => $campus_ids, 'PlacementResult.status' => 'Pending'],
 
 			]);
-		$notqualified_list = $this->PlacementResult->find('count',[
+		$notqualified_list = $this->CompanyCampus->PlacementResult->find('count',[
 				'conditions' => ['PlacementResult.company_campus_id' => $campus_ids, 'PlacementResult.status' => 'Not Qualified'],
 
 			]);
@@ -516,63 +508,9 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 		$this->set('total',$total); 
 		$this->set('company_names',$company_names);
 
-}
+	}
 
-/**
- * edit method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */// Important Note: Not used currently
-/*	public function edit($id = null) {
-		if (!$this->CompanyCampus->exists($id)) {
-			throw new NotFoundException(__('Invalid company campus'));
-		}
-		if ($this->request->is(array('post', 'put'))) {
-			if ($this->CompanyCampus->save($this->request->data)) {
-				$this->Session->setFlash(__('The company campus has been saved.'));
-				return $this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash(__('The company campus could not be saved. Please, try again.'));
-			}
-		} else {
-			$options = array('conditions' => array('CompanyCampus.' . $this->CompanyCampus->primaryKey => $id),'recursive' => 1);
-			$this->request->data = $this->CompanyCampus->find('first', $options);
-			debug($this->request->data);
-		}
-		$institutions = $this->CompanyCampus->Institution->find('list');
-		$departments = array();
-		$degrees = array();
-		$semesters = array();
-		$companyMasters = $this->CompanyCampus->CompanyMaster->find('list',array('conditions' => array('CompanyMaster.id' => $this->request->data['CompanyCampus']['company_master_id'])));
-		$academicYears = $this->CompanyCampus->AcademicYear->find('list');
-		$this->set(compact('institutions', 'departments', 'degrees','semesters', 'companyMasters', 'academicYears'));
-	} */
-
-/**
- * delete method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */// Important Note: Not used currently
-
-/*	public function delete($id = null) {
-		$this->CompanyCampus->id = $id;
-		if (!$this->CompanyCampus->exists()) {
-			throw new NotFoundException(__('Invalid company campus'));
-		}
-		$this->request->onlyAllow('post', 'delete');
-		if ($this->CompanyCampus->delete()) {
-			$this->Session->setFlash(__('The company campus has been deleted.'));
-		} else {
-			$this->Session->setFlash(__('The company campus could not be deleted. Please, try again.'));
-		}
-		return $this->redirect(array('action' => 'index'));
-	}*/
-
-public function deactivate($id = null) {
+	public function deactivate($id = null) {
 		if ($this->request->is(array('post', 'put'))){
 			$this->CompanyCampus->id = $id;
 		if (!$this->CompanyCampus->exists()) {
@@ -583,16 +521,15 @@ public function deactivate($id = null) {
 
 		if ($this->CompanyCampus->save($this->request->data,true,array('id','recstatus'))) {
 			$this->Session->setFlash(__('The company has been deactivated.'), 'alert', array(
-    'class' => 'alert-success'
-));
+    		'class' => 'alert-success'));
 		} else {
 			$this->Session->setFlash(__('The company could not be deactivated. Please, try again.'), 'alert', array(
-    'class' => 'alert-danger'
-));
+    		'class' => 'alert-danger'));
 		}
 		return $this->redirect(array('action' => 'index'));
 		}
 	}
+
 	public function activate($id = null) {
 		if ($this->request->is(array('post', 'put'))){
 			$this->CompanyCampus->id = $id;
@@ -603,25 +540,25 @@ public function deactivate($id = null) {
 		$this->request->data['CompanyCampus']['recstatus']= 1;
 		if ($this->CompanyCampus->save($this->request->data,true,array('id','recstatus'))) {
 			$this->Session->setFlash(__('The company has been activated.'), 'alert', array(
-    'class' => 'alert-success'
-));
+    		'class' => 'alert-success'));
 		} else {
 			$this->Session->setFlash(__('The company could not be activated. Please, try again.'), 'alert', array(
-    'class' => 'alert-danger'
-));
+    		'class' => 'alert-danger'));
 		}
-		return $this->redirect(array('action' => 'index'));
+			return $this->redirect(array('action' => 'index'));
 		}
 	}	
-public function list_company() {
+
+	public function list_company() {
         $this->request->onlyAllow('ajax');
         $id = $this->request->query('id');
         
         if (!$id) {
           throw new NotFoundException();
         }
-	  	  $this->disableCache();
-		   $company_campuses = $this->CompanyCampus->getListByDegree($id);
+	  	
+	  	$this->disableCache();
+		$company_campuses = $this->CompanyCampus->getListByDegree($id);
 
         $this->set(compact('company_campuses'));
         $this->set('_serialize', array('company_campuses'));
@@ -632,14 +569,14 @@ public function list_company() {
         $company = $this->CompanyCampus->CompanyMaster->find('list', array(
         'fields' => array('CompanyMaster.name')));
 
-        $this->loadModel('CompanyJobEligibility');
 
-        $hire = $this->CompanyJobEligibility->find('list', array(
+        $hire = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list', array(
             'fields' => array('CompanyJobEligibility.hiring')));
 
         $data = [];
         $counter = 0;
-        foreach($hire as $key=>$value) {
+
+        foreach($hire as $key => $value) {
         	$data[$counter] = (int)$value;
         	$counter++;
         }
@@ -686,10 +623,8 @@ public function list_company() {
 
         $company = $this->CompanyCampus->CompanyMaster->find('list', array(
         'fields' => array('CompanyMaster.name')));
-       
-        $this->loadModel('CompanyJobEligibility');
 
-        $hire['hiring'] = $this->CompanyJobEligibility->find('list', array(
+        $hire['hiring'] = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list', array(
         'fields' => array('CompanyJobEligibility.hiring')));
         
         $data = [];
@@ -746,7 +681,6 @@ public function list_company() {
 	}
 	
 	public function home() {
-        $this->loadModel('PlacementResult');
       
         $total = $this->CompanyCampus->CompanyMaster->find('count',array('conditions' => array('CompanyMaster.recstatus' => 1)));
         $total_training = $this->CompanyCampus->CompanyMaster->find('count',array('conditions' => array('CompanyMaster.training' => true,'CompanyMaster.recstatus' => 1)));
@@ -755,25 +689,25 @@ public function list_company() {
         $training = $this->CompanyCampus->CompanyMaster->find('all',array('conditions' => array('CompanyMaster.training' => 1,'CompanyMaster.recstatus' => 1),'field' => array('CompanyMaster.name')));
         $job = $this->CompanyCampus->CompanyMaster->find('all',array('conditions' => array('CompanyMaster.job' => 1,'CompanyMaster.recstatus' => 1),'field' => array('CompanyMaster.name')));
 
-        $this->loadModel('CompanyJobEligibility');
-        $hiring = $this->CompanyJobEligibility->find('list', array(
+        $hiring = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list', array(
         'conditions' => array('CompanyJobEligibility.recstatus' => 1),    
         'fields' => array('CompanyJobEligibility.hiring')));
 
         $data = [];
         $counter = 0;
         
-        foreach($hiring as $key=>$value) {
+        foreach($hiring as $key => $value) {
         	$data[$counter] = $value;
         	$counter++;
         }
 
         $total_hiring = 0;
 
-        for($i=0; $i<$counter; $i++) {
+        for($i=0; $i < $counter; $i++) {
             $total_hiring = $total_hiring + $data[$i];
         }
 
-        $this->set(compact('companies','training','job','total','total_training','total_job','total_hiring'));
+        $fullname = $this->Auth->user('fullname');
+        $this->set(compact('companies','training','job','total','total_training','total_job','total_hiring','fullname'));
 	}
 }

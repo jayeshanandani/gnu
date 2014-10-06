@@ -1,6 +1,6 @@
 <br><br>
 <?php
-echo $this->Html->script('populatedropdowns');
+echo $this->Html->script('TrainingAndPlacement.populatedropdowns');
 ?>
 <style type="text/css">
     input[type=checkbox] {

@@ -1,6 +1,6 @@
 
 <?php
-echo "Welcome ".AuthComponent::user('fullname');
+echo "Welcome {$fullname}";
 ?>
 <div class="row">
     <div class="col-lg-3">

@@ -1,5 +1,5 @@
 <?php
-echo $this->Html->script('yearsdropdowns');
+echo $this->Html->script('TrainingAndPlacement.yearsdropdown');
 ?>
 
 <div class="row">
@@ -23,7 +23,7 @@ $url            = $this->Html->url(array(
     'ext' => 'json',
     'plugin' => false
 ));
-$emptyAcademicYear     = count($academicYears) > 0 ? Configure::read('Select.defaultAfter') : array(
+$emptyacademicyear     = count($academicyears) > 0 ? Configure::read('Select.defaultAfter') : array(
     '0' => Configure::read('Select.naBefore') . __('Select Institution First') . Configure::read('Select.naAfter')
 );
 
@@ -34,7 +34,7 @@ echo $this->Form->input('institution_id', array(
 ));
 echo $this->Form->input('academic_year_id', array(
     'id' => 'academic_years',
-    'empty' => $emptyAcademicYear,
+    'empty' => $emptyacademicyear,
 ));
 	?>
     <div class="col">
