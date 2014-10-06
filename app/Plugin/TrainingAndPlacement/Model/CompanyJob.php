@@ -7,36 +7,46 @@ App::uses('TrainingAndPlacementAppModel', 'TrainingAndPlacement.Model');
 */
 class CompanyJob extends TrainingAndPlacementAppModel {
 
-    /**
-     * Use table
-     *
-     * @var mixed False or table name
-    */
+/**
+* Use table
+*
+* @var mixed False or table name
+*/
     public $useTable = 'company_jobs';
 
-    /**
-     * Display field
-     *
-     * @var string
-    */
+/**
+* Display field
+*
+* @var string
+*/
     public $displayField = 'name';
 
-    //The Associations below have been created with all possible keys, those that are not needed can be removed
+/**
+* Validation rules
+*
+*/
+    public $validate = [
+        'name'              => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
+        'probationperiod'   => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
+        'salary'            => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
+    ];
 
-    /**
-     * belongsTo associations
-     *
-     * @var array
-    */
+//The Associations below have been created with all possible keys, those that are not needed can be removed
+
+/**
+* belongsTo associations
+*
+* @var array
+*/
     public $belongsTo = ['TrainingAndPlacement.CompanyMaster'];
 
-    /**
-     * getListByCompany method
-     * Helps to get list of companies
-     *
-     * @var id
-     * @return array
-    */
+/**
+* getListByCompany method
+* Helps to get list of companies
+*
+* @var id
+* @return array
+*/
     public function getListByCompany($cid = null) {
         if (empty($cid)) {
             return array();
@@ -44,27 +54,36 @@ class CompanyJob extends TrainingAndPlacementAppModel {
         return $this->find('list', ['conditions' => [$this->alias . '.company_master_id' => $cid]]);
     }
 
-    /**
-     * Validation rules
-     *
-    */
-    public $validate = [
-        'name'              => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
-        'probationperiod'   => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
-        'salary'            => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
-    ];
+/**
+* Check $_FILES[][name] length.
+*
+* @param (string) $filename - Uploaded file name.
+*/
+    public function check_file_uploaded_length ($filename) {
+        return (bool) ((mb_strlen($filename,"UTF-8") > 225) ? true : false);
+    }
 
-    /**
-     * Import companyjob data using csv file
-     *
-    */
+/**
+* Check $_FILES[][name]
+*
+* @param (string) $filename - Uploaded file name.
+* @author Yousef Ismaeil Cliprz
+*/
+    public function check_file_uploaded_name ($filename) {
+        (bool) ((preg_match("`^[-0-9A-Z_\.]+$`i",$filename)) ? true : false);
+    }
+
+/**
+* Import companyjob data using csv file
+*
+*/
     public function import($filename) {
         /** to avoid having to tweak the contents of
         * $data you should use your db field name as the heading name
         * eg: Post.id, Post.title, Post.description
         * set the filename to read CSV from
         */
-        $filename = TMP . 'uploads' . DS . 'CompanyJob' . DS . $filename;
+        $filename = APP . 'uploads' . DS . 'CompanyJob' . DS . $filename;
          
         // open the file
         $handle = fopen($filename, "r");
@@ -102,16 +121,6 @@ class CompanyJob extends TrainingAndPlacementAppModel {
 
             // we have an id, so we update
             if ($id) {
-                // there is 2 options here,
-                  
-                // option 1:
-                // load the current row, and merge it with the new data
-                //$this->recursive = -1;
-                //$post = $this->read(null,$id);
-                //$data['Post'] = array_merge($post['Post'],$data['Post']);
-                 
-                // option 2:
-                // set the model id
                 $this->id = $id;
             }
              
@@ -120,8 +129,6 @@ class CompanyJob extends TrainingAndPlacementAppModel {
                 $this->create();
             }
              
-            // see what we have
-            // debug($data);
             // validate the row
             $this->set($data);
             if (!$this->validates()) {

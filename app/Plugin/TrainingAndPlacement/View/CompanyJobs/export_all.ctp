@@ -1,9 +1,9 @@
 <?php
-$date=date("d/m/Y");
+$date = date("d/m/Y");
 $filename = "Company Jobs ".$date.".xls";
 $contents = "Sr.No.\t Company_id\t Designation\t probationperiod\t Salary\t \n";
 echo $contents;
-$i=0;
+$i = 0;
 foreach ($companyJobs as $CompanyJob)
 {
   $contents = ++$i."\t".$CompanyJob['CompanyJob']['company_master_id']."\t".$CompanyJob['CompanyJob']['name']."\t".$CompanyJob['CompanyJob']['probationperiod']."\t".$CompanyJob['CompanyJob']['salary']."\t \n";

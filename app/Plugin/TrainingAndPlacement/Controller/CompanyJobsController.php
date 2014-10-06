@@ -19,25 +19,26 @@ class CompanyJobsController extends TrainingAndPlacementAppController {
 
 	public function import() {
 		if ($this->request->is('post')) {
-          	
-          	$filename = 'C:\Apache24\htdocs\cakephp\app\tmp\uploads\CompanyJob\\'.$this->data['CompanyJobs']['file']['name']; 
-          	$file = $this->data['CompanyJobs']['file']['name'];
+          	$filename = APP . 'uploads' . DS . 'CompanyJobs' . DS . $this->request->data['CompanyJobs']['file']['name'];
+          	$file = $this->request->data['CompanyJobs']['file']['name'];
+          	$length = $this->CompanyJobs->check_file_uploaded_length($file);
+          	$name = $this->CompanyJobs->name($file);
           	$extension = pathinfo($file, PATHINFO_EXTENSION);
-        	if($extension == 'csv'){
-        	    if (move_uploaded_file($this->data['CompanyJobs']['file']['tmp_name'],$filename)) {
-            	$messages = $this->CompanyJob->import($this->data['CompanyJobs']['file']['name']);
+        	if($extension === 'csv' && $length && $name){
+        	    if (move_uploaded_file($this->request->data['CompanyJobs']['file']['tmp_name'],$filename)) {
+            	$messages = $this->CompanyJobs->import($file);
             	/* save message to session */
-            	$this->Session->setFlash('File uploaded successfuly. You can view it <a href="C:\Apache24\htdocs\cakephp\app\tmp\uploads\CompanyJob\\'.$this->data['CompanyJobs']['file']['name'].'">here</a>.');
+            	$this->Session->setFlash('File uploaded successfuly.');
             	/* redirect */
             	$this->redirect(array('action' => 'index'));
-        		}
-        		else {
+        	} else {
             	/* save message to session */
-            	$this->Session->setFlash('There was a problem uploading file. Please try again.');
-        		}
-     		}
-     		else{
-     			$this->Session->setFlash("Extension error");
+            	$this->Session->setFlash('There was a problem uploading file. Please try again.', 'alert', array(
+   										 'class' => 'alert-danger'));
+        	}
+     	} else{
+     			$this->Session->setFlash("Extension error", 'alert', array(
+    									'class' => 'alert-danger'));
      		}
      	}
     }
@@ -48,7 +49,6 @@ class CompanyJobsController extends TrainingAndPlacementAppController {
   		]));
     	$this->layout = null;
    		$this->autoLayout = false;
-  		Configure::write('debug', '0');
 	}
 /**
  * view method
@@ -110,27 +110,6 @@ class CompanyJobsController extends TrainingAndPlacementAppController {
 		$this->set(compact('companyMasters'));
 	}
 
-/**
- * delete method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */ //Important Note : Not currently used
-/*	public function delete($id = null) {
-		$this->CompanyJob->id = $id;
-		if (!$this->CompanyJob->exists()) {
-			throw new NotFoundException(__('Invalid company job'));
-		}
-		$this->request->onlyAllow('post', 'delete');
-		if ($this->CompanyJob->delete()) {
-			$this->Session->setFlash(__('The company job has been deleted.'));
-		} else {
-			$this->Session->setFlash(__('The company job could not be deleted. Please, try again.'));
-		}
-		return $this->redirect(array('action' => 'index'));
-	}
-*/
 	public function deactivate($id = null) {
 		if ($this->request->is(array('post', 'put'))){
 			$this->CompanyJob->id = $id;
@@ -169,11 +148,14 @@ class CompanyJobsController extends TrainingAndPlacementAppController {
 	public function list_jobs() {
         $this->request->onlyAllow('ajax');
         $id = $this->request->query('id');
+
         if (!$id) {
           throw new NotFoundException();
         }
+
 	  	$this->disableCache();
 		$companyJobs = $this->CompanyJob->getListByCompany($id);
+        
         $this->set(compact('companyJobs'));
         $this->set('_serialize', array('companyJobs'));
     }
