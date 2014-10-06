@@ -6,24 +6,28 @@ class PlacementResultsController extends TrainingAndPlacementAppController {
 	public $helpers = array('Js');
 
 
-	public function import() {
-		if ($this->request->is('post')) {      	
-          	$filename = 'C:\Apache24\htdocs\cakephp\app\tmp\uploads\PlacementResult\\'.$this->data['PlacementResults']['file']['name']; 
-          	$file = $this->data['PlacementResults']['file']['name'];
+	function import() {
+		if ($this->request->is('post')) {
+          	$filename = APP . 'uploads' . DS . 'PlacementResult' . DS . $this->request->data['PlacementResult']['file']['name'];
+          	$file = $this->request->data['PlacementResult']['file']['name'];
+          	$length = $this->PlacementResult->check_file_uploaded_length($file);
+          	$name = $this->PlacementResult->name($file);
           	$extension = pathinfo($file, PATHINFO_EXTENSION);
-        	if($extension == 'csv'){
-        	    if (move_uploaded_file($this->data['PlacementResults']['file']['tmp_name'],$filename)) {
-            		$messages = $this->PlacementResult->import($this->data['PlacementResults']['file']['name']);
-            		/* save message to session */
-            		$this->Session->setFlash('File uploaded successfuly. You can view it <a href="C:\Apache24\htdocs\cakephp\app\tmp\uploads\PlacementResult\\'.$this->data['PlacementResults']['file']['name'].'">here</a>.');
-            		/* redirect */
-            		$this->redirect(['action' => 'index']);
-        		} else {
-            		/* save message to session */
-            		$this->Session->setFlash('There was a problem uploading file. Please try again.');
-        		}
-     		} else{
-     			$this->Session->setFlash("Extension error");
+        	if($extension === 'csv' && $length && $name){
+        	    if (move_uploaded_file($this->request->data['PlacementResult']['file']['tmp_name'],$filename)) {
+            	$messages = $this->PlacementResult->import($file);
+            	/* save message to session */
+            	$this->Session->setFlash('File uploaded successfuly.');
+            	/* redirect */
+            	$this->redirect(array('action' => 'index'));
+        	} else {
+            	/* save message to session */
+            	$this->Session->setFlash('There was a problem uploading file. Please try again.', 'alert', array(
+   										 'class' => 'alert-danger'));
+        	}
+     	} else{
+     			$this->Session->setFlash("Extension error", 'alert', array(
+    									'class' => 'alert-danger'));
      		}
      	}
     }
@@ -38,13 +42,11 @@ class PlacementResultsController extends TrainingAndPlacementAppController {
 		}
 		unset($this->request->data['PlacementResult']['institution_id']);
 
-		$this->loadModel('Institution');
-		$institutions 		= $this->Institution->find('list');
+		$institutions 		= $this->PlacementResult->CompanyCampus->Institution->find('list');
 		$departments 		= [];
 		$degrees 			= [];
 		
-		$this->loadModel('CompanyMaster');
-		$companyMasters 	= $this->CompanyMaster->find('list');
+		$companyMasters 	= $this->PlacementResult->CompanyCampus->CompanyMaster->find('list');
 		$this->set(compact('institutions', 'departments', 'degrees', 'companyMasters'));	
 	}
 
@@ -60,15 +62,12 @@ class PlacementResultsController extends TrainingAndPlacementAppController {
     		'fields' 		=> ['PlacementResult.company_campus_id']
     	]);
 
-    	$this->loadModel('TrainingAndPlacement.CompanyCampus');
-    	$this->loadModel('TrainingAndPlacement.CompanyMaster');
-
-    	$company_ids = $this->CompanyCampus->find('list', [
+    	$company_ids = $this->PlacementResult->CompanyCampus->find('list', [
     		'conditions' 	=> ['CompanyCampus.id' => $campus_ids],
     		'fields' 		=> ['CompanyCampus.company_master_id']
     	]);
     	
-    	$company = $this->CompanyMaster->find('all', [
+    	$company = $this->PlacementResult->CompanyCampus->CompanyMaster->find('all', [
     		'conditions' 	=> ['CompanyMaster.id' => $company_ids],
     		'fields' 		=> ['CompanyMaster.name']
     	]);
@@ -91,16 +90,11 @@ class PlacementResultsController extends TrainingAndPlacementAppController {
         	],'conditions' => ['PlacementResult.company_campus_id' => $company]
 		);
 		$this->set('PlacementResults', $this->Paginator->paginate());
-
-		$this->loadModel('Institution');
-		$this->loadModel('Department');
-		$this->loadModel('Degree');
-		$this->loadModel('TrainingAndPlacement.CompanyMaster');
 		
-		$company_institute		= $this->Institution->find('all', array('conditions' => array('Institution.id' => $institute), 'field' => array('Institution.name')));
-		$company_department		= $this->Department->find('all', array('conditions' => array('Department.id' => $department), 'field' => array('Department.name')));	
-		$company_degree			= $this->Degree->find('all', array('conditions' => array('Degree.id' => $degree), 'field' => array('Degree.name')));	
-		$company_name			= $this->CompanyMaster->find('all',['conditions'=>['CompanyMaster.id'=>$company],'fields'=>['CompanyMaster.name']]);
+		$company_institute		= $this->PlacementResult->CompanyCampus->Institution->find('all', array('conditions' => array('Institution.id' => $institute), 'field' => array('Institution.name')));
+		$company_department		= $this->PlacementResult->CompanyCampus->Department->find('all', array('conditions' => array('Department.id' => $department), 'field' => array('Department.name')));	
+		$company_degree			= $this->PlacementResult->CompanyCampus->Degree->find('all', array('conditions' => array('Degree.id' => $degree), 'field' => array('Degree.name')));	
+		$company_name			= $this->PlacementResult->CompanyCampus->CompanyMaster->find('all',['conditions'=>['CompanyMaster.id'=>$company],'fields'=>['CompanyMaster.name']]);
 		
 		$this->set('company_name',$company_name);
  		$this->set('company_department',$company_department);
@@ -115,25 +109,18 @@ class PlacementResultsController extends TrainingAndPlacementAppController {
 	}
 public function student_list($institute = null,$department = null,$degree = null,$company = null) {
 		$this->loadModel('Setting');
-		$data				= $this->Setting->find('first');
-		$pagination_value 	= $data['Setting']['pagination_value'];
-		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1,
-			'contain'	=> ['Student' => [
-        	'fields'	=> ['id','firstname','lastname'],'conditions' => ['Student.institution_id' => $institute, 'Student.degree_id' => $degree]
-        		]      
-        	],'conditions' => ['PlacementResult.company_campus_id' => $company]
+		$data = $this->Setting->find('first');
+		$pagination_value = $data['Setting']['pagination_value'];
+		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1,'contain'	=> ['Student' => [
+        	'fields'	=> ['id','firstname','lastname'],'conditions' => ['Student.institution_id' => $institute, 'Student.degree_id' => $degree]]],
+        	'conditions' => ['PlacementResult.company_campus_id' => $company]
 		);
 		$this->set('PlacementResults', $this->Paginator->paginate());
 
-		$this->loadModel('Institution');
-		$this->loadModel('Department');
-		$this->loadModel('Degree');
-		$this->loadModel('TrainingAndPlacement.CompanyMaster');
-
-		$institute 		= $this->Institution->find('all', array('conditions' => array('Institution.id' => $institute), 'field' => array('Institution.name')));
-		$branch 		= $this->Department->find('all', array('conditions' => array('Department.id' => $department), 'field' => array('Department.name')));	
-		$degree 		= $this->Degree->find('all', array('conditions' => array('Degree.id' => $degree), 'field' => array('Degree.name')));	
-		$company_name 	= $this->CompanyMaster->find('all',['conditions'=>['CompanyMaster.id'=>$company],'fields'=>['CompanyMaster.name']]);
+		$institute 		= $this->PlacementResult->CompanyCampus->Institution->find('all', array('conditions' => array('Institution.id' => $institute), 'field' => array('Institution.name')));
+		$branch 		= $this->PlacementResult->CompanyCampus->Department->find('all', array('conditions' => array('Department.id' => $department), 'field' => array('Department.name')));	
+		$degree 		= $this->PlacementResult->CompanyCampus->Degree->find('all', array('conditions' => array('Degree.id' => $degree), 'field' => array('Degree.name')));	
+		$company_name 	= $this->PlacementResult->CompanyCampus->CompanyMaster->find('all',['conditions'=>['CompanyMaster.id'=>$company],'fields'=>['CompanyMaster.name']]);
 		
 		$this->set('company_name',$company_name);
 		$this->set('branch',$branch);
@@ -157,15 +144,10 @@ public function student_list($institute = null,$department = null,$degree = null
 		);
 		$this->set('PlacementResults', $this->Paginator->paginate());
 
-		$this->loadModel('Institution');
-		$this->loadModel('Department');
-		$this->loadModel('Degree');
-		$this->loadModel('TrainingAndPlacement.CompanyMaster');
-
-		$institute = $this->Institution->find('all', array('conditions' => array('Institution.id' => $institute), 'field' => array('Institution.name')));
-		$branch = $this->Department->find('all', array('conditions' => array('Department.id' => $department), 'field' => array('Department.name')));	
-		$degree = $this->Degree->find('all', array('conditions' => array('Degree.id' => $degree), 'field' => array('Degree.name')));	
-		$company_name = $this->CompanyMaster->find('all',['conditions'=>['CompanyMaster.id'=>$company],'fields'=>['CompanyMaster.name']]);
+		$institute = $this->PlacementResult->CompanyCampus->Institution->find('all', array('conditions' => array('Institution.id' => $institute), 'field' => array('Institution.name')));
+		$branch = $this->PlacementResult->CompanyCampus->Department->find('all', array('conditions' => array('Department.id' => $department), 'field' => array('Department.name')));	
+		$degree = $this->PlacementResult->CompanyCampus->Degree->find('all', array('conditions' => array('Degree.id' => $degree), 'field' => array('Degree.name')));	
+		$company_name = $this->PlacementResult->CompanyCampus->CompanyMaster->find('all',['conditions'=>['CompanyMaster.id'=>$company],'fields'=>['CompanyMaster.name']]);
 		
 		$this->set('company_name',$company_name);
 		$this->set('branch',$branch);
@@ -175,6 +157,7 @@ public function student_list($institute = null,$department = null,$degree = null
 	}
 
 	public function notqualified_status($institute = null, $department = null, $degree = null, $company = null) {
+		
 		$this->loadModel('Setting');
 		$data = $this->Setting->find('first');
 		$pagination_value = $data['Setting']['pagination_value'];
@@ -188,15 +171,10 @@ public function student_list($institute = null,$department = null,$degree = null
 		);
 		$this->set('PlacementResults', $this->Paginator->paginate());
 
-		$this->loadModel('Institution');
-		$this->loadModel('Department');
-		$this->loadModel('Degree');
-		$this->loadModel('TrainingAndPlacement.CompanyMaster');
-
-		$institute = $this->Institution->find('all', array('conditions' => array('Institution.id' => $institute), 'field' => array('Institution.name')));
-		$branch = $this->Department->find('all', array('conditions' => array('Department.id' => $department), 'field' => array('Department.name')));	
-		$degree = $this->Degree->find('all', array('conditions' => array('Degree.id' => $degree), 'field' => array('Degree.name')));	
-		$company_name = $this->CompanyMaster->find('all',['conditions'=>['CompanyMaster.id'=>$company],'fields'=>['CompanyMaster.name']]);
+		$institute = $this->PlacementResult->CompanyCampus->Institution->find('all', array('conditions' => array('Institution.id' => $institute), 'field' => array('Institution.name')));
+		$branch = $this->PlacementResult->CompanyCampus->Department->find('all', array('conditions' => array('Department.id' => $department), 'field' => array('Department.name')));	
+		$degree = $this->PlacementResult->CompanyCampus->Degree->find('all', array('conditions' => array('Degree.id' => $degree), 'field' => array('Degree.name')));	
+		$company_name = $this->PlacementResult->CompanyCampus->CompanyMaster->find('all',['conditions'=>['CompanyMaster.id'=>$company],'fields'=>['CompanyMaster.name']]);
 		
 		$this->set('company_name',$company_name);
 		$this->set('branch',$branch);
@@ -219,15 +197,10 @@ public function student_list($institute = null,$department = null,$degree = null
 		
 		$this->set('PlacementResults', $this->Paginator->paginate());
 
-	$this->loadModel('Institution');
-	$this->loadModel('Department');
-	$this->loadModel('Degree');
-	$this->loadModel('TrainingAndPlacement.CompanyMaster');
-
-	$institute = $this->Institution->find('all', array('conditions' => array('Institution.id' => $institute), 'field' => array('Institution.name')));
-	$branch = $this->Department->find('all', array('conditions' => array('Department.id' => $department), 'field' => array('Department.name')));	
-	$degree = $this->Degree->find('all', array('conditions' => array('Degree.id' => $degree), 'field' => array('Degree.name')));	
-	$company_name = $this->CompanyMaster->find('all',['conditions'=>['CompanyMaster.id'=>$company],'fields'=>['CompanyMaster.name']]);
+	$institute = $this->PlacementResult->CompanyCampus->Institution->find('all', array('conditions' => array('Institution.id' => $institute), 'field' => array('Institution.name')));
+	$branch = $this->PlacementResult->CompanyCampus->Department->find('all', array('conditions' => array('Department.id' => $department), 'field' => array('Department.name')));	
+	$degree = $this->PlacementResult->CompanyCampus->Degree->find('all', array('conditions' => array('Degree.id' => $degree), 'field' => array('Degree.name')));	
+	$company_name = $this->PlacementResult->CompanyCampus->CompanyMaster->find('all',['conditions'=>['CompanyMaster.id'=>$company],'fields'=>['CompanyMaster.name']]);
 
 	$this->set('institute',$institute);
 	$this->set('branch',$branch);
@@ -260,9 +233,8 @@ public function display() {
 }
 
 public function student_home() {
-	$this->loadModel('Student');
 	$student_id = $this->Auth->user('student_id');
-	$degree_id = $this->Student->find('list',[
+	$degree_id = $this->PlacementResult->Student->find('list',[
 		'conditions' => ['Student.id' => $student_id],
 		'fields' => ['Student.degree_id']
 	]);
@@ -280,21 +252,21 @@ public function student_home() {
         	]      
     	],'conditions'=>['PlacementResult.student_id'=> $student_id ]]
 	);
-	$this->loadModel('CompanyMaster');
 	
 	$company_id = $this->PlacementResult->CompanyCampus->find('list',[
 		'fields' => ['CompanyCampus.company_master_id'],
 		'conditions'=>['CompanyCampus.degree_id' => $degree_id,'CompanyCampus.recstatus' => 1]
 	]);
 		
-	$companies = $this->CompanyMaster->find('all',['conditions' => ['CompanyMaster.id' => $company_id,'CompanyMaster.recstatus' => 1],'field' => ['CompanyMaster.name']]);
-	$training = $this->CompanyMaster->find('all',['conditions' => ['CompanyMaster.id' => $company_id,'CompanyMaster.recstatus' => 1,'CompanyMaster.training' => 1],'field' => ['CompanyMaster.name']]);
-	$job = $this->CompanyMaster->find('all',['conditions' => ['CompanyMaster.id' => $company_id,'CompanyMaster.recstatus' => 1,'CompanyMaster.job' => 1],'field' => ['CompanyMaster.name']]);
+	$companies = $this->PlacementResult->CompanyCampus->CompanyMaster->find('all',['conditions' => ['CompanyMaster.id' => $company_id,'CompanyMaster.recstatus' => 1],'field' => ['CompanyMaster.name']]);
+	$training = $this->PlacementResult->CompanyCampus->CompanyMaster->find('all',['conditions' => ['CompanyMaster.id' => $company_id,'CompanyMaster.recstatus' => 1,'CompanyMaster.training' => 1],'field' => ['CompanyMaster.name']]);
+	$job = $this->PlacementResult->CompanyCampus->CompanyMaster->find('all',['conditions' => ['CompanyMaster.id' => $company_id,'CompanyMaster.recstatus' => 1,'CompanyMaster.job' => 1],'field' => ['CompanyMaster.name']]);
 
 	$this->set('data',$data);
 	$this->set('companies',$companies);
 	$this->set('training',$training);
 	$this->set('job',$job);
+	$this->set('fullname', $this->Auth->user('fullname'));
 	}
 
 /**
@@ -356,25 +328,4 @@ public function student_home() {
 		}
 		
 	}
-
-/**
- * delete method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */ // Not yet used
-/*	public function delete($id = null) {
-		$this->PlacementResult->id = $id;
-		if (!$this->PlacementResult->exists()) {
-			throw new NotFoundException(__('Invalid placement result'));
-		}
-		$this->request->onlyAllow('post', 'delete');
-		if ($this->PlacementResult->delete()) {
-			$this->Session->setFlash(__('The placement result has been deleted.'));
-		} else {
-			$this->Session->setFlash(__('The placement result could not be deleted. Please, try again.'));
-		}
-		return $this->redirect(array('action' => 'index'));
-	}*/
 }

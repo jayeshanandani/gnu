@@ -10,7 +10,6 @@
 	<fieldset>
 		<legend><?php echo __('Edit Placement Result'); ?></legend>
 	<?php
-		//echo $this->Form->input('company_master_id');
 		echo $this->Form->input('verbal',array('wrapInput' => 'col col-md-9 col-md-offset-3','class' => false));
 		echo $this->Form->input('aptitude',array('wrapInput' => 'col col-md-9 col-md-offset-3','class' => false));
 		echo $this->Form->input('interview',array('wrapInput' => 'col col-md-9 col-md-offset-3','class' => false));

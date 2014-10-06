@@ -1,5 +1,5 @@
 <?php
-echo "Welcome ".AuthComponent::user('fullname');
+echo "Welcome {fullname}";
 ?>
 <div class="placementResults view">
 <div class="row">

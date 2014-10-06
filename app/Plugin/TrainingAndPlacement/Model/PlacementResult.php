@@ -7,31 +7,50 @@ App::uses('TrainingAndPlacementAppModel', 'TrainingAndPlacement.Model');
 */
 class PlacementResult extends TrainingAndPlacementAppModel {
 
-    /**
-     * belongsTo associations
-     *
-     * @var array
-    */
+/**
+* belongsTo associations
+*
+* @var array
+*/
     public $belongsTo = ['TrainingAndPlacement.CompanyCampus', 'Student'];
 
-    /**
-     * validation rules
-     *
-     * @var array
-    */
-    public $validate = ['stu_campus' => ['rule' => 'isUnique']];  
+/**
+* validation rules
+*
+* @var array
+*/
+    public $validate = ['stu_campus' => ['rule' => 'isUnique']];
 
-    /**
-     * Import placementresults data using csv file
-     *
-    */
+/**
+* Check $_FILES[][name] length.
+*
+* @param (string) $filename - Uploaded file name.
+*/
+    public function check_file_uploaded_length ($filename) {
+        return (bool) ((mb_strlen($filename,"UTF-8") > 225) ? true : false);
+    }
+
+/**
+* Check $_FILES[][name]
+*
+* @param (string) $filename - Uploaded file name.
+* @author Yousef Ismaeil Cliprz
+*/
+    public function check_file_uploaded_name ($filename) {
+        (bool) ((preg_match("`^[-0-9A-Z_\.]+$`i",$filename)) ? true : false);
+    }  
+
+/**
+* Import placementresults data using csv file
+*
+*/
     public function import($filename) {
         /** to avoid having to tweak the contents of
         * $data you should use your db field name as the heading name
         * eg: Post.id, Post.title, Post.description
         * set the filename to read CSV from
         */
-        $filename = TMP . 'uploads' . DS . 'PlacementResult' . DS . $filename;
+        $filename = APP . 'uploads' . DS . 'PlacementResult' . DS . $filename;
          
         // open the file
         $handle = fopen($filename, "r");
@@ -44,7 +63,7 @@ class PlacementResult extends TrainingAndPlacementAppModel {
             'messages' => array(),
             'errors' => array(),
         );
-    		$i=0;
+    		$i = 0;
     		$error = null;
         // read each data row in the file
         while (($row = fgetcsv($handle)) !== FALSE) {
@@ -69,16 +88,6 @@ class PlacementResult extends TrainingAndPlacementAppModel {
 
             // we have an id, so we update
             if ($id) {
-                // there is 2 options here,
-                  
-                // option 1:
-                // load the current row, and merge it with the new data
-                //$this->recursive = -1;
-                //$post = $this->read(null,$id);
-                //$data['Post'] = array_merge($post['Post'],$data['Post']);
-                 
-                // option 2:
-                // set the model id
                 $this->id = $id;
             }
              
@@ -86,9 +95,6 @@ class PlacementResult extends TrainingAndPlacementAppModel {
             else {
                 $this->create();
             }
-             
-            // see what we have
-            // debug($data);
              
             // validate the row
             $this->set($data);
