@@ -1,5 +1,5 @@
 <?php
-$date=date("d/m/Y");
+$date = date("d/m/Y");
 $filename = "Company Job Eligibility ".$date.".xls";
 $contents = "Sr.No.\t Company_id\t Company_job_id\t min_eligibility_SSC\t min_eligibility_HSC\t min_eligibility_Degree\t Interested\t Hiring\t Verbal\t Aptitude\t Interview\t GD\t HR\t \n";
 echo $contents;

@@ -14,19 +14,10 @@ class CompanyJobEligibility extends TrainingAndPlacementAppModel {
 */
 public $useTable = 'company_job_eligibilities';
 
-    //The Associations below have been created with all possible keys, those that are not needed can be removed
-
-    /**
-     * belongsTo associations
-     *
-     * @var array
-    */
-    public $belongsTo = ['TrainingAndPlacement.CompanyMaster','TrainingAndPlacement.CompanyJob'];
-
-    /**
-     * Validation rules
-     *
-    */
+/**
+* Validation rules
+*
+*/
     public $validate = [
         'min_eligible_10'       => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
         'min_eligible_12'       => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
@@ -35,17 +26,44 @@ public $useTable = 'company_job_eligibilities';
         'hiring'                => ['notEmpty' => ['rule' => ['notEmpty', 'decimal'],'message' => 'Hiring Should be in Decimal/Numeric','required' => true]],
     ];
 
-    /**
-     * Import companyjobeligibility data using csv file
-     *
-    */
+//The Associations below have been created with all possible keys, those that are not needed can be removed
+
+/**
+ * belongsTo associations
+ *
+ * @var array
+*/
+    public $belongsTo = ['TrainingAndPlacement.CompanyMaster','TrainingAndPlacement.CompanyJob'];
+
+/**
+* Check $_FILES[][name] length.
+*
+* @param (string) $filename - Uploaded file name.
+*/
+    public function check_file_uploaded_length ($filename) {
+        return (bool) ((mb_strlen($filename,"UTF-8") > 225) ? true : false);
+    }
+
+/**
+* Check $_FILES[][name]
+*
+* @param (string) $filename - Uploaded file name.
+* @author Yousef Ismaeil Cliprz
+*/
+    public function check_file_uploaded_name ($filename) {
+        (bool) ((preg_match("`^[-0-9A-Z_\.]+$`i",$filename)) ? true : false);
+    } 
+/**
+* Import companyjobeligibility data using csv file
+*
+*/
     public function import($filename) {
         /** to avoid having to tweak the contents of
         * $data you should use your db field name as the heading name
         * eg: Post.id, Post.title, Post.description
         * set the filename to read CSV from
         */
-        $filename = TMP . 'uploads' . DS . 'CompanyJobEligibility' . DS . $filename;
+        $filename = APP . 'uploads' . DS . 'CompanyJobEligibility' . DS . $filename;
          
         // open the file
         $handle = fopen($filename, "r");
@@ -83,16 +101,6 @@ public $useTable = 'company_job_eligibilities';
 
             // we have an id, so we update
             if ($id) {
-                // there is 2 options here,
-                  
-                // option 1:
-                // load the current row, and merge it with the new data
-                //$this->recursive = -1;
-                //$post = $this->read(null,$id);
-                //$data['Post'] = array_merge($post['Post'],$data['Post']);
-                 
-                // option 2:
-                // set the model id
                 $this->id = $id;
             }
              
@@ -100,9 +108,6 @@ public $useTable = 'company_job_eligibilities';
             else {
                 $this->create();
             }
-             
-            // see what we have
-            // debug($data);
              
             // validate the row
             $this->set($data);

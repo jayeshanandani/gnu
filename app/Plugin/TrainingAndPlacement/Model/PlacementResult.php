@@ -8,18 +8,19 @@ App::uses('TrainingAndPlacementAppModel', 'TrainingAndPlacement.Model');
 class PlacementResult extends TrainingAndPlacementAppModel {
 
 /**
+* validation rules
+*
+* @var array
+*/
+    public $validate = ['stu_campus' => ['rule' => 'isUnique']];
+    
+/**
 * belongsTo associations
 *
 * @var array
 */
     public $belongsTo = ['TrainingAndPlacement.CompanyCampus', 'Student'];
 
-/**
-* validation rules
-*
-* @var array
-*/
-    public $validate = ['stu_campus' => ['rule' => 'isUnique']];
 
 /**
 * Check $_FILES[][name] length.

@@ -10,14 +10,13 @@ class ReferredCompaniesController extends TrainingAndPlacementAppController {
 		$data				= $this->Setting->find('first');
 		$pagination_value	= $data['Setting']['pagination_value'];
 		$this->Paginator->settings = ['limit' => $pagination_value,'page' => 1];	
-	
-		$this->loadModel('User');
+
 		$creator 		= $this->ReferredCompany->find('list',['fields' => ['ReferredCompany.creator_id']]);
 		$modifier 		= $this->ReferredCompany->find('list',['fields' => ['ReferredCompany.modifier_id']]);
 		$user_id 		= $this->ReferredCompany->find('list',['fields' => ['ReferredCompany.user_id']]);
-		$user 			= $this->User->find('all',['conditions' => ['User.id' => $user_id]]);
-		$creator_name 	= $this->User->find('all',['conditions' => ['User.id' => $creator]]);
-		$modifier_name 	= $this->User->find('all',['conditions' => ['User.id' => $modifier]]);
+		$user 			= $this->ReferredCompany->User->find('all',['conditions' => ['User.id' => $user_id]]);
+		$creator_name 	= $this->ReferredCompany->User->find('all',['conditions' => ['User.id' => $creator]]);
+		$modifier_name 	= $this->ReferredCompany->User->find('all',['conditions' => ['User.id' => $modifier]]);
 		
 		$this->set('user',$user);
 		$this->set('creator_name',$creator_name);

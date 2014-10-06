@@ -10,7 +10,7 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
  */
 	public $helpers = array('Js','Csv');
 
-	function import() {
+	public function import() {
 		if ($this->request->is('post')) {
           	$filename = APP . 'uploads' . DS . 'CompanyCampus' . DS . $this->request->data['CompanyCampus']['file']['name'];
           	$file = $this->request->data['CompanyCampus']['file']['name'];

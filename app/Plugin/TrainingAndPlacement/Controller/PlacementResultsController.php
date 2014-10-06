@@ -6,7 +6,7 @@ class PlacementResultsController extends TrainingAndPlacementAppController {
 	public $helpers = array('Js');
 
 
-	function import() {
+	public function import() {
 		if ($this->request->is('post')) {
           	$filename = APP . 'uploads' . DS . 'PlacementResult' . DS . $this->request->data['PlacementResult']['file']['name'];
           	$file = $this->request->data['PlacementResult']['file']['name'];

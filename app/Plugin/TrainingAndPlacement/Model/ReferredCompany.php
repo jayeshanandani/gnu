@@ -62,4 +62,18 @@ class ReferredCompany extends TrainingAndPlacementAppModel {
 		),
 		
 	);
+/**
+* belongsTo associations
+*
+* @var array
+*/
+    public $belongsTo = ['User'];
+     
+/**
+* hasMany associations
+*
+* @var array
+*/
+    public $hasMany = [''];
+
 }
