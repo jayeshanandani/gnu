@@ -5,27 +5,28 @@ class CompanyMastersController extends TrainingAndPlacementAppController {
 
 public $helpers = array('Js','Html','Form');
 
-public function import() {
+	public function import() {
 		if ($this->request->is('post')) {
-          	
-          	$filename = 'C:\Apache24\htdocs\cakephp\app\tmp\uploads\CompanyMaster\\'.$this->data['CompanyMasters']['file']['name']; 
-          	$file = $this->data['CompanyMasters']['file']['name'];
+          	$filename = APP . 'uploads' . DS . 'CompanyMaster' . DS . $this->request->data['CompanyMaster']['file']['name'];
+          	$file = $this->request->data['CompanyMaster']['file']['name'];
+          	$length = $this->CompanyMaster->check_file_uploaded_length($file);
+          	$name = $this->CompanyMaster->name($file);
           	$extension = pathinfo($file, PATHINFO_EXTENSION);
-        	if($extension == 'csv'){
-        	    if (move_uploaded_file($this->data['CompanyMasters']['file']['tmp_name'],$filename)) {
-            	$messages = $this->CompanyMaster->import($this->data['CompanyMasters']['file']['name']);
+        	if($extension === 'csv' && $length && $name){
+        	    if (move_uploaded_file($this->request->data['CompanyMaster']['file']['tmp_name'],$filename)) {
+            	$messages = $this->CompanyMaster->import($file);
             	/* save message to session */
-            	$this->Session->setFlash('File uploaded successfuly. You can view it <a href="C:\Apache24\htdocs\cakephp\app\tmp\uploads\CompanyMaster\\'.$this->data['CompanyMasters']['file']['name'].'">here</a>.');
+            	$this->Session->setFlash('File uploaded successfuly.');
             	/* redirect */
             	$this->redirect(array('action' => 'index'));
-        		}
-        		else {
+        	} else {
             	/* save message to session */
-            	$this->Session->setFlash('There was a problem uploading file. Please try again.');
-        		}
-     		}
-     		else{
-     			$this->Session->setFlash("Extension error");
+            	$this->Session->setFlash('There was a problem uploading file. Please try again.', 'alert', array(
+   										 'class' => 'alert-danger'));
+        	}
+     	} else{
+     			$this->Session->setFlash("Extension error", 'alert', array(
+    									'class' => 'alert-danger'));
      		}
      	}
     }
@@ -41,18 +42,19 @@ public function export_all() {
   	]));
     $this->layout = null;
    	$this->autoLayout = false;
-  	Configure::write('debug', '0');
 }
 
 public function index() {
 		
 		$this->Paginator->settings = array('limit' => 5,'page' => 1);
 		$this->CompanyMaster->recursive = 0;
+
 		$this->loadModel('User');
 		$creator = $this->CompanyMaster->find('list',['fields' => ['CompanyMaster.creator_id']]);
 		$modifier = $this->CompanyMaster->find('list',['fields' => ['CompanyMaster.modifier_id']]);
 		$creator_name = $this->User->find('all',['conditions' => ['User.id' => $creator]]);
 		$modifier_name = $this->User->find('all',['conditions' => ['User.id' => $modifier]]);
+		
 		$this->set('creator_name',$creator_name);
 		$this->set('modifier_name',$modifier_name);
 		$this->set('companyMasters', $this->Paginator->paginate());	
@@ -123,14 +125,7 @@ public function index() {
 		}
 	}
 
-/**
- * delete method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-public function deactivate($id = null) {
+	public function deactivate($id = null) {
 		if ($this->request->is(array('post', 'put'))){
 			$this->CompanyMaster->id = $id;
 		if (!$this->CompanyMaster->exists()) {
@@ -147,13 +142,13 @@ public function deactivate($id = null) {
 		return $this->redirect(array('action' => 'index'));
 		}
 	}
+	
 	public function activate($id = null) {
 		if ($this->request->is(array('post', 'put'))){
 			$this->CompanyMaster->id = $id;
 		if (!$this->CompanyMaster->exists()) {
 			throw new NotFoundException(__('Invalid company'));
 		}
-		//$this->request->onlyAllow('post', 'delete');
 		$this->request->data['CompanyMaster']['id']=$id;
 		$this->request->data['CompanyMaster']['recstatus']= 1;
 		if ($this->CompanyMaster->save($this->request->data,true,array('id','recstatus'))) {

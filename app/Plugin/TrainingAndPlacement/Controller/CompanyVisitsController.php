@@ -25,27 +25,30 @@ class CompanyVisitsController extends TrainingAndPlacementAppController {
   		]));
     	$this->layout = null;
    		$this->autoLayout = false;
-  		Configure::write('debug', '0');
 	}
 	
 	public function import() {
-		if ($this->request->is('post')) { 	
-          	$filename = 'C:\Apache24\htdocs\cakephp\app\tmp\uploads\CompanyVisit\\'.$this->data['CompanyVisits']['file']['name']; 
-          	$file = $this->data['CompanyVisits']['file']['name'];
+		if ($this->request->is('post')) {
+          	$filename = APP . 'uploads' . DS . 'CompanyVisit' . DS . $this->request->data['CompanyVisit']['file']['name'];
+          	$file = $this->request->data['CompanyVisit']['file']['name'];
+          	$length = $this->CompanyVisit->check_file_uploaded_length($file);
+          	$name = $this->CompanyVisit->name($file);
           	$extension = pathinfo($file, PATHINFO_EXTENSION);
-        	if($extension == 'csv'){
-        	    if (move_uploaded_file($this->data['CompanyVisits']['file']['tmp_name'],$filename)) {
-            	$messages = $this->CompanyVisit->import($this->data['CompanyVisits']['file']['name']);
+        	if($extension === 'csv' && $length && $name){
+        	    if (move_uploaded_file($this->request->data['CompanyVisit']['file']['tmp_name'],$filename)) {
+            	$messages = $this->CompanyVisit->import($file);
             	/* save message to session */
-            	$this->Session->setFlash('File uploaded successfuly. You can view it <a href="C:\Apache24\htdocs\cakephp\app\tmp\uploads\CompanyVisit\\'.$this->data['CompanyVisits']['file']['name'].'">here</a>.');
+            	$this->Session->setFlash('File uploaded successfuly.');
             	/* redirect */
             	$this->redirect(array('action' => 'index'));
-        		} else {
+        	} else {
             	/* save message to session */
-            	$this->Session->setFlash('There was a problem uploading file. Please try again.');
-        		}
-     		} else{
-     			$this->Session->setFlash("Extension error");
+            	$this->Session->setFlash('There was a problem uploading file. Please try again.', 'alert', array(
+   										 'class' => 'alert-danger'));
+        	}
+     	} else{
+     			$this->Session->setFlash("Extension error", 'alert', array(
+    									'class' => 'alert-danger'));
      		}
      	}
     }
@@ -58,8 +61,7 @@ class CompanyVisitsController extends TrainingAndPlacementAppController {
 			'fields' => ['degree_id']
 			]);
 		
-		$this->loadModel('CompanyCampus');
-		$company_ids = $this->CompanyCampus->find('list',[
+		$company_ids = $this->CompanyVisit->CompanyMaster->CompanyCampus->find('list',[
 			'conditions'=>['CompanyCampus.degree_id' => $degree,'CompanyCampus.recstatus' => 1],
 			'fields' => ['CompanyCampus.company_master_id']			
 		]);
@@ -135,29 +137,8 @@ class CompanyVisitsController extends TrainingAndPlacementAppController {
 		$this->set(compact('companyMasters'));
 	}
 
-/**
- * delete method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */// Important Note : Not currently used
-/*	public function delete($id = null) {
-		$this->CompanyVisit->id = $id;
-		if (!$this->CompanyVisit->exists()) {
-			throw new NotFoundException(__('Invalid company visit'));
-		}
-		$this->request->onlyAllow('post', 'delete');
-		if ($this->CompanyVisit->delete()) {
-			$this->Session->setFlash(__('The company visit has been deleted.'));
-		} else {
-			$this->Session->setFlash(__('The company visit could not be deleted. Please, try again.'));
-		}
-		return $this->redirect(array('action' => 'index'));
-	}
-*/
 
-public function deactivate($id = null) {
+	public function deactivate($id = null) {
 		if ($this->request->is(array('post', 'put'))){
 			$this->CompanyVisit->id = $id;
 		if (!$this->CompanyVisit->exists()) {
@@ -175,7 +156,7 @@ public function deactivate($id = null) {
 		}
 	}
 
-public function activate($id = null) {
+	public function activate($id = null) {
 		if ($this->request->is(array('post', 'put'))){
 			$this->CompanyVisit->id = $id;
 		if (!$this->CompanyVisit->exists()) {

@@ -7,41 +7,60 @@ App::uses('TrainingAndPlacementAppModel', 'TrainingAndPlacement.Model');
 */
 class CompanyVisit extends TrainingAndPlacementAppModel {
 
-    //The Associations below have been created with all possible keys, those that are not needed can be removed
-
-    /**
-     * belongsTo associations
-     *
-     * @var array
-    */
-    public $belongsTo = ['TrainingAndPlacement.CompanyMaster'];
-
-    /**
-     * hasmany associations
-     *
-     * @var array
-    */
+/**
+* hasmany associations
+*
+* @var array
+*/
     public $validate = [
-    	'pptdate'          => ['notempty' => ['rule' => ['notempty'],'required' => true]],
+        'pptdate'          => ['notempty' => ['rule' => ['notempty'],'required' => true]],
         'visitdate1'       => ['notempty' => ['rule' => ['notempty'],'required' => true]],
-    	'visitdate2'       => ['notempty' => ['rule' => ['notempty'],'required' => true]],
-    	'visitdate3'       => ['notempty' => ['rule' => ['notempty'],'required' => true]],
-    	'lastdate'         => ['notempty' => ['rule' => ['notempty'],'required' => true]],
-    	'placementtype'    => ['notEmpty' => ['rule' => ['notEmpty','required' => true]],
-    	'placementvenue'   => ['notEmpty' => ['rule' => ['notEmpty','required' => true]],
+        'visitdate2'       => ['notempty' => ['rule' => ['notempty'],'required' => true]],
+        'visitdate3'       => ['notempty' => ['rule' => ['notempty'],'required' => true]],
+        'lastdate'         => ['notempty' => ['rule' => ['notempty'],'required' => true]],
+        'placementtype'    => ['notEmpty' => ['rule' => ['notEmpty','required' => true]],
+        'placementvenue'   => ['notEmpty' => ['rule' => ['notEmpty','required' => true]],
     ];
 
-    /**
-     * Import companyvisit data using csv file
-     *
-    */
+//The Associations below have been created with all possible keys, those that are not needed can be removed
+
+/**
+* belongsTo associations
+*
+* @var array
+*/
+    public $belongsTo = ['TrainingAndPlacement.CompanyMaster'];
+
+/**
+* Check $_FILES[][name] length.
+*
+* @param (string) $filename - Uploaded file name.
+*/
+    public function check_file_uploaded_length ($filename) {
+        return (bool) ((mb_strlen($filename,"UTF-8") > 225) ? true : false);
+    }
+
+/**
+* Check $_FILES[][name]
+*
+* @param (string) $filename - Uploaded file name.
+* @author Yousef Ismaeil Cliprz
+*/
+    public function check_file_uploaded_name ($filename) {
+        (bool) ((preg_match("`^[-0-9A-Z_\.]+$`i",$filename)) ? true : false);
+    }
+
+/**
+* Import companyvisit data using csv file
+*
+*/
     public function import($filename) {
         /** to avoid having to tweak the contents of
         * $data you should use your db field name as the heading name
         * eg: Post.id, Post.title, Post.description
         * set the filename to read CSV from
         */
-        $filename = TMP . 'uploads' . DS . 'CompanyVisit' . DS . $filename;
+        $filename = APP . 'uploads' . DS . 'CompanyVisit' . DS . $filename;
          
         // open the file
         $handle = fopen($filename, "r");
@@ -79,16 +98,6 @@ class CompanyVisit extends TrainingAndPlacementAppModel {
 
             // we have an id, so we update
             if ($id) {
-                // there is 2 options here,
-                  
-                // option 1:
-                // load the current row, and merge it with the new data
-                //$this->recursive = -1;
-                //$post = $this->read(null,$id);
-                //$data['Post'] = array_merge($post['Post'],$data['Post']);
-                 
-                // option 2:
-                // set the model id
                 $this->id = $id;
             }
              
@@ -96,9 +105,6 @@ class CompanyVisit extends TrainingAndPlacementAppModel {
             else {
                 $this->create();
             }
-             
-            // see what we have
-            // debug($data);
              
             // validate the row
             $this->set($data);

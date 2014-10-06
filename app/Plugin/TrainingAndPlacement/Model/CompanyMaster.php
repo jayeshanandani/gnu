@@ -7,18 +7,18 @@ App::uses('TrainingAndPlacementAppModel', 'TrainingAndPlacement.Model');
 */
 class CompanyMaster extends TrainingAndPlacementAppModel {
 
-	/**
-	 * Display field
-	 *
-	 * @var string
-	*/
+/**
+* Display field
+*
+* @var string
+*/
 	public $displayField = 'name';
 
-	/**
-	 * Validation rules
-	 *
-	 * @var array
-	*/
+/**
+* Validation rules
+*
+* @var array
+*/
 	public $validate = [
 		'name'		=> ['notEmpty' => ['rule' => ['notEmpty','isUnique'],'message' => 'Enter company name','required' => true]],
 		'profile'	=> ['notEmpty' => ['rule' => ['notEmpty', 'isUnique'],'message' => 'Type brief Company profile','required' => true]],
@@ -29,17 +29,36 @@ class CompanyMaster extends TrainingAndPlacementAppModel {
 		'contactno' => ['notEmpty' => ['rule' => ['phone', 'isUnique'],'message' => 'Your contact no. is invalid or already registered','required' => true]]
 	];
 
-	/**
-	 * hasMany associations
-	 *
-	 * @var array
-	*/
+/**
+* hasMany associations
+*
+* @var array
+*/
 	public $hasMany = ['TrainingAndPlacement.CompanyCampus', 'TrainingAndPlacement.CompanyJob', 'TrainingAndPlacement.CompanyJobEligibility', 'TrainingAndPlacement.CompanyVisit'];
 
-	/**
-	 * Import companymaster data using csv file
-	 *
-	*/
+/**
+* Check $_FILES[][name] length.
+*
+* @param (string) $filename - Uploaded file name.
+*/
+    public function check_file_uploaded_length ($filename) {
+        return (bool) ((mb_strlen($filename,"UTF-8") > 225) ? true : false);
+    }
+
+/**
+* Check $_FILES[][name]
+*
+* @param (string) $filename - Uploaded file name.
+* @author Yousef Ismaeil Cliprz
+*/
+    public function check_file_uploaded_name ($filename) {
+        (bool) ((preg_match("`^[-0-9A-Z_\.]+$`i",$filename)) ? true : false);
+    }
+
+/**
+* Import companymaster data using csv file
+*
+*/
 	public function import($filename) {
 	    /** to avoid having to tweak the contents of
 	    * $data you should use your db field name as the heading name
@@ -84,16 +103,6 @@ class CompanyMaster extends TrainingAndPlacementAppModel {
 
 	        // we have an id, so we update
 	        if ($id) {
-	            // there is 2 options here,
-	              
-	            // option 1:
-	            // load the current row, and merge it with the new data
-	            //$this->recursive = -1;
-	            //$post = $this->read(null,$id);
-	            //$data['Post'] = array_merge($post['Post'],$data['Post']);
-	             
-	            // option 2:
-	            // set the model id
 	            $this->id = $id;
 	        }
 	         
@@ -101,9 +110,6 @@ class CompanyMaster extends TrainingAndPlacementAppModel {
 	        else {
 	            $this->create();
 	        }
-	         
-	        // see what we have
-	        // debug($data);
 	         
 	        // validate the row
 	        $this->set($data);

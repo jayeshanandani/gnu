@@ -1,9 +1,9 @@
 <?php
-$date=date("d/m/Y");
+$date = date("d/m/Y");
 $filename = "Company Master ".$date.".xls";
 $contents = "Sr.No.\t Company\t website\t Category\t Email\t Contact\t For Training\t For Job\t \n";
 echo $contents;
-$i=0;
+$i = 0;
 foreach ($companyMasters as $CompanyMaster)
 {
   if($CompanyMaster['CompanyMaster']['training'] == 1){
