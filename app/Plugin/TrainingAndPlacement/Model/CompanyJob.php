@@ -1,84 +1,69 @@
 <?php
 App::uses('TrainingAndPlacementAppModel', 'TrainingAndPlacement.Model');
+
 /**
  * CompanyJob Model
  *
- * @property CompanyMaster $CompanyMaster
- */
+*/
 class CompanyJob extends TrainingAndPlacementAppModel {
 
-/**
- * Use table
- *
- * @var mixed False or table name
- */
-	public $useTable = 'company_jobs';
+    /**
+     * Use table
+     *
+     * @var mixed False or table name
+    */
+    public $useTable = 'company_jobs';
 
-/**
- * Display field
- *
- * @var string
- */
-	public $displayField = 'name';
+    /**
+     * Display field
+     *
+     * @var string
+    */
+    public $displayField = 'name';
 
+    //The Associations below have been created with all possible keys, those that are not needed can be removed
 
-	//The Associations below have been created with all possible keys, those that are not needed can be removed
+    /**
+     * belongsTo associations
+     *
+     * @var array
+    */
+    public $belongsTo = ['TrainingAndPlacement.CompanyMaster'];
 
-/**
- * belongsTo associations
- *
- * @var array
- */
-	public $belongsTo = array(
-		'TrainingAndPlacement.CompanyMaster'
-	);
+    /**
+     * getListByCompany method
+     * Helps to get list of companies
+     *
+     * @var id
+     * @return array
+    */
     public function getListByCompany($cid = null) {
         if (empty($cid)) {
             return array();
         }
-        return $this->find('list', array(
-            'conditions' => array($this->alias . '.company_master_id' => $cid),
-            //'order' => array($this->alias.'.name'=>'ASC')
-        ));
+        return $this->find('list', ['conditions' => [$this->alias . '.company_master_id' => $cid]]);
     }
-	public $validate = array(
-		'name' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'allowEmpty' => false,
-				'required' => true,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		
-		'probationperiod' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'allowEmpty' => false,
-				'required' => true,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'salary' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'allowEmpty' => false,
-				'required' => true,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		
-	);
 
-		function import($filename) {
-        // to avoid having to tweak the contents of
-        // $data you should use your db field name as the heading name
-        // eg: Post.id, Post.title, Post.description
- 
-        // set the filename to read CSV from
+    /**
+     * Validation rules
+     *
+    */
+    public $validate = [
+        'name'              => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
+        'probationperiod'   => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
+        'salary'            => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
+    ];
+
+    /**
+     * Import companyjob data using csv file
+     *
+    */
+    public function import($filename) {
+        /** to avoid having to tweak the contents of
+        * $data you should use your db field name as the heading name
+        * eg: Post.id, Post.title, Post.description
+        * set the filename to read CSV from
+        */
         $filename = TMP . 'uploads' . DS . 'CompanyJob' . DS . $filename;
          
         // open the file
@@ -92,13 +77,13 @@ class CompanyJob extends TrainingAndPlacementAppModel {
             'messages' => array(),
             'errors' => array(),
         );
- 		$i=0;
- 		$error = null;
+    		$i=0;
+    		$error = null;
         // read each data row in the file
         while (($row = fgetcsv($handle)) !== FALSE) {
             $i++;
             $data = array();
- 
+
             // for each header field
             foreach ($header as $k=>$head) {
                 // get the data field from Model.field
@@ -111,10 +96,10 @@ class CompanyJob extends TrainingAndPlacementAppModel {
                     $data['CompanyJob'][$head]=(isset($row[$k])) ? $row[$k] : '';
                 }
             }
- 
+
             // see if we have an id            
             $id = isset($data['CompanyJob']['id']) ? $data['CompanyJob']['id'] : 0;
- 
+
             // we have an id, so we update
             if ($id) {
                 // there is 2 options here,
@@ -137,19 +122,18 @@ class CompanyJob extends TrainingAndPlacementAppModel {
              
             // see what we have
             // debug($data);
-             
             // validate the row
             $this->set($data);
             if (!$this->validates()) {
                 //$this->setFlash(,'warning');
                 $return['errors'][] = __(sprintf('Post for Row %d failed to validate.',$i), true);
             }
- 
+
             // save the row
             if (!$error && !$this->save($data)) {
                 $return['errors'][] = __(sprintf('Post for Row %d failed to save.',$i), true);
             }
- 
+
             // success message!
             if (!$error) {
                 $return['messages'][] = __(sprintf('Post for Row %d was saved.',$i), true);
@@ -161,6 +145,5 @@ class CompanyJob extends TrainingAndPlacementAppModel {
          
         // return the messages
         return $return;
-         
     }
 }

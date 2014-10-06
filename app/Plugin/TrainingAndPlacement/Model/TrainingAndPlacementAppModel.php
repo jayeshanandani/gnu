@@ -5,7 +5,7 @@ App::uses('AppModel', 'Model');
 class TrainingAndPlacementAppModel extends AppModel {
 
 	public $recursive = -1;
-	public $actsAs = array('Containable','WhoDidIt');
+	public $actsAs = array('Containable','TrainingAndPlacement.WhoDidIt');
 
 	
 	/**

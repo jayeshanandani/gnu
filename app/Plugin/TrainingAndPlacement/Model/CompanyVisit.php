@@ -1,97 +1,46 @@
 <?php
 App::uses('TrainingAndPlacementAppModel', 'TrainingAndPlacement.Model');
+
 /**
  * CompanyVisit Model
  *
- * @property CompanyMaster $CompanyMaster
- */
+*/
 class CompanyVisit extends TrainingAndPlacementAppModel {
 
+    //The Associations below have been created with all possible keys, those that are not needed can be removed
 
-	//The Associations below have been created with all possible keys, those that are not needed can be removed
+    /**
+     * belongsTo associations
+     *
+     * @var array
+    */
+    public $belongsTo = ['TrainingAndPlacement.CompanyMaster'];
 
-/**
- * belongsTo associations
- *
- * @var array
- */
-	 public $belongsTo = [
-               'CompanyMaster',  
+    /**
+     * hasmany associations
+     *
+     * @var array
+    */
+    public $validate = [
+    	'pptdate'          => ['notempty' => ['rule' => ['notempty'],'required' => true]],
+        'visitdate1'       => ['notempty' => ['rule' => ['notempty'],'required' => true]],
+    	'visitdate2'       => ['notempty' => ['rule' => ['notempty'],'required' => true]],
+    	'visitdate3'       => ['notempty' => ['rule' => ['notempty'],'required' => true]],
+    	'lastdate'         => ['notempty' => ['rule' => ['notempty'],'required' => true]],
+    	'placementtype'    => ['notEmpty' => ['rule' => ['notEmpty','required' => true]],
+    	'placementvenue'   => ['notEmpty' => ['rule' => ['notEmpty','required' => true]],
+    ];
 
-        ];
-	public $validate = array(
-		'pptdate' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
-				//'allowEmpty' => false,
-				'required' => true,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'visitdate1' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
-				//'allowEmpty' => false,
-				'required' => true,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'visitdate2' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
-				//'allowEmpty' => false,
-				'required' => true,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'visitdate3' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
-				//'allowEmpty' => false,
-				'required' => true,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'lastdate' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
-				//'allowEmpty' => false,
-				'required' => true,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'placementtype' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'allowEmpty' => false,
-				'required' => true,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'placementvenue' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'allowEmpty' => false,
-				'required' => true,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		
-	);
-
-		function import($filename) {
-        // to avoid having to tweak the contents of
-        // $data you should use your db field name as the heading name
-        // eg: Post.id, Post.title, Post.description
- 
-        // set the filename to read CSV from
+    /**
+     * Import companyvisit data using csv file
+     *
+    */
+    public function import($filename) {
+        /** to avoid having to tweak the contents of
+        * $data you should use your db field name as the heading name
+        * eg: Post.id, Post.title, Post.description
+        * set the filename to read CSV from
+        */
         $filename = TMP . 'uploads' . DS . 'CompanyVisit' . DS . $filename;
          
         // open the file
@@ -101,17 +50,17 @@ class CompanyVisit extends TrainingAndPlacementAppModel {
         $header = fgetcsv($handle);
          
         // create a message container
-        $return = array(
-            'messages' => array(),
-            'errors' => array(),
+        $return = []
+            'messages' => []),
+            'errors' => []),
         );
- 		$i=0;
- 		$error = null;
+    		$i=0;
+    		$error = null;
         // read each data row in the file
         while (($row = fgetcsv($handle)) !== FALSE) {
             $i++;
-            $data = array();
- 
+            $data = []);
+
             // for each header field
             foreach ($header as $k=>$head) {
                 // get the data field from Model.field
@@ -124,10 +73,10 @@ class CompanyVisit extends TrainingAndPlacementAppModel {
                     $data['CompanyVisit'][$head]=(isset($row[$k])) ? $row[$k] : '';
                 }
             }
- 
+
             // see if we have an id            
             $id = isset($data['CompanyVisit']['id']) ? $data['CompanyVisit']['id'] : 0;
- 
+
             // we have an id, so we update
             if ($id) {
                 // there is 2 options here,
@@ -157,12 +106,12 @@ class CompanyVisit extends TrainingAndPlacementAppModel {
                 //$this->setFlash(,'warning');
                 $return['errors'][] = __(sprintf('Post for Row %d failed to validate.',$i), true);
             }
- 
+
             // save the row
             if (!$error && !$this->save($data)) {
                 $return['errors'][] = __(sprintf('Post for Row %d failed to save.',$i), true);
             }
- 
+
             // success message!
             if (!$error) {
                 $return['messages'][] = __(sprintf('Post for Row %d was saved.',$i), true);
@@ -174,6 +123,5 @@ class CompanyVisit extends TrainingAndPlacementAppModel {
          
         // return the messages
         return $return;
-         
     }
 }

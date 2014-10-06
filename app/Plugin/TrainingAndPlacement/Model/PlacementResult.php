@@ -1,44 +1,36 @@
 <?php
 App::uses('TrainingAndPlacementAppModel', 'TrainingAndPlacement.Model');
+
 /**
  * PlacementResult Model
  *
- * @property CompanyMaster $CompanyMaster
- */
+*/
 class PlacementResult extends TrainingAndPlacementAppModel {
 
-/**
- * Use table
- *
- * @var mixed False or table name
- */
-	//public $useTable = 'placement_results';
+    /**
+     * belongsTo associations
+     *
+     * @var array
+    */
+    public $belongsTo = ['TrainingAndPlacement.CompanyCampus', 'Student'];
 
-//public $displayField = 'id';
-	//The Associations below have been created with all possible keys, those that are not needed can be removed
+    /**
+     * validation rules
+     *
+     * @var array
+    */
+    public $validate = ['stu_campus' => ['rule' => 'isUnique']];  
 
-/**
- * belongsTo associations
- *
- * @var array
- */
- public $belongsTo = [
-               'TrainingAndPlacement.CompanyCampus',
-               'TrainingAndPlacement.Student'
-        ];
-
- public $validate = array(
-		'stu_campus' => array(
-				'rule' => 'isUnique',
-		),
-	);  
-
-		function import($filename) {
-        // to avoid having to tweak the contents of
-        // $data you should use your db field name as the heading name
-        // eg: Post.id, Post.title, Post.description
- 
-        // set the filename to read CSV from
+    /**
+     * Import placementresults data using csv file
+     *
+    */
+    public function import($filename) {
+        /** to avoid having to tweak the contents of
+        * $data you should use your db field name as the heading name
+        * eg: Post.id, Post.title, Post.description
+        * set the filename to read CSV from
+        */
         $filename = TMP . 'uploads' . DS . 'PlacementResult' . DS . $filename;
          
         // open the file
@@ -52,13 +44,13 @@ class PlacementResult extends TrainingAndPlacementAppModel {
             'messages' => array(),
             'errors' => array(),
         );
- 		$i=0;
- 		$error = null;
+    		$i=0;
+    		$error = null;
         // read each data row in the file
         while (($row = fgetcsv($handle)) !== FALSE) {
             $i++;
             $data = array();
- 
+
             // for each header field
             foreach ($header as $k=>$head) {
                 // get the data field from Model.field
@@ -71,10 +63,10 @@ class PlacementResult extends TrainingAndPlacementAppModel {
                     $data['PlacementResult'][$head]=(isset($row[$k])) ? $row[$k] : '';
                 }
             }
- 
+
             // see if we have an id            
             $id = isset($data['PlacementResult']['id']) ? $data['PlacementResult']['id'] : 0;
- 
+
             // we have an id, so we update
             if ($id) {
                 // there is 2 options here,
@@ -104,12 +96,12 @@ class PlacementResult extends TrainingAndPlacementAppModel {
                 //$this->setFlash(,'warning');
                 $return['errors'][] = __(sprintf('Post for Row %d failed to validate.',$i), true);
             }
- 
+
             // save the row
             if (!$error && !$this->save($data)) {
                 $return['errors'][] = __(sprintf('Post for Row %d failed to save.',$i), true);
             }
- 
+
             // success message!
             if (!$error) {
                 $return['messages'][] = __(sprintf('Post for Row %d was saved.',$i), true);
@@ -121,6 +113,5 @@ class PlacementResult extends TrainingAndPlacementAppModel {
          
         // return the messages
         return $return;
-         
     }     
 }

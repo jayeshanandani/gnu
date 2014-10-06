@@ -1,91 +1,50 @@
 <?php
 App::uses('TrainingAndPlacementAppModel', 'TrainingAndPlacement.Model');
+
 /**
  * CompanyJobEligibility Model
  *
- * @property CompanyMaster $CompanyMaster
- * @property CompanyJob $CompanyJob
- */
+*/
 class CompanyJobEligibility extends TrainingAndPlacementAppModel {
 
 /**
  * Use table
  *
  * @var mixed False or table name
- */
-	public $useTable = 'company_job_eligibilities';
+*/
+public $useTable = 'company_job_eligibilities';
 
+    //The Associations below have been created with all possible keys, those that are not needed can be removed
 
-	//The Associations below have been created with all possible keys, those that are not needed can be removed
+    /**
+     * belongsTo associations
+     *
+     * @var array
+    */
+    public $belongsTo = ['TrainingAndPlacement.CompanyMaster','TrainingAndPlacement.CompanyJob'];
 
-/**
- * belongsTo associations
- *
- * @var array
- */
-	public $belongsTo = array(
-		'TrainingAndPlacement.CompanyMaster',
-		'TrainingAndPlacement.CompanyJob',
-	);
+    /**
+     * Validation rules
+     *
+    */
+    public $validate = [
+        'min_eligible_10'       => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
+        'min_eligible_12'       => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
+        'min_eligible_degree'   => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
+        'interestedin'          => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
+        'hiring'                => ['notEmpty' => ['rule' => ['notEmpty', 'decimal'],'message' => 'Hiring Should be in Decimal/Numeric','required' => true]],
+    ];
 
-	public $validate = array(
-		'min_eligible_10' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'allowEmpty' => false,
-				'required' => true,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		
-		'min_eligible_12' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'allowEmpty' => false,
-				'required' => true,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'min_eligible_degree' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'allowEmpty' => false,
-				'required' => true,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'interestedin' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'allowEmpty' => false,
-				'required' => true,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'hiring' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				'rule' => array('decimal'),
-				'message' => 'Hiring Should be in Decimal/Numeric',
-				//'allowEmpty' => false,
-				'required' => true,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		
-	);
-
-		function import($filename) {
-        // to avoid having to tweak the contents of
-        // $data you should use your db field name as the heading name
-        // eg: Post.id, Post.title, Post.description
- 
-        // set the filename to read CSV from
+    /**
+     * Import companyjobeligibility data using csv file
+     *
+    */
+    public function import($filename) {
+        /** to avoid having to tweak the contents of
+        * $data you should use your db field name as the heading name
+        * eg: Post.id, Post.title, Post.description
+        * set the filename to read CSV from
+        */
         $filename = TMP . 'uploads' . DS . 'CompanyJobEligibility' . DS . $filename;
          
         // open the file
@@ -99,13 +58,13 @@ class CompanyJobEligibility extends TrainingAndPlacementAppModel {
             'messages' => array(),
             'errors' => array(),
         );
- 		$i=0;
- 		$error = null;
+    		$i=0;
+    		$error = null;
         // read each data row in the file
         while (($row = fgetcsv($handle)) !== FALSE) {
             $i++;
             $data = array();
- 
+
             // for each header field
             foreach ($header as $k=>$head) {
                 // get the data field from Model.field
@@ -118,10 +77,10 @@ class CompanyJobEligibility extends TrainingAndPlacementAppModel {
                     $data['CompanyJobEligibility'][$head]=(isset($row[$k])) ? $row[$k] : '';
                 }
             }
- 
+
             // see if we have an id            
             $id = isset($data['CompanyJobEligibility']['id']) ? $data['CompanyJobEligibility']['id'] : 0;
- 
+
             // we have an id, so we update
             if ($id) {
                 // there is 2 options here,
@@ -151,12 +110,12 @@ class CompanyJobEligibility extends TrainingAndPlacementAppModel {
                 //$this->setFlash(,'warning');
                 $return['errors'][] = __(sprintf('Post for Row %d failed to validate.',$i), true);
             }
- 
+
             // save the row
             if (!$error && !$this->save($data)) {
                 $return['errors'][] = __(sprintf('Post for Row %d failed to save.',$i), true);
             }
- 
+
             // success message!
             if (!$error) {
                 $return['messages'][] = __(sprintf('Post for Row %d was saved.',$i), true);
@@ -168,6 +127,5 @@ class CompanyJobEligibility extends TrainingAndPlacementAppModel {
          
         // return the messages
         return $return;
-         
-    }
+        }
 }

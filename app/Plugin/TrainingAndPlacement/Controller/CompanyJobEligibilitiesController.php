@@ -2,9 +2,8 @@
 App::uses('TrainingAndPlacementAppController', 'TrainingAndPlacement.Controller');
 
 class CompanyJobEligibilitiesController extends TrainingAndPlacementAppController {
-
+	
 	public $helpers = array('Js');
-
 
 /**
  * index method

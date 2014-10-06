@@ -30,47 +30,47 @@ class PlacementResultsController extends TrainingAndPlacementAppController {
 	
 	public function form1() {
 		if ($this->request->is('post')  && $this->request->data['PlacementResult']['degree_id']!=0) {
-			$institute = $this->request->data['PlacementResult']['institution_id'];
-			$department = $this->request->data['PlacementResult']['department_id'];
-			$degree = $this->request->data['PlacementResult']['degree_id'];
-			$company = $this->request->data['PlacementResult']['company_master_id'];
-			return $this->redirect(array('action' => 'index',$institute,$department,$degree,$company));
+			$institute 		= $this->request->data['PlacementResult']['institution_id'];
+			$department 	= $this->request->data['PlacementResult']['department_id'];
+			$degree 		= $this->request->data['PlacementResult']['degree_id'];
+			$company 		= $this->request->data['PlacementResult']['company_master_id'];
+			return $this->redirect(['action' => 'index',$institute,$department,$degree,$company]);
 		}
 		unset($this->request->data['PlacementResult']['institution_id']);
-		$this->loadModel('Institution');
-		$institutions = $this->Institution->find('list');
-		$departments = array();
-		$degrees = array();
-		$this->loadModel('CompanyMaster');
-		$companyMasters = $this->CompanyMaster->find('list');
-		$this->set(compact('institutions', 'departments', 'degrees', 'companyMasters'));	
 
+		$this->loadModel('Institution');
+		$institutions 		= $this->Institution->find('list');
+		$departments 		= [];
+		$degrees 			= [];
+		
+		$this->loadModel('CompanyMaster');
+		$companyMasters 	= $this->CompanyMaster->find('list');
+		$this->set(compact('institutions', 'departments', 'degrees', 'companyMasters'));	
 	}
 
 	public function selected_students($institute = null,$department = null,$degree = null,$company = null) {
 		$data = $this->PlacementResult->find('all', [
-    		'contain' => [
-        		'Student' => [
-        		'fields' => ['id','firstname','lastname'],'conditions' => ['Student.institution_id' => $institute, 'Student.degree_id' => $degree]
-        		]      
+    		'contain'	=> ['Student' => [
+        	'fields'	=> ['id','firstname','lastname'],'conditions' => ['Student.institution_id' => $institute, 'Student.degree_id' => $degree]]      
         	],'conditions' => ['PlacementResult.company_campus_id' => $company, 'PlacementResult.status' => 'Appointed']
     	]);
 
     	$campus_ids = $this->PlacementResult->find('list', [
-    		'conditions' => ['PlacementResult.status' => 'Appointed'],
-    		'fields' => ['PlacementResult.company_campus_id']
+    		'conditions' 	=> ['PlacementResult.status' => 'Appointed'],
+    		'fields' 		=> ['PlacementResult.company_campus_id']
     	]);
 
-    	$this->loadModel('CompanyCampus');
+    	$this->loadModel('TrainingAndPlacement.CompanyCampus');
+    	$this->loadModel('TrainingAndPlacement.CompanyMaster');
+
     	$company_ids = $this->CompanyCampus->find('list', [
-    		'conditions' => ['CompanyCampus.id' => $campus_ids],
-    		'fields' => ['CompanyCampus.company_master_id']
+    		'conditions' 	=> ['CompanyCampus.id' => $campus_ids],
+    		'fields' 		=> ['CompanyCampus.company_master_id']
     	]);
-
-    	$this->loadModel('CompanyMaster');
+    	
     	$company = $this->CompanyMaster->find('all', [
-    		'conditions' => ['CompanyMaster.id' => $company_ids],
-    		'fields' => ['CompanyMaster.name']
+    		'conditions' 	=> ['CompanyMaster.id' => $company_ids],
+    		'fields' 		=> ['CompanyMaster.name']
     	]);
 
     	$this->set('data',$data);
@@ -95,12 +95,12 @@ class PlacementResultsController extends TrainingAndPlacementAppController {
 		$this->loadModel('Institution');
 		$this->loadModel('Department');
 		$this->loadModel('Degree');
-		$this->loadModel('CompanyMaster');
+		$this->loadModel('TrainingAndPlacement.CompanyMaster');
 		
-		$company_institute = $this->Institution->find('all', array('conditions' => array('Institution.id' => $institute), 'field' => array('Institution.name')));
-		$company_department = $this->Department->find('all', array('conditions' => array('Department.id' => $department), 'field' => array('Department.name')));	
-		$company_degree = $this->Degree->find('all', array('conditions' => array('Degree.id' => $degree), 'field' => array('Degree.name')));	
-		$company_name = $this->CompanyMaster->find('all',['conditions'=>['CompanyMaster.id'=>$company],'fields'=>['CompanyMaster.name']]);
+		$company_institute		= $this->Institution->find('all', array('conditions' => array('Institution.id' => $institute), 'field' => array('Institution.name')));
+		$company_department		= $this->Department->find('all', array('conditions' => array('Department.id' => $department), 'field' => array('Department.name')));	
+		$company_degree			= $this->Degree->find('all', array('conditions' => array('Degree.id' => $degree), 'field' => array('Degree.name')));	
+		$company_name			= $this->CompanyMaster->find('all',['conditions'=>['CompanyMaster.id'=>$company],'fields'=>['CompanyMaster.name']]);
 		
 		$this->set('company_name',$company_name);
  		$this->set('company_department',$company_department);
@@ -115,13 +115,11 @@ class PlacementResultsController extends TrainingAndPlacementAppController {
 	}
 public function student_list($institute = null,$department = null,$degree = null,$company = null) {
 		$this->loadModel('Setting');
-		$data = $this->Setting->find('first');
-		$pagination_value = $data['Setting']['pagination_value'];
-		
+		$data				= $this->Setting->find('first');
+		$pagination_value 	= $data['Setting']['pagination_value'];
 		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1,
-			'contain' => [
-        		'Student' => [
-        		'fields' => ['id','firstname','lastname'],'conditions' => ['Student.institution_id' => $institute, 'Student.degree_id' => $degree]
+			'contain'	=> ['Student' => [
+        	'fields'	=> ['id','firstname','lastname'],'conditions' => ['Student.institution_id' => $institute, 'Student.degree_id' => $degree]
         		]      
         	],'conditions' => ['PlacementResult.company_campus_id' => $company]
 		);
@@ -130,12 +128,12 @@ public function student_list($institute = null,$department = null,$degree = null
 		$this->loadModel('Institution');
 		$this->loadModel('Department');
 		$this->loadModel('Degree');
-		$this->loadModel('CompanyMaster');
+		$this->loadModel('TrainingAndPlacement.CompanyMaster');
 
-		$institute = $this->Institution->find('all', array('conditions' => array('Institution.id' => $institute), 'field' => array('Institution.name')));
-		$branch = $this->Department->find('all', array('conditions' => array('Department.id' => $department), 'field' => array('Department.name')));	
-		$degree = $this->Degree->find('all', array('conditions' => array('Degree.id' => $degree), 'field' => array('Degree.name')));	
-		$company_name = $this->CompanyMaster->find('all',['conditions'=>['CompanyMaster.id'=>$company],'fields'=>['CompanyMaster.name']]);
+		$institute 		= $this->Institution->find('all', array('conditions' => array('Institution.id' => $institute), 'field' => array('Institution.name')));
+		$branch 		= $this->Department->find('all', array('conditions' => array('Department.id' => $department), 'field' => array('Department.name')));	
+		$degree 		= $this->Degree->find('all', array('conditions' => array('Degree.id' => $degree), 'field' => array('Degree.name')));	
+		$company_name 	= $this->CompanyMaster->find('all',['conditions'=>['CompanyMaster.id'=>$company],'fields'=>['CompanyMaster.name']]);
 		
 		$this->set('company_name',$company_name);
 		$this->set('branch',$branch);
@@ -162,7 +160,7 @@ public function student_list($institute = null,$department = null,$degree = null
 		$this->loadModel('Institution');
 		$this->loadModel('Department');
 		$this->loadModel('Degree');
-		$this->loadModel('CompanyMaster');
+		$this->loadModel('TrainingAndPlacement.CompanyMaster');
 
 		$institute = $this->Institution->find('all', array('conditions' => array('Institution.id' => $institute), 'field' => array('Institution.name')));
 		$branch = $this->Department->find('all', array('conditions' => array('Department.id' => $department), 'field' => array('Department.name')));	
@@ -193,7 +191,7 @@ public function student_list($institute = null,$department = null,$degree = null
 		$this->loadModel('Institution');
 		$this->loadModel('Department');
 		$this->loadModel('Degree');
-		$this->loadModel('CompanyMaster');
+		$this->loadModel('TrainingAndPlacement.CompanyMaster');
 
 		$institute = $this->Institution->find('all', array('conditions' => array('Institution.id' => $institute), 'field' => array('Institution.name')));
 		$branch = $this->Department->find('all', array('conditions' => array('Department.id' => $department), 'field' => array('Department.name')));	
@@ -224,7 +222,7 @@ public function student_list($institute = null,$department = null,$degree = null
 	$this->loadModel('Institution');
 	$this->loadModel('Department');
 	$this->loadModel('Degree');
-	$this->loadModel('CompanyMaster');
+	$this->loadModel('TrainingAndPlacement.CompanyMaster');
 
 	$institute = $this->Institution->find('all', array('conditions' => array('Institution.id' => $institute), 'field' => array('Institution.name')));
 	$branch = $this->Department->find('all', array('conditions' => array('Department.id' => $department), 'field' => array('Department.name')));	

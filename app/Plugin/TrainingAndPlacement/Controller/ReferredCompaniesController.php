@@ -7,53 +7,54 @@ class ReferredCompaniesController extends TrainingAndPlacementAppController {
 
 	public function index() {
 		$this->loadModel('Setting');
-		$data = $this->Setting->find('first');
-		$pagination_value = $data['Setting']['pagination_value'];
-		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1);	
+		$data				= $this->Setting->find('first');
+		$pagination_value	= $data['Setting']['pagination_value'];
+		$this->Paginator->settings = ['limit' => $pagination_value,'page' => 1];	
 	
 		$this->loadModel('User');
-		$creator = $this->ReferredCompany->find('list',['fields' => ['ReferredCompany.creator_id']]);
-		$modifier = $this->ReferredCompany->find('list',['fields' => ['ReferredCompany.modifier_id']]);
-		$user_id = $this->ReferredCompany->find('list',['fields' => ['ReferredCompany.user_id']]);
-		$user = $this->User->find('all',['conditions' => ['User.id' => $user_id]]);
-		$creator_name = $this->User->find('all',['conditions' => ['User.id' => $creator]]);
-		$modifier_name = $this->User->find('all',['conditions' => ['User.id' => $modifier]]);
+		$creator 		= $this->ReferredCompany->find('list',['fields' => ['ReferredCompany.creator_id']]);
+		$modifier 		= $this->ReferredCompany->find('list',['fields' => ['ReferredCompany.modifier_id']]);
+		$user_id 		= $this->ReferredCompany->find('list',['fields' => ['ReferredCompany.user_id']]);
+		$user 			= $this->User->find('all',['conditions' => ['User.id' => $user_id]]);
+		$creator_name 	= $this->User->find('all',['conditions' => ['User.id' => $creator]]);
+		$modifier_name 	= $this->User->find('all',['conditions' => ['User.id' => $modifier]]);
 		
 		$this->set('user',$user);
 		$this->set('creator_name',$creator_name);
 		$this->set('modifier_name',$modifier_name);
 		$this->set('referredCompanies', $this->Paginator->paginate());
 	}
-public function display() {
+	public function display() {
 		$this->loadModel('Setting');
-		$data = $this->Setting->find('first');
-		$pagination_value = $data['Setting']['pagination_value'];
-		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1,
-            'conditions'=> ['ReferredCompany.user_id' => $this->Auth->user('id')]	
-            );
+		$data				= $this->Setting->find('first');
+		$pagination_value	= $data['Setting']['pagination_value'];
+		$this->Paginator->settings = [
+			'limit'			=> $pagination_value,'page' => 1,
+            'conditions'	=> ['ReferredCompany.user_id' => $this->Auth->user('id')]	
+        ];
 
 		$this->set('ReferredCompanies', $this->Paginator->paginate());	
 	}
-/**
- * view method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
+	/**
+	 * view method
+	 *
+	 * @throws NotFoundException
+	 * @param string $id
+	 * @return void
+	*/
 	public function view($id = null) {
 		if (!$this->ReferredCompany->exists($id)) {
 			throw new NotFoundException(__('Invalid referred company'));
 		}
-		$options = array('conditions' => array('ReferredCompany.' . $this->ReferredCompany->primaryKey => $id));
+		$options = ['conditions' => ['ReferredCompany.' . $this->ReferredCompany->primaryKey => $id]];
 		$this->set('referredCompany', $this->ReferredCompany->find('first', $options));
 	}
 
-/**
- * add method
- *
- * @return void
- */
+	/**
+	 * add method
+	 *
+	 * @return void
+	 */
 	public function add() {
 		if ($this->request->is('post')) {
 			$this->ReferredCompany->create();
@@ -92,28 +93,7 @@ public function display() {
 			$this->request->data = $this->ReferredCompany->find('first', $options);
 		}
 	}
-
-/**
- * delete method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */ //Important Note : Not Currently Used
-/*	public function delete($id = null) {
-		$this->ReferredCompany->id = $id;
-		if (!$this->ReferredCompany->exists()) {
-			throw new NotFoundException(__('Invalid referred company'));
-		}
-		$this->request->onlyAllow('post', 'delete');
-		if ($this->ReferredCompany->delete()) {
-			$this->Session->setFlash(__('The referred company has been deleted.'));
-		} else {
-			$this->Session->setFlash(__('The referred company could not be deleted. Please, try again.'));
-		}
-		return $this->redirect(array('action' => 'index'));
-	}*/
-
+	
 public function save($id = null) {
 		if ($this->request->is(array('post', 'put'))){
 			$this->ReferredCompany->id = $id;

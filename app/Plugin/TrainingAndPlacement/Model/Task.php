@@ -6,68 +6,35 @@ App::uses('TrainingAndPlacementAppModel', 'TrainingAndPlacement.Model');
  */
 class Task extends TrainingAndPlacementAppModel {
 
-/**
- * Display field
- *
- * @var string
- */
-	public $displayField = 'title';
-	public $useTable = 'tasks';
+    /**
+     * Display field
+     *
+     * @var string
+    */
+    public $displayField = 'title';
 
-/**
- * Validation rules
- *
- * @var array
- */
-	public $validate = array(
-		'id' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'title' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'dateoftask' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'done' => array(
-			'boolean' => array(
-				'rule' => array('boolean'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		)
-	);
-	
-	function import($filename) {
-        // to avoid having to tweak the contents of
-        // $data you should use your db field name as the heading name
-        // eg: Post.id, Post.title, Post.description
- 
-        // set the filename to read CSV from
+    /**
+     * Validation rules
+     *
+     * @var array
+     */
+	public $validate = [
+		'id'          => [ 'notEmpty' => ['rule' => ['notEmpty']]],
+		'title'       => [ 'notEmpty' => ['rule' => ['notEmpty'],'required' => false]],
+		'dateoftask'  => [ 'notempty' => ['rule' => ['notempty'],'required' => false]],
+		'done'        => [ 'boolean' => ['rule' => ['boolean']]]
+	];
+    
+    /**
+     * Import placementresults data using csv file
+     *
+    */
+    public function import($filename) {
+        /** to avoid having to tweak the contents of
+        * $data you should use your db field name as the heading name
+        * eg: Post.id, Post.title, Post.description
+        * set the filename to read CSV from
+        */
         $filename = TMP . 'uploads' . DS . 'Task' . DS . $filename;
          
         // open the file

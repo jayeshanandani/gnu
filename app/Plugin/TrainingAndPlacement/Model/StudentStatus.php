@@ -1,67 +1,42 @@
 <?php
 App::uses('TrainingAndPlacementAppModel', 'TrainingAndPlacement.Model');
+
 /**
  * StuStatus Model
  *
  */
 class StudentStatus extends TrainingAndPlacementAppModel {
 
+    /**
+     * belongsTo associations
+     *
+     * @var array
+    */
+    public $belongsTo = ['Student'];
 
-public $belongsTo = ['TrainingAndPlacement.Student'];
+    /**
+     * Validation rules
+     *
+     * @var array
+    */
+	public $validate = [
+	   'student_id'    => [ 'isUnique' => ['rule' => ['isUnique']]],
+	   'trainingAt'    => [ 'notEmpty' => ['rule' => ['notEmpty'],'message' => 'Please fill this field']],
+	   'companyname'   => [ 'notEmpty' => ['rule' => ['notEmpty'],'message' => 'Please fill this field']],
+	   'project_title' => [ 'notEmpty' => ['rule' => ['notEmpty'],'message' => 'Please fill this field']],
+	   'project'       => [ 'notEmpty' => ['rule' => ['notEmpty'],'message' => 'Please fill this field']],
+	];
 
-	public $validate = array(
-		'student_id' => array(
-			'isUnique' => array(
-				'rule' => array('isUnique'),
-				//'allowEmpty' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'trainingAt' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				'message' => 'Please fill this field',
-				//'allowEmpty' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'companyname' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				'message' => 'Please fill this field',
-				//'allowEmpty' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'project_title' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				'message' => 'Please fill this field',
-				//'allowEmpty' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'project' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				'message' => 'Please fill this field',
-				//'allowEmpty' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-	);
-
-		function import($filename) {
-        // to avoid having to tweak the contents of
-        // $data you should use your db field name as the heading name
-        // eg: Post.id, Post.title, Post.description
- 
-        // set the filename to read CSV from
+    /**
+     * Import placementresults data using csv file
+     *
+    */
+    public function import($filename) {
+        /** to avoid having to tweak the contents of
+        * $data you should use your db field name as the heading name
+        * eg: Post.id, Post.title, Post.description
+        * set the filename to read CSV from
+        */
         $filename = TMP . 'uploads' . DS . 'StuStatus' . DS . $filename;
          
         // open the file
@@ -71,16 +46,16 @@ public $belongsTo = ['TrainingAndPlacement.Student'];
         $header = fgetcsv($handle);
          
         // create a message container
-        $return = array(
-            'messages' => array(),
-            'errors' => array(),
+        $return = [
+            'messages' => []),
+            'errors' => []),
         );
  		$i=0;
  		$error = null;
         // read each data row in the file
         while (($row = fgetcsv($handle)) !== FALSE) {
             $i++;
-            $data = array();
+            $data = []);
  
             // for each header field
             foreach ($header as $k=>$head) {

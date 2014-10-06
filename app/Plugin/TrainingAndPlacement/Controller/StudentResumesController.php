@@ -3,7 +3,7 @@ App::uses('TrainingAndPlacementAppController', 'TrainingAndPlacement.Controller'
 
 class StudentResumesController extends AppController {
 
-public function import() {
+	public function import() {
 		if ($this->request->is('post')) {
           	
           	$filename = 'C:\Apache24\htdocs\cakephp\app\tmp\uploads\StudentResume\\'.$this->data['StudentResume']['file']['name']; 
@@ -26,15 +26,15 @@ public function import() {
      			$this->Session->setFlash("Extension error");
      		}
      	}
-    }
+	}
 
-/**
- * view method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
+	/**
+	 * view method
+	 *
+	 * @throws NotFoundException
+	 * @param string $id
+	 * @return void
+	*/
 	public function view($id = null) {
 		if (!$this->StudentResume->Student->exists($id)) {
 			throw new NotFoundException(__('Invalid id'));
@@ -50,28 +50,28 @@ public function import() {
 		$this->set('email',$email);
 
 		$institution_id = $this->StudentResume->Student->find('list',[
-			'conditions' => ['Student.id' => $student_id],
-			'fields' => ['Student.institution_id']
-			]);
+			'conditions'	=> ['Student.id' => $student_id],
+			'fields'		=> ['Student.institution_id']
+		]);
 		$degree_id = $this->StudentResume->Student->find('list',[
-			'conditions' => ['Student.id' => $student_id],
-			'fields' => ['Student.degree_id']
-			]);
+			'conditions'	=> ['Student.id' => $student_id],
+			'fields'		=> ['Student.degree_id']
+		]);
 		$institute = $this->Institution->find('all',[
-			'conditions' => ['Institution.id' => $institution_id],
-			'fields' => ['Institution.name']
+			'conditions'	=> ['Institution.id' => $institution_id],
+			'fields'		=> ['Institution.name']
 		]);
 		$degree = $this->Degree->find('all',[
-			'conditions' => ['Degree.id' => $degree_id],
-			'fields' => ['Degree.name']
+			'conditions'	=> ['Degree.id' => $degree_id],
+			'fields'		=> ['Degree.name']
 		]);
 		$department_id = $this->Degree->find('list',[
-			'conditions' => ['Degree.id' => $degree_id],
-			'fields' => ['Degree.department_id']
+			'conditions'	=> ['Degree.id' => $degree_id],
+			'fields'		=> ['Degree.department_id']
 		]);
 		$department = $this->Department->find('all',[
-			'conditions' => ['Department.id' => $department_id],
-			'fields' => ['Department.name']
+			'conditions'	=> ['Department.id' => $department_id],
+			'fields'		=> ['Department.name']
 		]);
 
 		$this->set('institute',$institute);
@@ -79,52 +79,50 @@ public function import() {
 		$this->set('degree',$degree);
 
 		$student_details = $this->StudentResume->Student->find('all',[
-			'conditions' => ['Student.id' => $student_id],
-			'fields' => ['Student.firstname','Student.lastname','Student.institution_id','Student.degree_id']
+			'conditions'	=> ['Student.id' => $student_id],
+			'fields'		=> ['Student.firstname','Student.lastname','Student.institution_id','Student.degree_id']
 			]);
 
-	//To get 10th n 12th results	
+		//To get 10th n 12th results	
 		$this->loadModel('ResultsBoard');
 		$resultsBoards = $this->ResultsBoard->find('all',['conditions' => ['ResultsBoard.student_id' => $student_id]]);
 		$this->set('resultsBoards', $resultsBoards);
 
-	//To get degree results semester vis	
+		//To get degree results semester vis	
 		$this->loadModel('ExamMaster');
 		$this->loadModel('ScheduleExam');
 		$sem_ids = $this->ExamMaster->find('list',[
-			'conditions' => ['ExamMaster.student_id' => $student_id], 
-			'fields' => ['ExamMaster.schedule_exam_id']]);
+			'conditions'	=> ['ExamMaster.student_id' => $student_id], 
+			'fields'		=> ['ExamMaster.schedule_exam_id']]);
 		$semesters = $this->ScheduleExam->find('all',[
-			'conditions' => ['ScheduleExam.id' => $sem_ids],
-			'fields' => ['ScheduleExam.session_no']
+			'conditions'	=> ['ScheduleExam.id' => $sem_ids],
+			'fields'		=> ['ScheduleExam.session_no']
 			]);
 		$sgpas = $this->ExamMaster->find('all',[
-			'conditions' => ['ExamMaster.student_id' => $student_id, 'ExamMaster.schedule_exam_id' => $sem_ids], 
-			'fields' => ['ExamMaster.sgpa']]);
+			'conditions'	=> ['ExamMaster.student_id' => $student_id, 'ExamMaster.schedule_exam_id' => $sem_ids], 
+			'fields'		=> ['ExamMaster.sgpa']]);
 		
 		$this->set('semesters',$semesters);
 		$this->set('sgpas',$sgpas);
 
-
-	//To get display student's resume	
+		//To get display student's resume	
 		$student_resumes = $this->StudentResume->find('all',[
-			'conditions' => ['StudentResume.student_id' => $student_id],'contain'=>['Student']	
+			'conditions'	=> ['StudentResume.student_id' => $student_id],'contain'=>['Student']	
 			]);
 		$this->set('student_resumes', $student_resumes);
 		$this->set('student_details', $student_details);			
 		
 		$this->pdfConfig = array(
-                'orientation' => 'portrait',
-                'filename' => 'Resume_' . $id
-            );
-
+            'orientation'	=> 'portrait',
+            'filename'		=> 'Resume_' . $id
+        );
 	}
 
-/**
- * add method
- *
- * @return void
- */
+	/**
+	 * add method
+	 *
+	 * @return void
+	*/
 	public function add() {
 		if ($this->request->is('post')) {
 			$this->StudentResume->create();
@@ -138,13 +136,13 @@ public function import() {
 		}
 	}
 
-/**
- * edit method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
+	/**
+	 * edit method
+	 *
+	 * @throws NotFoundException
+	 * @param string $id
+	 * @return void
+	*/
 	public function edit($id = null) {
 		if (!$this->StudentResume->exists($id)) {
 			throw new NotFoundException(__('Invalid student resume'));
@@ -157,30 +155,10 @@ public function import() {
 			} else {
 				$this->Session->setFlash(__('The Resume could not be saved. Please, try again.'));
 			}
-		} else {
+		}
+		else {
 			$options = array('conditions' => array('StudentResume.' . $this->StudentResume->primaryKey => $id));
 			$this->request->data = $this->StudentResume->find('first', $options);
 		}
 	}
-
-/**
- * delete method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	/*public function delete($id = null) {
-		$this->StudentResume->id = $id;
-		if (!$this->StudentResume->exists()) {
-			throw new NotFoundException(__('Invalid stu resume'));
-		}
-		$this->request->onlyAllow('post', 'delete');
-		if ($this->StudentResume->delete()) {
-			$this->Session->setFlash(__('The stu resume has been deleted.'));
-		} else {
-			$this->Session->setFlash(__('The stu resume could not be deleted. Please, try again.'));
-		}
-		return $this->redirect(array('action' => 'index'));
-	}*/
 }

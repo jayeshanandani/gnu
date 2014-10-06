@@ -15,6 +15,7 @@ class CategoriesController extends SupportTicketSystemAppController {
  */
 	public $components = array('Paginator');
 
+
 /**
  * index method
  *
