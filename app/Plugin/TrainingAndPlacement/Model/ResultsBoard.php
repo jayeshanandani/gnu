@@ -7,11 +7,14 @@ App::uses('TrainingAndPlacementAppModel', 'TrainingAndPlacement.Model');
 */
 class ResultsBoard extends TrainingAndPlacementAppModel {
 
- //The Associations below have been created with all possible keys, those that are not needed can be removed
- /**
- * belongsTo associations
- *
- * @var array
- */
+//The Associations below have been created with all possible keys, those that are not needed can be removed
+/**
+* belongsTo associations
+*
+* @var array
+*/
   public $belongsTo = ['Student'];
+
+  public $hasMany = ['Student','Institution'];
+  
 }

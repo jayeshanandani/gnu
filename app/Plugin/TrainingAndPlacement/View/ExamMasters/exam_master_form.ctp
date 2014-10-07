@@ -1,6 +1,5 @@
-
 <?php
-echo $this->Html->script('populatedropdowns');
+echo $this->Html->script('TrainingandPlacement.populatedropdowns');
 ?><div class="row">
           <div class="col">
              

@@ -1,7 +1,7 @@
 <div class="examMasters view">
 <h3><?php echo __('Results Of Degree'); ?></h3>
 <?php 
-	echo '<font size=3px>'.AuthComponent::user('fullname').'</font>';
+	echo '<font size=3px>'.$fullname.'</font>';
 ?> 
 </div>
 <div class="examMasters view">

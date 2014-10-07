@@ -5,28 +5,29 @@ class StudentStatusesController extends TrainingAndPlacementAppController {
 
 	public function import() {
 		if ($this->request->is('post')) {
-	      	
-	      	$filename = 'C:\Apache24\htdocs\cakephp\app\tmp\uploads\StudentStatus\\'.$this->data['StudentStatuses']['file']['name']; 
-	      	$file = $this->data['StudentStatuses']['file']['name'];
-	      	$extension = pathinfo($file, PATHINFO_EXTENSION);
-	    	if($extension == 'csv'){
-	    	    if (move_uploaded_file($this->data['StudentStatus']['file']['tmp_name'],$filename)) {
-	        	$messages = $this->StudentStatus->import($this->data['StudentStatus']['file']['name']);
-	        	/* save message to session */
-	        	$this->Session->setFlash('File uploaded successfuly. You can view it <a href="C:\Apache24\htdocs\cakephp\app\tmp\uploads\StudentStatus\\'.$this->data['StudentStatuses']['file']['name'].'">here</a>.');
-	        	/* redirect */
-	        	$this->redirect(array('action' => 'index'));
-	    		}
-	    		else {
-	        	/* save message to session */
-	        	$this->Session->setFlash('There was a problem uploading file. Please try again.');
-	    		}
-	 		}
-	 		else{
-	 			$this->Session->setFlash("Extension error");
-	 		}
-	 	}
-	}
+          	$filename = APP . 'uploads' . DS . 'StudentStatus' . DS . $this->request->data['StudentStatus']['file']['name'];
+          	$file = $this->request->data['StudentStatus']['file']['name'];
+          	$length = $this->StudentStatus->check_file_uploaded_length($file);
+          	$name = $this->StudentStatus->name($file);
+          	$extension = pathinfo($file, PATHINFO_EXTENSION);
+        	if($extension === 'csv' && $length && $name){
+        	    if (move_uploaded_file($this->request->data['StudentStatus']['file']['tmp_name'],$filename)) {
+            	$messages = $this->StudentStatus->import($file);
+            	/* save message to session */
+            	$this->Session->setFlash('File uploaded successfuly.');
+            	/* redirect */
+            	$this->redirect(array('action' => 'index'));
+        	} else {
+            	/* save message to session */
+            	$this->Session->setFlash('There was a problem uploading file. Please try again.', 'alert', array(
+   										 'class' => 'alert-danger'));
+        	}
+     	} else{
+     			$this->Session->setFlash("Extension error", 'alert', array(
+    									'class' => 'alert-danger'));
+     		}
+     	}
+    }
 	/**
 	 * Student_status_form method
 	 * Get values from Form and passing for processing to get result
@@ -41,8 +42,8 @@ class StudentStatusesController extends TrainingAndPlacementAppController {
 			return $this->redirect(['action' => 'index', $institute, $department,$degree]);
 		}
 		unset($this->request->data['StudentStatus']['institution_id']);
-		$this->loadModel('Institution');
-		$institutions	= $this->Institution->find('list');
+
+		$institutions	= $this->StudentStatus->Student->Institution->find('list');
 		$departments	= [];
 		$degrees		= [];
 		$academic_years = [];
@@ -60,7 +61,7 @@ class StudentStatusesController extends TrainingAndPlacementAppController {
 		$student_list = $this->StudentStatus->Student->find('list', [
 			'conditions'	=> ['Student.institution_id' => $institute,'Student.degree_id' => $degree],
 			'fields'		=> ['Student.id']
-		]];
+		]);
 		$this->loadModel('Setting');
 		$data				= $this->Setting->find('first');
 		$pagination_value 	= $data['Setting']['pagination_value'];

@@ -18,8 +18,8 @@ class CompanyVisit extends TrainingAndPlacementAppModel {
         'visitdate2'       => ['notempty' => ['rule' => ['notempty'],'required' => true]],
         'visitdate3'       => ['notempty' => ['rule' => ['notempty'],'required' => true]],
         'lastdate'         => ['notempty' => ['rule' => ['notempty'],'required' => true]],
-        'placementtype'    => ['notEmpty' => ['rule' => ['notEmpty','required' => true]],
-        'placementvenue'   => ['notEmpty' => ['rule' => ['notEmpty','required' => true]],
+        'placementtype'    => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
+        'placementvenue'   => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]]
     ];
 
 //The Associations below have been created with all possible keys, those that are not needed can be removed
@@ -69,16 +69,16 @@ class CompanyVisit extends TrainingAndPlacementAppModel {
         $header = fgetcsv($handle);
          
         // create a message container
-        $return = []
-            'messages' => []),
-            'errors' => []),
-        );
+        $return = [
+            'messages' => [],
+            'errors' => [],
+        ];
     		$i=0;
     		$error = null;
         // read each data row in the file
         while (($row = fgetcsv($handle)) !== FALSE) {
             $i++;
-            $data = []);
+            $data = [];
 
             // for each header field
             foreach ($header as $k=>$head) {

@@ -6,14 +6,11 @@ App::uses('TrainingAndPlacementAppModel', 'TrainingAndPlacement.Model');
  */
 class ExamMaster extends TrainingAndPlacementAppModel {
 
-	//The Associations below have been created with all possible keys, those that are not needed can be removed
-	/**
-	 * belongsTo associations
-	 *
-	 * @var array
-	*/
- 	public $belongsTo = [
-		'Student'		=> ['className' => 'Student','foreignKey' => 'student_id'],
-		'ScheduleExam'	=> ['className' => 'ScheduleExam','foreignKey' => 'schedule_exam_id']
-	];
+//The Associations below have been created with all possible keys, those that are not needed can be removed
+/**
+* belongsTo associations
+*
+* @var array
+*/
+ 	public $belongsTo = [ 'Student', 'TrainingAndPlacement.ScheduleExam'];
 }

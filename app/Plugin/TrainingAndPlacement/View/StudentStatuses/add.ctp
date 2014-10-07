@@ -2,8 +2,6 @@
 <div class="row">
           <div class="col-lg-6">
 <div class="Student Statuses form">
-<?php echo $this->Html->script('jquery'); ?>
-
 <?php echo $this->Form->create('StudentStatus', array(
 	'inputDefaults' => array(
 		'div' => 'form-group',

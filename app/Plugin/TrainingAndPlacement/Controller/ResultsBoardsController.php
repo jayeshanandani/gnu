@@ -11,8 +11,7 @@ class ResultsBoardsController extends TrainingAndPlacementAppController {
 			return $this->redirect(['action' => 'index', $institute, $department, $degree]);
 		}
 		unset($this->request->data['ResultsBoard']['institution_id']);
-		$this->loadModel('Institution');
-		$institutions	= $this->Institution->find('list');
+		$institutions	= $this->ResultsBoards->Student->Institution->find('list');
 		$departments	= [];
 		$degrees		= [];
 		$this->set(compact('institutions', 'departments', 'degrees'));	

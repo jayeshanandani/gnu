@@ -5,47 +5,43 @@ class StudentResumesController extends AppController {
 
 	public function import() {
 		if ($this->request->is('post')) {
-          	
-          	$filename = 'C:\Apache24\htdocs\cakephp\app\tmp\uploads\StudentResume\\'.$this->data['StudentResume']['file']['name']; 
-          	$file = $this->data['StudentResume']['file']['name'];
+          	$filename = APP . 'uploads' . DS . 'StudentResume' . DS . $this->request->data['StudentResume']['file']['name'];
+          	$file = $this->request->data['StudentResume']['file']['name'];
+          	$length = $this->StudentResume->check_file_uploaded_length($file);
+          	$name = $this->StudentResume->name($file);
           	$extension = pathinfo($file, PATHINFO_EXTENSION);
-        	if($extension == 'csv'){
-        	    if (move_uploaded_file($this->data['StudentResume']['file']['tmp_name'],$filename)) {
-            	$messages = $this->StudentResume->import($this->data['StudentResume']['file']['name']);
+        	if($extension === 'csv' && $length && $name){
+        	    if (move_uploaded_file($this->request->data['StudentResume']['file']['tmp_name'],$filename)) {
+            	$messages = $this->StudentResume->import($file);
             	/* save message to session */
-            	$this->Session->setFlash('File uploaded successfuly. You can view it <a href="C:\Apache24\htdocs\cakephp\app\tmp\uploads\StudentResume\\'.$this->data['StudentResume']['file']['name'].'">here</a>.');
+            	$this->Session->setFlash('File uploaded successfuly.');
             	/* redirect */
             	$this->redirect(array('action' => 'index'));
-        		}
-        		else {
+        	} else {
             	/* save message to session */
-            	$this->Session->setFlash('There was a problem uploading file. Please try again.');
-        		}
-     		}
-     		else{
-     			$this->Session->setFlash("Extension error");
+            	$this->Session->setFlash('There was a problem uploading file. Please try again.', 'alert', array(
+   										 'class' => 'alert-danger'));
+        	}
+     	} else{
+     			$this->Session->setFlash("Extension error", 'alert', array(
+    									'class' => 'alert-danger'));
      		}
      	}
-	}
+    }
 
-	/**
-	 * view method
-	 *
-	 * @throws NotFoundException
-	 * @param string $id
-	 * @return void
-	*/
+/**
+* view method
+*
+* @throws NotFoundException
+* @param string $id
+* @return void
+*/
 	public function view($id = null) {
 		if (!$this->StudentResume->Student->exists($id)) {
 			throw new NotFoundException(__('Invalid id'));
 		}
 		
 		$student_id = $id;
-		$this->loadModel('Institution');
-		$this->loadModel('Department');
-		$this->loadModel('Degree');
-		$this->loadModel('User');
-
 		$email = $this->User->find('all',['conditions' => ['User.student_id' => $student_id],'fields' => ['User.email']]);
 		$this->set('email',$email);
 
@@ -57,19 +53,19 @@ class StudentResumesController extends AppController {
 			'conditions'	=> ['Student.id' => $student_id],
 			'fields'		=> ['Student.degree_id']
 		]);
-		$institute = $this->Institution->find('all',[
+		$institute = $this->StudentResume->Student->Institution->find('all',[
 			'conditions'	=> ['Institution.id' => $institution_id],
 			'fields'		=> ['Institution.name']
 		]);
-		$degree = $this->Degree->find('all',[
+		$degree = $this->StudentResume->Student->Degree->find('all',[
 			'conditions'	=> ['Degree.id' => $degree_id],
 			'fields'		=> ['Degree.name']
 		]);
-		$department_id = $this->Degree->find('list',[
+		$department_id = $this->StudentResume->Student->Degree->find('list',[
 			'conditions'	=> ['Degree.id' => $degree_id],
 			'fields'		=> ['Degree.department_id']
 		]);
-		$department = $this->Department->find('all',[
+		$department = $this->StudentResume->Student->Degree->Department->find('all',[
 			'conditions'	=> ['Department.id' => $department_id],
 			'fields'		=> ['Department.name']
 		]);
@@ -84,21 +80,18 @@ class StudentResumesController extends AppController {
 			]);
 
 		//To get 10th n 12th results	
-		$this->loadModel('ResultsBoard');
-		$resultsBoards = $this->ResultsBoard->find('all',['conditions' => ['ResultsBoard.student_id' => $student_id]]);
+		$resultsBoards = $this->StudentResume->Student->ResultsBoard->find('all',['conditions' => ['ResultsBoard.student_id' => $student_id]]);
 		$this->set('resultsBoards', $resultsBoards);
 
-		//To get degree results semester vis	
-		$this->loadModel('ExamMaster');
-		$this->loadModel('ScheduleExam');
-		$sem_ids = $this->ExamMaster->find('list',[
+		//To get degree results semester via	
+		$sem_ids = $this->StudentResume->Student->ExamMaster->find('list',[
 			'conditions'	=> ['ExamMaster.student_id' => $student_id], 
 			'fields'		=> ['ExamMaster.schedule_exam_id']]);
-		$semesters = $this->ScheduleExam->find('all',[
+		$semesters = $this->StudentResume->Student->Degree->ScheduleExam->find('all',[
 			'conditions'	=> ['ScheduleExam.id' => $sem_ids],
 			'fields'		=> ['ScheduleExam.session_no']
 			]);
-		$sgpas = $this->ExamMaster->find('all',[
+		$sgpas = $this->StudentResume->Student->ExamMaster->find('all',[
 			'conditions'	=> ['ExamMaster.student_id' => $student_id, 'ExamMaster.schedule_exam_id' => $sem_ids], 
 			'fields'		=> ['ExamMaster.sgpa']]);
 		

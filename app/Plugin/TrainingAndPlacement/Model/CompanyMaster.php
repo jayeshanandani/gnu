@@ -20,13 +20,13 @@ class CompanyMaster extends TrainingAndPlacementAppModel {
 * @var array
 */
 	public $validate = [
-		'name'		=> ['notEmpty' => ['rule' => ['notEmpty','isUnique'],'message' => 'Enter company name','required' => true]],
-		'profile'	=> ['notEmpty' => ['rule' => ['notEmpty', 'isUnique'],'message' => 'Type brief Company profile','required' => true]],
-		'website'	=> ['notEmpty' => ['rule' => ['url', 'isUnique'],'message' => 'Your Web url is invalid or already registered','required' => true,'url' => 'url']],
+		'name'		=> ['notEmpty' => ['rule' => ['notEmpty'],'rule' => ['isUnique'],'message' => 'Enter company name','required' => true]],
+		'profile'	=> ['notEmpty' => ['rule' => ['notEmpty'],'rule' => ['isUnique'],'message' => 'Type brief Company profile','required' => true]],
+		'website'	=> ['notEmpty' => ['rule' => ['url'], 'rule' => ['isUnique'],'message' => 'Your Web url is invalid or already registered','required' => true,'url' => 'url']],
 		'location'	=> ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
 		'category'	=> ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
-		'email'		=> ['notEmpty' => ['rule' => ['email', 'isUnique'],'message' => 'Your email is invalid or already registered','required' => true]],
-		'contactno' => ['notEmpty' => ['rule' => ['phone', 'isUnique'],'message' => 'Your contact no. is invalid or already registered','required' => true]]
+		'email'		=> ['notEmpty' => ['rule' => ['email'], 'rule' => ['isUnique'],'message' => 'Your email is invalid or already registered','required' => true]],
+		'contactno' => ['notEmpty' => ['rule' => ['phone'], 'rule' => ['isUnique'],'message' => 'Your contact no. is invalid or already registered','required' => true]]
 	];
 
 /**

@@ -18,50 +18,12 @@ class ReferredCompany extends TrainingAndPlacementAppModel {
  *
  * @var array
  */
-	public $validate = array(
-		'companyname' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				'required' => true,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'location' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				'required' => true,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'website' => array(
-			'notEmpty' => array(
-				'rule' => array('url'),
-				'message' => 'Your Web url is invalid',
-				//'allowEmpty' => false,
-				'required' => true,
-				'url' => 'url',
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'referance' => array(
-			'notEmpty' => array(
-				'rule' => array('isUnique'),
-				'message' => 'reference is already registered',
-				//'allowEmpty' => false,
-				'required' => true,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		
-	);
+	public $validate = [
+		'companyname' 	=> ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
+		'location' 		=> ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
+		'website' 		=> ['notEmpty' => ['rule' => ['url'],'message' => 'Your Web url is invalid','required' => true,'url' => 'url']],
+		'referance' 	=> ['notEmpty' => ['rule' => ['isUnique'],'message' => 'reference is already registered','required' => true]],	
+	];
 /**
 * belongsTo associations
 *

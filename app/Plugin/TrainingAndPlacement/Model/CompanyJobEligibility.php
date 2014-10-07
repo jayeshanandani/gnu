@@ -23,7 +23,7 @@ public $useTable = 'company_job_eligibilities';
         'min_eligible_12'       => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
         'min_eligible_degree'   => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
         'interestedin'          => ['notEmpty' => ['rule' => ['notEmpty'],'required' => true]],
-        'hiring'                => ['notEmpty' => ['rule' => ['notEmpty', 'decimal'],'message' => 'Hiring Should be in Decimal/Numeric','required' => true]],
+        'hiring'                => ['notEmpty' => ['rule' => ['notEmpty'],'rule' => ['decimal'],'message' => 'Hiring Should be in Decimal/Numeric','required' => true]],
     ];
 
 //The Associations below have been created with all possible keys, those that are not needed can be removed

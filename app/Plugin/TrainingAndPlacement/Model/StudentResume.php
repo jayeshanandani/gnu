@@ -1,179 +1,67 @@
 <?php
 App::uses('TrainingAndPlacementAppModel', 'TrainingAndPlacement.Model');
 /**
- * StuResume Model
+ * StudentResume Model
  *
  */
 class StudentResume extends TrainingAndPlacementAppModel {
 
-
-public $belongsTo = array(
-		'Student' => array(
-			'className' => 'Student',
-			'foreignKey' => 'student_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		)
-	);
 /**
  * Validation rules
  *
  * @var array
  */
 
-	public $validate = array(
-		'student_id' => array(
-			'isUnique' => array(
-				'rule' => array('isUnique'),
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'careerobjective' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				'rule' => array('isUnique'),
-				'message' => 'Please try your own career objective',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'hobbies' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'strengths' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'os' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'techlanguages' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'db' => array(
-			'uuid' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'webtechnologies' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'nw_prog_tools' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'sw_prog_tools' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'interestedin' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'workshops' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'seminars' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		
-		'projectname' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		
-	);
-	
-		function import($filename) {
-        // to avoid having to tweak the contents of
-        // $data you should use your db field name as the heading name
-        // eg: Post.id, Post.title, Post.description
- 
-        // set the filename to read CSV from
-        $filename = TMP . 'uploads' . DS . 'StuResume' . DS . $filename;
+	public $validate = [
+		'student_id'		=> ['isUnique' => ['rule' => ['isUnique']]],
+		'careerobjective' 	=> ['notEmpty' => ['rule' => ['notEmpty'],'rule' => ['isUnique'],'message' => 'Please try your own career objective']],
+		'hobbies' 			=> ['notEmpty' => ['rule' => ['notEmpty']]],
+		'strengths' 		=> ['notEmpty' => ['rule' => ['notEmpty']]],
+		'os' 				=> ['notEmpty' => ['rule' => ['notEmpty']]],
+		'techlanguages' 	=> ['notEmpty' => ['rule' => ['notEmpty']]],
+		'db' 				=> ['uuid' 	   => ['rule' => ['notEmpty']]],
+		'webtechnologies' 	=> ['notEmpty' => ['rule' => ['notEmpty']]],
+		'nw_prog_tools' 	=> ['notEmpty' => ['rule' => ['notEmpty']]],
+		'sw_prog_tools' 	=> ['notEmpty' => ['rule' => ['notEmpty']]],
+		'interestedin' 		=> ['notEmpty' => ['rule' => ['notEmpty']]],
+		'workshops' 		=> ['notEmpty' => ['rule' => ['notEmpty']]],
+		'seminars' 			=> ['notEmpty' => ['rule' => ['notEmpty']]],
+		'projectname' 		=> ['notEmpty' => ['rule' => ['notEmpty']]]
+	];
+
+	public $belongsTo = ['Student'];
+
+/**
+* Check $_FILES[][name] length.
+*
+* @param (string) $filename - Uploaded file name.
+*/
+    public function check_file_uploaded_length ($filename) {
+        return (bool) ((mb_strlen($filename,"UTF-8") > 225) ? true : false);
+    }
+
+/**
+* Check $_FILES[][name]
+*
+* @param (string) $filename - Uploaded file name.
+* @author Yousef Ismaeil Cliprz
+*/
+    public function check_file_uploaded_name ($filename) {
+        (bool) ((preg_match("`^[-0-9A-Z_\.]+$`i",$filename)) ? true : false);
+    }
+
+/**
+* Import companycampus data using csv file
+*
+*/
+    public function import($filename) {
+        /** to avoid having to tweak the contents of
+        * $data you should use your db field name as the heading name
+        * eg: Post.id, Post.title, Post.description
+        * set the filename to read CSV from
+        */
+        $filename = APP . 'uploads' . DS . 'StudentResume' . DS . $filename;
+         
          
         // open the file
         $handle = fopen($filename, "r");
@@ -202,25 +90,15 @@ public $belongsTo = array(
                 }
                 // get the data field from field
                 else {
-                    $data['StuResume'][$head]=(isset($row[$k])) ? $row[$k] : '';
+                    $data['StudentResume'][$head]=(isset($row[$k])) ? $row[$k] : '';
                 }
             }
  
             // see if we have an id            
-            $id = isset($data['StuResume']['id']) ? $data['StuResume']['id'] : 0;
+            $id = isset($data['StudentResume']['id']) ? $data['StudentResume']['id'] : 0;
  
             // we have an id, so we update
             if ($id) {
-                // there is 2 options here,
-                  
-                // option 1:
-                // load the current row, and merge it with the new data
-                //$this->recursive = -1;
-                //$post = $this->read(null,$id);
-                //$data['Post'] = array_merge($post['Post'],$data['Post']);
-                 
-                // option 2:
-                // set the model id
                 $this->id = $id;
             }
              
@@ -228,9 +106,6 @@ public $belongsTo = array(
             else {
                 $this->create();
             }
-             
-            // see what we have
-            // debug($data);
              
             // validate the row
             $this->set($data);

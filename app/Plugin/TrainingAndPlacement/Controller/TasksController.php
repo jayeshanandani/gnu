@@ -9,39 +9,12 @@ class TasksController extends TrainingAndPlacementAppController {
 
 	public $helpers = ['Js','Html', 'Form', 'Time'];
 
-	/**
-	 * import method
-	 *
-	 * @return void
-	*/
-	public function import() {
-		if ($this->request->is('post')) {
-          	
-          	$filename = 'C:\Apache24\htdocs\cakephp\app\tmp\uploads\Task\\'.$this->data['Tasks']['file']['name']; 
-          	$file = $this->data['Tasks']['file']['name'];
-          	$extension = pathinfo($file, PATHINFO_EXTENSION);
-        	if($extension == 'csv'){
-        	    if (move_uploaded_file($this->data['Tasks']['file']['tmp_name'],$filename)) {
-            		$messages = $this->Task->import($this->data['Tasks']['file']['name']);
-            		/* save message to session */
-            		$this->Session->setFlash('File uploaded successfuly. You can view it <a href="C:\Apache24\htdocs\cakephp\app\tmp\uploads\Task\\'.$this->data['Tasks']['file']['name'].'">here</a>.');
-            		/* redirect */
-            		$this->redirect(array('action' => 'index'));
-        		} else {
-            	 /* save message to session */
-            	 $this->Session->setFlash('There was a problem uploading file. Please try again.');
-        		}
-     		} else{
-     			$this->Session->setFlash("Extension error");
-     		}
-     	}
-    }
 
-	/**
-	 * index method
-	 *
-	 * @return void
-	*/
+/**
+* index method
+*
+* @return void
+*/
 	public function index() {
 		$this->loadModel('Setting');
 		$data = $this->Setting->find('first');
@@ -51,13 +24,13 @@ class TasksController extends TrainingAndPlacementAppController {
 		$this->set('tasks', $this->Paginator->paginate()); 
 	}
 
-	/**
-	 * view method
-	 *
-	 * @throws NotFoundException
-	 * @param string $id
-	 * @return void
-	*/
+/**
+* view method
+*
+* @throws NotFoundException
+* @param string $id
+* @return void
+*/
 	public function view($id = null) {
 		if (!$this->Task->exists($id)) {
 			throw new NotFoundException(__('Invalid task'));
@@ -66,11 +39,11 @@ class TasksController extends TrainingAndPlacementAppController {
 		$this->set('task', $this->Task->find('first', $options));
 	}
 
-	/**
-	 * add method
-	 *
-	 * @return void
-	*/
+/**
+* add method
+*
+* @return void
+*/
 	public function add() {
 		if ($this->request->is('post')) {
 			$this->Task->create();
@@ -83,13 +56,13 @@ class TasksController extends TrainingAndPlacementAppController {
 		}
 	}
 
-	/**
-	 * edit method
-	 *
-	 * @throws NotFoundException
-	 * @param string $id
-	 * @return void
-	*/
+/**
+* edit method
+*
+* @throws NotFoundException
+* @param string $id
+* @return void
+*/
 	public function edit($id = null) {
 		if (!$this->Task->exists($id)) {
 			throw new NotFoundException(__('Invalid task'));
@@ -103,7 +76,7 @@ class TasksController extends TrainingAndPlacementAppController {
 				$this->Session->setFlash(__('The task could not be saved. Please, try again.'));
 			}
 		} else {
-			$options = ['conditions' => ['Task.' . $this->Task->primaryKey => $id];
+			$options = ['conditions' => ['Task.' . $this->Task->primaryKey => $id]];
 			$this->request->data = $this->Task->find('first', $options);
 		}
 	}

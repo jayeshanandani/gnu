@@ -2,42 +2,62 @@
 App::uses('TrainingAndPlacementAppModel', 'TrainingAndPlacement.Model');
 
 /**
- * StuStatus Model
+ * StudentStatus Model
  *
  */
 class StudentStatus extends TrainingAndPlacementAppModel {
 
-    /**
-     * belongsTo associations
-     *
-     * @var array
-    */
+/**
+* Validation rules
+*
+* @var array
+*/
+    public $validate = [
+       'student_id'    => [ 'isUnique' => ['rule' => ['isUnique']]],
+       'trainingAt'    => [ 'notEmpty' => ['rule' => ['notEmpty'],'message' => 'Please fill this field']],
+       'companyname'   => [ 'notEmpty' => ['rule' => ['notEmpty'],'message' => 'Please fill this field']],
+       'project_title' => [ 'notEmpty' => ['rule' => ['notEmpty'],'message' => 'Please fill this field']],
+       'project'       => [ 'notEmpty' => ['rule' => ['notEmpty'],'message' => 'Please fill this field']],
+    ];
+
+/**
+* belongsTo associations
+*
+* @var array
+*/
     public $belongsTo = ['Student'];
 
-    /**
-     * Validation rules
-     *
-     * @var array
-    */
-	public $validate = [
-	   'student_id'    => [ 'isUnique' => ['rule' => ['isUnique']]],
-	   'trainingAt'    => [ 'notEmpty' => ['rule' => ['notEmpty'],'message' => 'Please fill this field']],
-	   'companyname'   => [ 'notEmpty' => ['rule' => ['notEmpty'],'message' => 'Please fill this field']],
-	   'project_title' => [ 'notEmpty' => ['rule' => ['notEmpty'],'message' => 'Please fill this field']],
-	   'project'       => [ 'notEmpty' => ['rule' => ['notEmpty'],'message' => 'Please fill this field']],
-	];
+/**
+* Check $_FILES[][name] length.
+*
+* @param (string) $filename - Uploaded file name.
+*/
+    public function check_file_uploaded_length ($filename) {
+        return (bool) ((mb_strlen($filename,"UTF-8") > 225) ? true : false);
+    }
 
-    /**
-     * Import placementresults data using csv file
-     *
-    */
-    public function import($filename) {
+/**
+* Check $_FILES[][name]
+*
+* @param (string) $filename - Uploaded file name.
+* @author Yousef Ismaeil Cliprz
+*/
+    public function check_file_uploaded_name ($filename) {
+        (bool) ((preg_match("`^[-0-9A-Z_\.]+$`i",$filename)) ? true : false);
+    }
+
+/**
+* Import placementresults data using csv file
+*
+*/
+     public function import($filename) {
         /** to avoid having to tweak the contents of
         * $data you should use your db field name as the heading name
         * eg: Post.id, Post.title, Post.description
         * set the filename to read CSV from
         */
-        $filename = TMP . 'uploads' . DS . 'StuStatus' . DS . $filename;
+        $filename = APP . 'uploads' . DS . 'StudentStatus' . DS . $filename;
+         
          
         // open the file
         $handle = fopen($filename, "r");
@@ -46,16 +66,16 @@ class StudentStatus extends TrainingAndPlacementAppModel {
         $header = fgetcsv($handle);
          
         // create a message container
-        $return = [
-            'messages' => []),
-            'errors' => []),
+        $return = array(
+            'messages' => array(),
+            'errors' => array(),
         );
- 		$i=0;
- 		$error = null;
+        $i=0;
+        $error = null;
         // read each data row in the file
         while (($row = fgetcsv($handle)) !== FALSE) {
             $i++;
-            $data = []);
+            $data = array();
  
             // for each header field
             foreach ($header as $k=>$head) {
@@ -66,25 +86,15 @@ class StudentStatus extends TrainingAndPlacementAppModel {
                 }
                 // get the data field from field
                 else {
-                    $data['StuStatus'][$head]=(isset($row[$k])) ? $row[$k] : '';
+                    $data['StudentStatus'][$head]=(isset($row[$k])) ? $row[$k] : '';
                 }
             }
  
             // see if we have an id            
-            $id = isset($data['StuStatus']['id']) ? $data['StuStatus']['id'] : 0;
+            $id = isset($data['StudentStatus']['id']) ? $data['StudentStatus']['id'] : 0;
  
             // we have an id, so we update
             if ($id) {
-                // there is 2 options here,
-                  
-                // option 1:
-                // load the current row, and merge it with the new data
-                //$this->recursive = -1;
-                //$post = $this->read(null,$id);
-                //$data['Post'] = array_merge($post['Post'],$data['Post']);
-                 
-                // option 2:
-                // set the model id
                 $this->id = $id;
             }
              
@@ -92,9 +102,6 @@ class StudentStatus extends TrainingAndPlacementAppModel {
             else {
                 $this->create();
             }
-             
-            // see what we have
-            // debug($data);
              
             // validate the row
             $this->set($data);

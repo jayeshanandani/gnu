@@ -11,8 +11,7 @@ class ExamMastersController extends TrainingAndPlacementAppController {
 			return $this->redirect(array('action' => 'index',$institute,$department,$degree));
 		}
 		unset($this->request->data['ExamMaster']['institution_id']);
-		$this->loadModel('Institution');
-		$institutions = $this->Institution->find('list');
+		$institutions = $this->ExamMasters->Student->Institution->find('list');
 		$departments = array();
 		$degrees = array();
 		$this->set(compact('institutions', 'departments', 'degrees'));	
@@ -50,76 +49,6 @@ class ExamMastersController extends TrainingAndPlacementAppController {
 	public function display() {
 		$exam_masters = $this->ExamMaster->find('all',['conditions' => ['ExamMaster.student_id' => $this->Auth->User('student_id')],'contain' => ['ScheduleExam']]);
 		$this->set('examMasters', $exam_masters);
+		$this->set('fullname',$this->Auth->user('fullname'));
 	}
-
-
-/**
- * add method
- *
- * @return void
- */ // Important Note : Not Currently used
-/*	public function add() {
-		if ($this->request->is('post')) {
-			$this->ExamMaster->create();
-			if ($this->ExamMaster->save($this->request->data)) {
-				$this->Session->setFlash(__('The exam master has been saved.'));
-				return $this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash(__('The exam master could not be saved. Please, try again.'));
-			}
-		}
-		$students = $this->ExamMaster->Student->find('list');
-		$semesters = $this->ExamMaster->Semester->find('list');
-		$examYears = $this->ExamMaster->ExamYear->find('list');
-		$this->set(compact('students', 'semesters', 'examYears'));
-	}
-*/
-/**
- * edit method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */ // Important Note : Not Currently used
-/*	public function edit($id = null) {
-		if (!$this->ExamMaster->exists($id)) {
-			throw new NotFoundException(__('Invalid exam master'));
-		}
-		if ($this->request->is(array('post', 'put'))) {
-			if ($this->ExamMaster->save($this->request->data)) {
-				$this->Session->setFlash(__('The exam master has been saved.'));
-				return $this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash(__('The exam master could not be saved. Please, try again.'));
-			}
-		} else {
-			$options = array('conditions' => array('ExamMaster.' . $this->ExamMaster->primaryKey => $id));
-			$this->request->data = $this->ExamMaster->find('first', $options);
-		}
-		$students = $this->ExamMaster->Student->find('list');
-		$semesters = $this->ExamMaster->Semester->find('list');
-		$examYears = $this->ExamMaster->ExamYear->find('list');
-		$this->set(compact('students', 'semesters', 'examYears'));
-	}
-*/
-/**
- * delete method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */ // Important Note : Not Currently used
-/*	public function delete($id = null) {
-		$this->ExamMaster->id = $id;
-		if (!$this->ExamMaster->exists()) {
-			throw new NotFoundException(__('Invalid exam master'));
-		}
-		$this->request->onlyAllow('post', 'delete');
-		if ($this->ExamMaster->delete()) {
-			$this->Session->setFlash(__('The exam master has been deleted.'));
-		} else {
-			$this->Session->setFlash(__('The exam master could not be deleted. Please, try again.'));
-		}
-		return $this->redirect(array('action' => 'index'));
-	}*/
 }
