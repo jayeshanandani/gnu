@@ -1,12 +1,12 @@
 <?php
-App::uses('SupportTicketSystemAppController', 'SupportTicketSystem.Controller');
+App::uses('AppController', 'Controller');
 /**
  * Staffs Controller
  *
  * @property Staff $Staff
  * @property PaginatorComponent $Paginator
  */
-class StaffsController extends SupportTicketSystemAppController {
+class StaffsController extends AppController {
 
 /**
  * index method

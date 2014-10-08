@@ -1,7 +1,7 @@
 <?php
-App::uses('AppModel', 'TrainingAndPlacement.Model');
+App::uses('AppModel', 'Model');
 
-class Student extends TrainingAndPlacementAppModel {
+class Student extends AppModel {
 
 /**
  * Validation rules
@@ -20,5 +20,5 @@ public $validate = [];
  */
 
    public $belongsTo = ['Institution','Degree'];
-   public $hasMany = ['TrainingAndPlacement.ResultBoard'];
+   public $hasMany = ['TrainingAndPlacement.ResultBoard','TrainingAndPlacement.ExamMaster','User'];
 }

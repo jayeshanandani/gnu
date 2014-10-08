@@ -1,11 +1,11 @@
 <?php
-App::uses('SupportTicketSystemAppModel', 'SupportTicketSystem.Model');
+App::uses('AppModel', 'Model');
 /**
  * Staff Model
  *
  */
 
-class Staff extends SupportTicketSystemAppModel {
+class Staff extends AppModel {
 
 
 public $virtualFields = array(
@@ -33,6 +33,7 @@ public $displayField = 'name';
  *
  * @var array
  */
+	public $hasMany = ['User'];
 	
 
 		public function getListByDepartment($cid = null) {

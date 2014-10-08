@@ -11,7 +11,7 @@ class ExamMastersController extends TrainingAndPlacementAppController {
 			return $this->redirect(array('action' => 'index',$institute,$department,$degree));
 		}
 		unset($this->request->data['ExamMaster']['institution_id']);
-		$institutions = $this->ExamMasters->Student->Institution->find('list');
+		$institutions = $this->ExamMaster->Student->Institution->find('list');
 		$departments = array();
 		$degrees = array();
 		$this->set(compact('institutions', 'departments', 'degrees'));	

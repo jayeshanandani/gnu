@@ -21,6 +21,6 @@ class Institution extends AppModel {
  *
  * @var array
  */
-	public $hasMany = ['Department','Staff'];
+	public $hasMany = ['Department','Staff','Student'];
 
 }

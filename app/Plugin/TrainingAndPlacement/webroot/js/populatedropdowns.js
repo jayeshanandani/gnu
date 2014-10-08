@@ -17,10 +17,10 @@ $(function() {
 					destination.append('<option value="Please Select">Please Select</option>');
 					appendData(response.degrees, destination);
 				}
-				if (response.academicYears) {
+				if (response.academicyears) {
 					destination.empty(),
 					destination.append('<option value="Please Select">Please Select</option>');
-					appendData(response.academicYears, destination);
+					appendData(response.academicyears, destination);
 				}
             },
 

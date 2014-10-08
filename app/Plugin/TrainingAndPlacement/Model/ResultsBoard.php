@@ -15,6 +15,6 @@ class ResultsBoard extends TrainingAndPlacementAppModel {
 */
   public $belongsTo = ['Student'];
 
-  public $hasMany = ['Student','Institution'];
+  public $hasMany = ['Institution'];
   
 }

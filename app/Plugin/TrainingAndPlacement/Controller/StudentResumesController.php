@@ -42,7 +42,7 @@ class StudentResumesController extends AppController {
 		}
 		
 		$student_id = $id;
-		$email = $this->User->find('all',['conditions' => ['User.student_id' => $student_id],'fields' => ['User.email']]);
+		$email = $this->StudentResume->Student->User->find('all',['conditions' => ['User.student_id' => $student_id],'fields' => ['User.email']]);
 		$this->set('email',$email);
 
 		$institution_id = $this->StudentResume->Student->find('list',[
@@ -79,7 +79,8 @@ class StudentResumesController extends AppController {
 			'fields'		=> ['Student.firstname','Student.lastname','Student.institution_id','Student.degree_id']
 			]);
 
-		//To get 10th n 12th results	
+		//To get 10th n 12th results
+		debug(get_class($this->StudentResume->Student->ResultsBoard));exit;
 		$resultsBoards = $this->StudentResume->Student->ResultsBoard->find('all',['conditions' => ['ResultsBoard.student_id' => $student_id]]);
 		$this->set('resultsBoards', $resultsBoards);
 
