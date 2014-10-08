@@ -1,12 +1,12 @@
 <?php
 echo $this->Html->script('TrainingAndPlacement.populatedropdowns');
-?>
+?><br><br>
 <div class="row">
           <div class="col-lg-6">
              
-                <h3>View 10th & 12th Results</h3>
-<div class="resultBoard form">
-<?php echo $this->Form->create('ResultsBoard', array(
+                <h3>View Students Profile</h3>
+<div class="Student form">
+<?php echo $this->Form->create('Student', array(
     'inputDefaults' => array(
         'div' => 'form-group',
         'wrapInput' => false,
@@ -14,8 +14,8 @@ echo $this->Html->script('TrainingAndPlacement.populatedropdowns');
     ),
     'class' => 'well form-horizontal'
 )); ?>
-	<fieldset>
-		
+    <fieldset>
+        
 <?php
 $url             = $this->Html->url(array(
     'controller' => 'departments',
@@ -37,6 +37,7 @@ $emptyDegree     = count($degrees) > 0 ? Configure::read('Select.defaultAfter') 
     '0' => Configure::read('Select.naBefore') . __('Select Department First') . Configure::read('Select.naAfter')
 );
 
+
 echo $this->Form->input('institution_id', array(
     'id' => 'institutions',
     'empty' => 'Please Select First',
@@ -45,20 +46,21 @@ echo $this->Form->input('institution_id', array(
 echo $this->Form->input('department_id', array(
     'id' => 'departments',
     'empty' => $emptyDepartment,
-    'rel' => $urla
+    'rel' => $urla,
+    'type' => 'select', 
+    'options' => $departments
 ));
 echo $this->Form->input('degree_id', array(
     'id' => 'degrees',
     'empty' => $emptyDegree,
-
 ));
-echo $this->Form->submit('Submit', array(
+ echo $this->Form->submit('Submit', array(
         'div' => 'form-group',
         'class' => 'btn btn-primary'
     ));
-	?>
-	</fieldset>
-<?php echo $this->Form->end(); ?>
-</div>
-
-
+?>
+</fieldset>
+<?php
+echo $this->Form->end();
+?>
+</div></div></div>

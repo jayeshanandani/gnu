@@ -123,8 +123,10 @@ class CompanyJobEligibilitiesController extends TrainingAndPlacementAppControlle
 			throw new NotFoundException(__('Invalid company job eligibility'));
 		}
 		if ($this->request->is(array('post', 'put'))) {
-
-			if ($this->CompanyJobEligibility->save($this->request->data)) {
+			$user_id = $this->Auth->User('id');
+			$this->request->data['CompanyJobEligibility']['id']=$id;
+			$this->request->data['CompanyJobEligibility']['modifier_id'] = $user_id;
+			if ($this->CompanyJobEligibility->save($this->request->data, true,['modifier_id', 'recstatus', 'company_master_id', 'company_job_id', 'min_eligible_10', 'min_eligible_12', 'min_eligible_degree', 'interestedin', 'hiring', 'verbal', 'aptitude', 'interview', 'gd', 'hr'])) {
 				$this->Session->setFlash(__('The company job eligibility has been saved.'));
 				return $this->redirect(array('action' => 'index'));
 			} else {

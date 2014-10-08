@@ -92,10 +92,10 @@ class StudentStatusesController extends TrainingAndPlacementAppController {
 	 */
 	public function view($id = null) {
 		if (!$this->StudentStatus->exists($id)) {
-			throw new NotFoundException(__('Invalid student'));
+			throw new NotFoundException(__('Invalid company master'));
 		}
-		$student_status = $this->StudentStatus->find('all',['conditions' => ['StudentStatus.student_id' => $id]]);
-		$this->set('studentStatuses',$student_status);	
+		$options = array('conditions' => array('StudentStatus.' . $this->StudentStatus->primaryKey => $id));
+		$this->set('StudentStatus', $this->StudentStatus->find('first', $options));
 	}
 
 	/**

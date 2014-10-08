@@ -68,8 +68,8 @@ echo $this->Html->css('navigation');
 
 						<li>
 		 					<?php echo $this->Html->link(__("View Student's Profile",true), [
-		                  'plugin'=> false,
-		                  'controller' => 'students', 
+		                  'plugin'=> 'training_and_placement',
+		                  'controller' => 'results_boards', 
 		                  'action' => 'profile_form'
 		               	]); ?>
             			</li>

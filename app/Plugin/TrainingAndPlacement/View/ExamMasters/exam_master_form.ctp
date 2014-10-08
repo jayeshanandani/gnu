@@ -1,7 +1,7 @@
 <?php
 echo $this->Html->script('TrainingAndPlacement.populatedropdowns');
 ?><div class="row">
-          <div class="col">
+          <div class="col-lg-6">
              
                 <h3>View University Results</h3>
 <div class="examMaster form">

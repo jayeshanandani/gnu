@@ -85,7 +85,7 @@ public function index() {
 
 	public function add() {
 		if ($this->request->is('post')) {
-			$user_id = AuthComponent::user('id');
+			$user_id = $this->Auth->User('id');
 			$this->request->data['CompanyMaster']['creator_id'] = $user_id;
 			$this->request->data['CompanyMaster']['modifier_id'] = $user_id;
 			$this->CompanyMaster->create();

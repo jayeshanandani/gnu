@@ -20,7 +20,6 @@
 		echo $this->Form->input('project', ['label' => 'Project' , 'placeholder' => 'Brief discription about your project', 'type' => 'textarea']);
 		echo $this->Form->input('training', ['label' => 'Is training confirm', 
 		'wrapInput' => 'col col-md-9 col-md-offset-3',
-		'label' => 'Offer Job',
 		'class' => false
 	]);
 		echo $this->Form->input('job', ['label' => 'Is job confirm', 'class' => 'chk']);

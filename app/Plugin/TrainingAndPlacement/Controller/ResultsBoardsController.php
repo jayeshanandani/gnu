@@ -17,6 +17,33 @@ class ResultsBoardsController extends TrainingAndPlacementAppController {
 		$this->set(compact('institutions', 'departments', 'degrees'));	
 	}
 
+	public function profile_form()
+	{
+		if ($this->request->is('post') && $this->request->data['Student']['degree_id']!=0) {		
+			$institute = $this->request->data['Student']['institution_id'];
+			$department = $this->request->data['Student']['department_id'];
+			$degree = $this->request->data['Student']['degree_id'];
+			return $this->redirect(['action' => 'profile_home', $institute, $department, $degree]);
+		}
+		$this->loadModel('Student');	
+		unset($this->request->data['Student']['institution_id']);
+		$institutions = $this->Student->Institution->find('list');
+		$departments = array();
+		$degrees = array();
+		$this->set(compact('institutions', 'departments', 'degrees'));				
+	}
+	public function profile_home($institute = null, $department = null, $degree = null) {
+ 		$this->loadModel('Setting');
+ 		$this->loadModel('Student');
+		$data = $this->Setting->find('first');
+		$pagination_value = $data['Setting']['pagination_value'];
+		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1,
+			'conditions'=>['Student.institution_id' => $institute, 'Student.degree_id' => $degree]);
+		$this->set('Students', $this->Paginator->paginate());
+		/*$students = $this->Student->find('all',[
+			'conditions'=>['Student.institution_id' => $institute, 'Student.degree_id' => $degree]]);
+		$this->set('Students', $students);*/
+	}
 	public function index($institute = null, $department = null, $degree = null) {
 		$this->loadModel('Setting');
 		$data				= $this->Setting->find('first');

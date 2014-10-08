@@ -1,5 +1,5 @@
 <?php
-echo $this->Html->script('populatedropdowns');
+echo $this->Html->script('TrainingAndPlacement.populatedropdowns');
 ?>
 
 <div class="row" style="height:100%;">

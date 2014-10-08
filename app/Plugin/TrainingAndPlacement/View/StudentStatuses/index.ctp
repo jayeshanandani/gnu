@@ -32,7 +32,7 @@
 			
 		} ?>&nbsp;</td>
 		<td class="actions">
-			<?php echo $this->Html->link(__('', true), array('action' => 'view', $studentStatus['Student']['id']), array('class' => 'glyphicon glyphicon-search')); ?>
+			<?php echo $this->Html->link(__('', true), array('action' => 'view', $studentStatus['StudentStatus']['id']), array('class' => 'glyphicon glyphicon-search')); ?>
 		</td>
 	</tr>
 <?php endforeach; ?>

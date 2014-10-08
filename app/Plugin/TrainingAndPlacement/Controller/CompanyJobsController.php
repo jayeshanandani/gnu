@@ -96,7 +96,10 @@ class CompanyJobsController extends TrainingAndPlacementAppController {
 			throw new NotFoundException(__('Invalid company job'));
 		}
 		if ($this->request->is(array('post', 'put'))) {
-			if ($this->CompanyJob->save($this->request->data)) {
+			$user_id = $this->Auth->User('id');
+			$this->request->data['CompanyJob']['id']=$id;
+			$this->request->data['CompanyJob']['modifier_id']= $user_id;	
+			if ($this->CompanyJob->save($this->request->data, true, ['modifier_id', 'recstatus', 'company_master_id', 'name', 'probationperiod', 'salary'])) {
 				$this->Session->setFlash(__('The company job has been saved.'));
 				return $this->redirect(array('action' => 'index'));
 			} else {

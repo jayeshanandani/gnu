@@ -435,7 +435,7 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 			'fields' => ['CompanyCampus.company_master_id']
 		]);
 
-		$data = $this->CompanyCampus->PlacementResult->find('all',[
+		$data = $this->CompanyCampus->find('all',[
 			'contain' => [
             	'CompanyMaster' => [
                 	'fields' => ['id','name']
