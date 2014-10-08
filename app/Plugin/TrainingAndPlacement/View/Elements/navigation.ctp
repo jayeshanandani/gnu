@@ -1,5 +1,5 @@
 <?php
-echo $this->Html->css('navigation');
+echo $this->Html->css('TrainingAndPlacement.navigation');
 ?>
 <br>
 <div class="navbar navbar-default navbar-static-top" style="background-color:#fff;">
@@ -44,10 +44,8 @@ echo $this->Html->css('navigation');
 					<ul>
 						<li class="dropdown-header">View Profile</li>
 					<?php  if (Auth::hasRoles(array('user')) && !Auth::hasRoles(array('tpadmin'))) { ?>
-            			<li><?php if(Auth::user('student_id')) { echo $this->Html->link(__("Personal Profile"),array('plugin'=> false,'controller' => 'students', 'action' => 'view', AuthComponent::user('student_id'))); } ?>
+            			<li><?php if(Auth::user('student_id')) { echo $this->Html->link(__("Personal Profile"),array('plugin'=> 'training_and_placement','controller' => 'results_boards', 'action' => 'view', AuthComponent::user('student_id'))); } ?>
 						</li>
-						<li><?php if(Auth::user('staff_id')) { echo $this->Html->link(__("Personal Profile"),array('plugin'=> false,'controller' => 'staffs', 'action' => 'view', AuthComponent::user('staff_id'))); } ?></li>
-						
             			<li>
                     	
 	                     <?php echo $this->Html->link(__("SSC/HSC Results",true), [

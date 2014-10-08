@@ -34,16 +34,62 @@ class ResultsBoardsController extends TrainingAndPlacementAppController {
 	}
 	public function profile_home($institute = null, $department = null, $degree = null) {
  		$this->loadModel('Setting');
- 		$this->loadModel('Student');
 		$data = $this->Setting->find('first');
 		$pagination_value = $data['Setting']['pagination_value'];
 		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1,
-			'conditions'=>['Student.institution_id' => $institute, 'Student.degree_id' => $degree]);
+			'contain' => ['Student' => ['conditions'=>['Student.institution_id' => $institute, 'Student.degree_id' => $degree]]]
+		);
 		$this->set('Students', $this->Paginator->paginate());
 		/*$students = $this->Student->find('all',[
 			'conditions'=>['Student.institution_id' => $institute, 'Student.degree_id' => $degree]]);
 		$this->set('Students', $students);*/
 	}
+
+	/**
+ * view method
+ *
+ * @throws NotFoundException
+ * @param string $id
+ * @return void
+ */
+	public function view($id = null) {
+
+		if (!$this->ResultsBoard->Student->exists($id)) {
+			throw new NotFoundException(__('Invalid student'));
+		}
+		$options = array('conditions' => array('Student.' . $this->ResultsBoard->Student->primaryKey => $id));
+		$this->set('student', $this->ResultsBoard->Student->find('first', $options));
+	
+		$institute_id = $this->ResultsBoard->Student->find('list', ['fields' => ['Student.institution_id']]);
+		$institutions = $this->ResultsBoard->Student->Institution->find('list', ['conditions' => ['Institution.id' => $institute_id]]);
+		$this->set('institutions', $institutions);
+	
+		$email = $this->ResultsBoard->Student->User->find('list',[
+			'conditions' => ['User.student_id' => $id],
+			'fields' => ['User.email']
+			]);
+		$this->set('email', $email);
+	
+		$degree_id = $this->ResultsBoard->Student->find('list', [
+			'conditions' => ['Student.id' => $id],
+			'fields' => ['Student.degree_id']
+		]);
+		$degrees = $this->ResultsBoard->Student->Degree->find('list', ['conditions' => ['Degree.id' => $degree_id]]);
+		$this->set('degrees', $degrees);
+
+		$department = $this->ResultsBoard->Student->Degree->find('list',[
+			'conditions' => ['Degree.id' => $degree_id],
+			'fields' => ['Degree.department_id']
+		]);
+		$department_name = $this->ResultsBoard->Student->Institution->Department->find('list',[
+			'conditions' => ['Department.id' => $department],
+			'fields' => ['Department.name']
+		]);
+		$this->set('department_name', $department_name);
+		
+	}
+
+
 	public function index($institute = null, $department = null, $degree = null) {
 		$this->loadModel('Setting');
 		$data				= $this->Setting->find('first');
@@ -61,18 +107,4 @@ class ResultsBoardsController extends TrainingAndPlacementAppController {
 		$this->set('resultsBoards', $resultsBoards);
 	}
 
-/**
- * view method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	public function view($id = null) {
-		if (!$this->ResultsBoard->exists($id)) {
-			throw new NotFoundException(__('Invalid results board'));
-		}
-		$options = array('conditions' => array('ResultsBoard.' . $this->ResultsBoard->primaryKey => $id));
-		$this->set('resultsBoard', $this->ResultsBoard->find('first', $options));
-	}
 }

@@ -1,9 +1,7 @@
 <?php 
-	echo $this->Html->script('jquery'); 
-	echo $this->Html->css('jquery-ui-1.10.4.custom');
-	echo $this->Html->script('jquery-1.10.2');
-	echo $this->Html->script('jquery-ui.min');
-	echo $this->Html->script('jquery-ui-1.10.4.custom.min');
+	echo $this->Html->css('TrainingAndPlacement.jquery-ui-1.10.4.custom');
+	echo $this->Html->script('TrainingAndPlacement.jquery-ui.min');
+	echo $this->Html->script('TrainingAndPlacement.jquery-ui-1.10.4.custom.min');
 ?>
 
 <script type="text/javascript">
