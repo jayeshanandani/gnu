@@ -15,10 +15,6 @@ class UsersController extends AppController {
  * @var array
  */
 	public $components = array('Paginator');
-    public $helpers = array(
-        'Form' => array('className' => 'BootstrapForm')
-    );
-
 /**
  * dashboard method
  *
