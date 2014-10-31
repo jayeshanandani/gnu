@@ -4,15 +4,6 @@ App::uses('AppController', 'Controller');
 class StudentsController extends AppController {
 
 public $helpers = array('Js');
-/**
- * index method
- *
- * @return void
- */
-	public function index() {
-	
-		$this->set('students', $this->Paginator->paginate());
-	}
 
 /**
  * view method
@@ -76,26 +67,4 @@ public $helpers = array('Js');
 			}
 		}
 	}
-
-	public function chained_dropdowns() {
-        $institutions = $this->Controller->Istitution->getList();
-        $departments = array();
-        foreach ($institutions as $key => $value) {
-            $departments = $this->Controller->departments->getListByInstitution($key);
-            break;
-        }
-        $this->set(compact('institutions', 'departments'));
-    }
-
-	public function country_provinces_ajax() {
-        $this->request->onlyAllow('ajax');
-        $id = $this->request->query('id');
-        if (!$id) {
-            throw new NotFoundException();
-        }
-        $this->viewClass = 'Tools.Ajax';
-        $this->loadModel('Data.Deparment');
-        $departments = $this->departments->getListByInstitution($id);
-        $this->set(compact('institutions'));
-    }
 }
