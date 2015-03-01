@@ -12,7 +12,7 @@
 	<fieldset>
 		<legend><?php echo __('Add Job Details'); ?></legend>
 	<?php
-		echo $this->Form->input('company_master_id');
+		//echo $this->Form->input('company_master_id');
 		echo $this->Form->input('name', ['label' => 'Post/Designation', 'placeholder' => 'Enter job/designation for selected comapny']);
 		echo $this->Form->input('probationperiod', ['label' => 'Probation Period', 'placeholder' => 'Enter Probation Period']);
 		echo $this->Form->input('salary', ['label' => 'Salary Package', 'placeholder' => 'Enter salary package for entered job/designation']);

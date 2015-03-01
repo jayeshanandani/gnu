@@ -21,7 +21,7 @@ $url            = $this->Html->url(array(
     'action' => 'list_jobs',
     'ext' => 'json'
 ));
-$emptyCompanyJob     = count($company_jobs) > 0 ? Configure::read('Select.defaultAfter') : array(
+/*$emptyCompanyJob     = count($company_jobs) > 0 ? Configure::read('Select.defaultAfter') : array(
     '0' => Configure::read('Select.naBefore') . __('Select Company First') . Configure::read('Select.naAfter')
 );
 
@@ -34,7 +34,7 @@ echo $this->Form->input('company_master_id', array(
 echo $this->Form->input('company_job_id', array(
     'id' => 'company_jobs',
     'empty' => $emptyCompanyJob,
-));
+));*/
 ?>
 	<?php
 		echo $this->Form->input('min_eligible_10', ['label' => 'Minimum Eligibility for SSC', 'placeholder' => 'Enter only digit without any letter e.g. 60']);

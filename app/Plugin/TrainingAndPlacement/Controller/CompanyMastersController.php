@@ -1,13 +1,13 @@
 <?php
 App::uses('TrainingAndPlacementAppController', 'TrainingAndPlacement.Controller');
-
+App::uses('CakeEmail', 'Network/Email');
 class CompanyMastersController extends TrainingAndPlacementAppController {
 
 public $helpers = array('Js','Html','Form');
 
 	public function import() {
 		if ($this->request->is('post')) {
-          	$filename = APP . 'uploads' . DS . 'CompanyMaster' . DS . $this->request->data['CompanyMaster']['file']['name'];
+          	$filename = 'C:\Apache24\htdocs\cakephp\app\tmp\uploads\CompanyMaster\\'.$this->data['CompanyMasters']['file']['name'];
           	$file = $this->request->data['CompanyMaster']['file']['name'];
           	$length = $this->CompanyMaster->check_file_uploaded_length($file);
           	$name = $this->CompanyMaster->name($file);
@@ -85,18 +85,87 @@ public function index() {
 
 	public function add() {
 		if ($this->request->is('post')) {
-			$user_id = $this->Auth->User('id');
-			$this->request->data['CompanyMaster']['creator_id'] = $user_id;
-			$this->request->data['CompanyMaster']['modifier_id'] = $user_id;
 			$this->CompanyMaster->create();
-			if ($this->CompanyMaster->save($this->request->data)) {
-				$this->Session->setFlash('The company details has been saved & Now add Visit details');
-				return $this->redirect( array('controller' => 'CompanyVisits', 'action' => 'add'));
-			} else {
-				$this->Session->setFlash(__('The company master could not be saved. Please, try again.'));
+			$password_gen = 'hello';
+			$first_login = 1;
+
+			if(!empty($this->request->data)){
+				$this->request->data['CompanyMaster']['name'] = strtoupper($this->request->data['CompanyMaster']['name']);
+				$this->request->data['User']['email'] = $this->request->data['CompanyMaster']['email'];
+				$this->request->data['User']['fullname'] = $this->request->data['CompanyMaster']['name'];
+				$this->request->data['User']['first_login'] = $first_login;
+				$this->request->data['User']['password'] = AuthComponent::password($password_gen);
+				
+				if($this->CompanyMaster->User->save($this->request->data,true,array('email','username','fullname','password','first_login'))) {
+					$last_id = $this->CompanyMaster->User->getLastInsertID();
+					$this->request->data['CompanyMaster']['user_id'] = $last_id;
+					$institution_id = $this->request->data['CompanyMaster']['institution_id'];
+					$options = array('conditions' => array('AcademicYear.institution_id' => $institution_id), 'order' => array('AcademicYear.name DESC'), 'recursive' => -1);
+					$data = $this->CompanyMaster->AcademicYear->find('first',$options);
+					$academic_year_id = $data['AcademicYear']['id'];
+					$this->request->data['CompanyMaster']['academic_year_id'] = $academic_year_id;
+					debug($academic_year_id);
+					if($this->CompanyMaster->save($this->request->data,true,array('name','email','institution_id','user_id','academic_year_id'))) {
+						$this->Session->setFlash('Data saved');	
+        				$this->CompanyMaster->User->Role->UserRole->create();
+						$this->request->data['UserRole']['user_id'] = $last_id;
+						$this->request->data['UserRole']['role_id'] = '6';
+						if($this->CompanyMaster->User->Role->UserRole->save($this->request->data,true,array('user_id','role_id'))) {
+							$user = $this->request->data['User']['username'];
+					        $email_to = $this->request->data['CompanyMaster']['email'];
+					        $subject = 'Welcome to GNU';
+						$message = 'Your username is '.$user.' and password is '.$password_gen;
+						CakeEmail::deliver($email_to, $subject, $message);
+						$this->Session->setFlash('Email Sent');
+						return $this->redirect('/users/dashboard');
+					} 
+					else {
+							$this->Session->setFlash(__('Data not saved, please try again'));
+					}
+				}
 			}
 		}
 	}
+		$institutions = $this->CompanyMaster->Institution->find('list');
+        $this->set(compact('institutions'));
+
+	}
+
+public function comp_detail()
+	{
+		
+		$data = $this->CompanyMaster->find('first',array('conditions' => array('CompanyMaster.user_id' => $this->Auth->user('id')),'fields'=>array('id')));
+		$id = $data['CompanyMaster']['id'];
+		if ($this->request->is(array('post', 'put'))) {
+			$this->request->data['CompanyMaster']['id'] = $id;
+			if ($this->CompanyMaster->save($this->request->data,true,array('id','profile','website','location','category','contactno','job','training'))) {
+				$this->Session->setFlash(__('The company details have been saved.'));
+				return $this->redirect('/users/dashboard');
+			} else {
+				$this->Session->setFlash(__('The company details could not be saved. Please, try again.'));
+			}
+		}
+		else {
+				$options = array('conditions' => array('CompanyMaster.' . $this->CompanyMaster->primaryKey => $id));
+				$this->request->data = $this->CompanyMaster->find('first', $options);
+			} 
+		}
+
+	public function generatePassword ()
+	{
+        $length = 8;
+        $password = "";
+        $i = 0;
+        $possible = "0123456789bcdfghjkmnpqrstvwxyz"; 
+        while ($i < $length){
+            $char = substr($possible, mt_rand(0, strlen($possible)-1), 1);
+            if (!strstr($password, $char)) { 
+                $password .= $char;
+                $i++;
+            }
+        }
+        return $password;
+    }
 
 /**
  * edit method

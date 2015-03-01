@@ -1,26 +1,22 @@
-
 <div class="row">
-          <div class="col">
- 
-<h3>Register Your Company in Simple 5 Steps !!!</h3>
-<table class="table table-striped">
-	<tr>
-		<th align="center"><?php echo $this->Html->link(__('Add Company Details'), array('controller' => 'CompanyMasters', 'action' => 'add')); ?></th>
-	</tr>
-	<tr>
-		<th><?php echo $this->Html->link(__('Add Visit Dates'), array('controller' => 'CompanyVisits', 'action' => 'add')); ?></th>
-	</tr>
-	<tr>
-		<th><?php echo $this->Html->link(__('Add Job Details'), array('controller' => 'CompanyJobs', 'action' => 'add')); ?></th>
-	</tr>
-	<tr>
-		<th><?php echo $this->Html->link(__('Add Job Eligibility'), array('controller' => 'CompanyJobEligibilities', 'action' => 'add')); ?></th>
-	</tr>
-	<tr>
-		<th><?php echo $this->Html->link(__('Company In Campus'), array('controller' => 'CompanyCampuses', 'action' => 'add')); ?></th>
-	</tr>
-</table>
-
+          <div class="col-lg-6">
+<div class="companyMasters form">
+<?php echo $this->Form->create('CompanyMaster', array(
+	'inputDefaults' => array(
+		'div' => 'form-group',
+		'wrapInput' => false,
+		'class' => 'form-control'
+	),
+	'class' => 'well form-horizontal'
+)); ?>
+	<fieldset>
+		<legend><?php echo __('Add Company Details'); ?></legend>
+	<?php
+		    echo $this->Html->link('Add New Company Credentials',['plugin'=>'training_and_placement','controller' => 'companyMasters' ,'action'=>'Add']);
+	?>
+	<div class="col col-md-9 col-md-offset-3">
+	</div>
+	</fieldset>
+<?php echo $this->Form->end(); ?>
+</div>
 </div></div>
-
-   

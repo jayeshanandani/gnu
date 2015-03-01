@@ -51,8 +51,10 @@ echo $this->Form->input('degree_id', array(
     'id' => 'degrees',
     'empty' => $emptyDegree,
 ));
-
+        
 		echo $this->Form->input('company_master_id');
+       
+
 	?>
     <div class="col">
             <?php echo $this->Form->submit('Search', array(

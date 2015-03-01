@@ -1,4 +1,4 @@
-<?php debug($tickets); ?>
+
 <div class="table-responsive">
 <div class="tickets index">
 	<h2><?php echo __('Tickets'); ?></h2>

@@ -4,7 +4,7 @@
 	<table cellpadding="0" cellspacing="0" class="table table-striped">
 	<tr>
 			
-			<th><?php echo $this->Paginator->sort('CompanyVisit.company_master_id','Company'); ?></th>
+			<th><?php echo $this->Paginator->sort('CompanyVisit.company_campus_id','Company'); ?></th>
 			<th><?php echo $this->Paginator->sort('CompanyVisit.pptdate','PrePlacement Talk'); ?></th>
 			<th><?php echo $this->Paginator->sort('CompanyVisit.visitdate1','Visiting Priority-1'); ?></th>
 			<th><?php echo $this->Paginator->sort('CompanyVisit.visitdate2','Visiting Priority-2'); ?></th>
@@ -17,7 +17,7 @@
 	<tr>
 		<?php if($companyVisit['CompanyVisit']['recstatus'] == 1){ ?>
 		<td>
-			<?php echo $this->Html->link($companyVisit['CompanyMaster']['name'], array('controller' => 'company_masters', 'action' => 'view', $companyVisit['CompanyMaster']['id'])); ?>
+			<?php echo $this->Html->link($companyVisit['CompanyCampus']['CompanyMaster']['name'], array('controller' => 'company_masters', 'action' => 'view', $companyVisit['CompanyMaster']['id'])); ?>
 		</td>
 		<td><?php echo h($this->Time->format('F jS,Y', $companyVisit['CompanyVisit']['pptdate'])); ?>&nbsp;</td>
 		<td><?php echo h($this->Time->format('F jS,Y', $companyVisit['CompanyVisit']['visitdate1'])); ?>&nbsp;</td>

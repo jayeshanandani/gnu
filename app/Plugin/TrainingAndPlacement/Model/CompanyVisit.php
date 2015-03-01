@@ -29,7 +29,7 @@ class CompanyVisit extends TrainingAndPlacementAppModel {
 *
 * @var array
 */
-    public $belongsTo = ['TrainingAndPlacement.CompanyMaster'];
+    public $belongsTo = ['TrainingAndPlacement.CompanyCampus'];
 
 /**
 * Check $_FILES[][name] length.

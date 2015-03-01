@@ -14,7 +14,7 @@ class CompanyVisitsController extends TrainingAndPlacementAppController {
 		$this->loadModel('Setting');
 		$data = $this->Setting->find('first');
 		$pagination_value = $data['Setting']['pagination_value'];
-		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1,'contain'=>['CompanyMaster']);	
+		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1,'contain'=>['CompanyCampus'=>['CompanyMaster']]);	
 		$this->set('companyVisits', $this->Paginator->paginate());
 	}
 
@@ -53,16 +53,15 @@ class CompanyVisitsController extends TrainingAndPlacementAppController {
      	}
     }
 
-	public function visit_date() {
+	/*public function visit_date() {
 		$this->loadModel('Student');
 		
 		$degree = $this->Student->find('list',[
 			'conditions'=>['Student.id'=> $this->Auth->User('student_id')],
 			'fields' => ['degree_id']
 			]);
-		
-		$company_ids = $this->CompanyVisit->CompanyMaster->CompanyCampus->find('list',[
-			'conditions'=>['CompanyCampus.degree_id' => $degree,'CompanyCampus.recstatus' => 1],
+		$company_ids = $this->CompanyVisit->CompanyCampus->find('list',['contain' 
+			'conditions'=>['CompanyCampus.recstatus' => 1],
 			'fields' => ['CompanyCampus.company_master_id']			
 		]);
 
@@ -70,11 +69,11 @@ class CompanyVisitsController extends TrainingAndPlacementAppController {
 		$data = $this->Setting->find('first');
 		$pagination_value = $data['Setting']['pagination_value'];
 		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1,
-            'contain'=>['CompanyMaster'=>['conditions'=>['CompanyMaster.id'=>$company_ids,'CompanyMaster.recstatus' => 1]]],
-            'conditions' => ['CompanyVisit.recstatus' => 1, 'CompanyVisit.company_master_id' => $company_ids]	
+            'contain'=>['CompanyCampus'=>['conditions'=>['CompanyMaster'=>['conditions'=>['CompanyMaster.id'=>$company_ids,'CompanyMaster.recstatus' => 1]]]]],
+            'conditions' => ['CompanyVisit.recstatus' => 1, 'CompanyVisit.company_campus_id' => $company_ids]	
             );
 		$this->set('CompanyVisits', $this->Paginator->paginate());
-	}
+	}*/
 /**
  * view method
  *
@@ -97,8 +96,16 @@ class CompanyVisitsController extends TrainingAndPlacementAppController {
  * @return void
  */
 	public function add() {
-		if ($this->request->is('post')) {
+			$data = $this->CompanyVisit->CompanyCampus->CompanyMaster->find('first',array('conditions' => array('CompanyMaster.user_id' => $this->Auth->user('id')),'fields'=>array('id')));
+			$cmid = $data['CompanyMaster']['id'];
+			$option = $this->CompanyVisit->CompanyCampus->find('first',array('conditions' => array('CompanyCampus.company_master_id' => $cmid)));
+			$ccid = $option['CompanyCampus']['id'];
+			$visit_id = $this->CompanyVisit->find('first',array('conditions' => array('CompanyVisit.company_campus_id' => $ccid)));
+			$id = $visit_id['CompanyVisit']['id'];
+			if ($this->request->is('post')) {
 			$this->CompanyVisit->create();
+			$this->request->data['CompanyVisit']['company_campus_id'] = $ccid; 
+			//
 			if ($this->CompanyVisit->save($this->request->data)) {
 				$this->Session->setFlash('The company visit has been saved & Now add Job details.');
 				return $this->redirect( array('controller' => 'CompanyJobs', 'action' => 'add'));
@@ -106,8 +113,11 @@ class CompanyVisitsController extends TrainingAndPlacementAppController {
 				$this->Session->setFlash(__('The company visit could not be saved. Please, try again.'));
 			}
 		}
-		$companyMasters = $this->CompanyVisit->CompanyMaster->find('list');
-		$this->set(compact('companyMasters'));
+		else
+		{
+				$options = array('conditions' => array('CompanyVisit.' . $this->CompanyVisit->primaryKey => $id));
+				$this->request->data = $this->CompanyVisit->find('first', $options);
+			} 
 	}
 
 /**

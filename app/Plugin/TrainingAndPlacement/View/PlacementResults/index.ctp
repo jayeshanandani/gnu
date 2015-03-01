@@ -28,9 +28,11 @@ echo $name['CompanyMaster']['name']; }?>
 			<th><?php echo $this->Paginator->sort('Selection Status'); ?></th>
 			<th class="actions"><?php echo __('Actions'); ?></th>
 	</tr>
-	<?php foreach ($PlacementResults as $placementResult): ?>
+	<?php 
+		//debug($PlacementResults);
+		foreach ($PlacementResults as $placementResult): ?>
 	<tr>
-		<td><?php echo $this->Html->link($placementResult['Student']['firstname'].' '.$placementResult['Student']['lastname'], array('controller' => 'Students', 'action' => 'view', $placementResult['Student']['id'])); ?>&nbsp;
+		<td><?php echo $this->Html->link($placementResult['Student']['firstname'].' '.$placementResult['Student']['lastname'], array('controller' => 'Students', 'action' => 'view', $placementResult['Student']['id'])); ?> &nbsp;
 		</td> 
 	
 		<td><?php if($placementResult['PlacementResult']['verbal'] == 1){
@@ -39,7 +41,7 @@ echo $name['CompanyMaster']['name']; }?>
 			else{
 				echo 'Fail';
 			}	
-			 ?>&nbsp;</td>
+			 ?> &nbsp;</td>
 		<td><?php if($placementResult['PlacementResult']['aptitude'] == 1){
 				echo 'Pass';
 			}

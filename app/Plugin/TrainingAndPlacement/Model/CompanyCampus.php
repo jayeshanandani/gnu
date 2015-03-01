@@ -20,14 +20,21 @@ class CompanyCampus extends TrainingAndPlacementAppModel {
 *
 * @var array
 */
-    public $belongsTo = ['Institution','Department','Degree','AcademicYear','TrainingAndPlacement.CompanyMaster'];
+    public $belongsTo = ['Institution',
+                          'Department',
+                          //'Degree',
+                          'AcademicYear',
+                          'TrainingAndPlacement.CompanyMaster'];
      
 /**
 * hasMany associations
 *
 * @var array
 */
-    public $hasMany = ['TrainingAndPlacement.PlacementResult'];
+    public $hasMany = ['TrainingAndPlacement.PlacementResult',
+                        'TrainingAndPlacement.CompanyJob',
+                        'TrainingAndPlacement.CompanyJobEligibility',
+                        'TrainingAndPlacement.CompanyVisit'];
 
 /**
 * getListByDegree method

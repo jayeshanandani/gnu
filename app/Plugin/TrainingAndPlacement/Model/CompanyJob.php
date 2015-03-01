@@ -38,7 +38,9 @@ class CompanyJob extends TrainingAndPlacementAppModel {
 *
 * @var array
 */
-    public $belongsTo = ['TrainingAndPlacement.CompanyMaster'];
+    public $belongsTo = ['TrainingAndPlacement.CompanyCampus'];
+
+    public $hasMany = ['TrainingAndPlacement.CompanyJobEligibility'];
 
 /**
 * getListByCompany method

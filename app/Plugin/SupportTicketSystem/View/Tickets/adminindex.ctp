@@ -7,6 +7,8 @@
 			<th><?php echo $this->Paginator->sort('user_id'); ?></th>
 			<th><?php echo $this->Paginator->sort('staff_id'); ?></th>
 			<th><?php echo $this->Paginator->sort('category_id'); ?></th>
+			<th><?php echo $this->Paginator->sort('instituion_id'); ?></th>
+			<th><?php echo $this->Paginator->sort('department_id'); ?></th>
 			<th><?php echo $this->Paginator->sort('subject'); ?></th>
 			<th><?php echo $this->Paginator->sort('status_id'); ?></th>
 			<th class="actions"><?php echo __('Actions'); ?></th>
@@ -20,10 +22,19 @@
 		<td>
 			<?php echo $this->Html->link($ticket['Staff']['firstname']." ".$ticket['Staff']['lastname'], array('controller' => 'staffs', 'action' => 'view', $ticket['Staff']['id'])); ?>
 		</td>
+		
 		<td>
 			<?php echo $this->Html->link($ticket['Category']['name'], array('controller' => 'categories', 'action' => 'view', $ticket['Category']['id'])); ?>
 		</td>
-		<td><?php echo h($ticket['Ticket']['subject']); ?>&nbsp;</td>
+		<td>
+			<?php echo h($ticket['Category']['Institution']['name']); ?>&nbsp;
+		</td>
+		<td>
+			<?php echo h($ticket['Category']['Department']['name']); ?>&nbsp;
+		</td>
+		<td>
+			<?php echo h($ticket['Ticket']['subject']); ?>&nbsp;
+		</td>
 		<td>
 			<?php echo $this->Html->link($ticket['Status']['name'], array('controller' => 'statuses', 'action' => 'view', $ticket['Status']['id'])); ?>
 		</td>

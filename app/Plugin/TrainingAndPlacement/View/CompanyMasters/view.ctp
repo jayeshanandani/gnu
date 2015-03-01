@@ -18,7 +18,10 @@
 	<tr>	
 		<th><?php echo __('Website'); ?></th>
 		<td>
-			<?php echo h($companyMaster['CompanyMaster']['website']); ?>
+			<?php 
+			$website = $companyMaster['CompanyMaster']['website'];
+			echo $this->Html->link($website, 'http://www.'.$website);  
+			?>
 			&nbsp;
 		</td>
 	</tr>

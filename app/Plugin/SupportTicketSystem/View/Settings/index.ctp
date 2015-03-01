@@ -1,4 +1,3 @@
-">
 <div class="table-responsive">
 <div class="settings index">
 	<h2><?php echo __('Settings'); ?></h2>

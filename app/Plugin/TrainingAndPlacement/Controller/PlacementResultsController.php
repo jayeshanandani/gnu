@@ -5,7 +5,7 @@ class PlacementResultsController extends TrainingAndPlacementAppController {
 
 	public $helpers = array('Js');
 
-
+	
 	public function import() {
 		if ($this->request->is('post')) {
           	$filename = APP . 'uploads' . DS . 'PlacementResult' . DS . $this->request->data['PlacementResult']['file']['name'];
@@ -85,16 +85,21 @@ class PlacementResultsController extends TrainingAndPlacementAppController {
 		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1,
 			'contain' => [
         		'Student' => [
-        		'fields' => ['id','firstname','lastname'],'conditions' => ['Student.institution_id' => $institute, 'Student.degree_id' => $degree]
+        		'conditions' => ['Student.institution_id' => $institute, 'Student.degree_id' => $degree],'fields' => ['Student.id','Student.firstname','Student.lastname']
         		]	      
         	],'conditions' => ['PlacementResult.company_campus_id' => $company]
 		);
-		$this->set('PlacementResults', $this->Paginator->paginate());
 		
-		$company_institute		= $this->PlacementResult->CompanyCampus->Institution->find('all', array('conditions' => array('Institution.id' => $institute), 'field' => array('Institution.name')));
-		$company_department		= $this->PlacementResult->CompanyCampus->Department->find('all', array('conditions' => array('Department.id' => $department), 'field' => array('Department.name')));	
-		$company_degree			= $this->PlacementResult->CompanyCampus->Degree->find('all', array('conditions' => array('Degree.id' => $degree), 'field' => array('Degree.name')));	
-		$company_name			= $this->PlacementResult->CompanyCampus->CompanyMaster->find('all',['conditions'=>['CompanyMaster.id'=>$company],'fields'=>['CompanyMaster.name']]);
+		//debug($this->Paginator->settings); exit;
+		$this->loadModel('Institution');
+		$this->loadModel('Department');
+		$this->loadModel('Degree');
+		$this->loadModel('CompanyMaster');
+		
+		$company_institute = $this->Institution->find('all', array('conditions' => array('Institution.id' => $institute), 'field' => array('Institution.name')));
+		$company_department = $this->Department->find('all', array('conditions' => array('Department.id' => $department), 'field' => array('Department.name')));	
+		$company_degree = $this->Degree->find('all', array('conditions' => array('Degree.id' => $degree), 'field' => array('Degree.name')));	
+		$company_name = $this->CompanyMaster->find('all',['conditions'=>['CompanyMaster.id'=>$company],'fields'=>['CompanyMaster.name']]);
 		
 		$this->set('company_name',$company_name);
  		$this->set('company_department',$company_department);
@@ -105,6 +110,8 @@ class PlacementResultsController extends TrainingAndPlacementAppController {
  		$this->set('department',$department);
 		$this->set('institute',$institute);
 		$this->set('degree',$degree);
+		$this->set('PlacementResults', $this->Paginator->paginate());
+
 
 	}
 public function student_list($institute = null,$department = null,$degree = null,$company = null) {
@@ -234,9 +241,9 @@ public function display() {
 
 public function student_home() {
 	$student_id = $this->Auth->user('student_id');
-	$degree_id = $this->PlacementResult->Student->find('list',[
+	$institution_id = $this->PlacementResult->Student->find('list',[
 		'conditions' => ['Student.id' => $student_id],
-		'fields' => ['Student.degree_id']
+		'fields' => ['Student.institution_id']
 	]);
 
 	$data = $this->PlacementResult->find('all', [
@@ -255,7 +262,7 @@ public function student_home() {
 	
 	$company_id = $this->PlacementResult->CompanyCampus->find('list',[
 		'fields' => ['CompanyCampus.company_master_id'],
-		'conditions'=>['CompanyCampus.degree_id' => $degree_id,'CompanyCampus.recstatus' => 1]
+		'conditions'=>['CompanyCampus.institution_id' => $institution_id,'CompanyCampus.recstatus' => 1]
 	]);
 		
 	$companies = $this->PlacementResult->CompanyCampus->CompanyMaster->find('all',['conditions' => ['CompanyMaster.id' => $company_id,'CompanyMaster.recstatus' => 1],'field' => ['CompanyMaster.name']]);
@@ -307,7 +314,7 @@ public function student_home() {
  * @param string $id
  * @return void
  */
-	public function edit($id = null, $institute = null, $department = null, $degree = null, $company = null) {
+	public function edit() {
 		$user_id = AuthComponent::user('id');	
 		if (!$this->PlacementResult->exists($id)) {
 			throw new NotFoundException(__('Invalid placement result'));

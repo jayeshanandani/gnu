@@ -1,11 +1,84 @@
+<script type="text/javascript">
+$(function() {
+  
+      function exportTableToCSV($table, filename) {
+
+        var $rows = $table.find('tr'),
+
+            // Temporary delimiter characters unlikely to be typed by keyboard
+            // This is to avoid accidentally splitting the actual contents
+            tmpColDelim = String.fromCharCode(11), // vertical tab character
+            tmpRowDelim = String.fromCharCode(0), // null character
+
+            // actual delimiter characters for CSV format
+            colDelim = '","',
+            rowDelim = '"\r\n"',
+
+            csv1 = '"' + $rows.map(function (i, row) {
+            	if( i < 1 ) {
+                var $row = $(row),
+                    $cols = $row.find('th') ; 
+
+                return $cols.map(function (j, col) {
+                    var $col = $(col),
+                        text = $col.text();
+
+                    return text.replace('"', '""'); // escape double quotes
+
+                }).get().join(tmpColDelim);
+            }
+
+            }).get().join(tmpRowDelim)
+                .split(tmpRowDelim).join(rowDelim)
+                .split(tmpColDelim).join(colDelim) + '"',
+
+            csv = '"' + $rows.map(function (i, row) {
+                var $row = $(row),
+                    $cols = $row.find('td') ; 
+
+                return $cols.map(function (j, col) {
+                    var $col = $(col),
+                        text = $col.text();
+
+                    return text.replace('"', '""'); // escape double quotes
+
+                }).get().join(tmpColDelim);
+
+            }).get().join(tmpRowDelim)
+                .split(tmpRowDelim).join(rowDelim)
+                .split(tmpColDelim).join(colDelim) + '"',
+
+            // Data URI
+            csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv1+csv);
+
+        $(this)
+            .attr({
+            'download': filename,
+                'href': csvData,
+                'target': '_blank'
+        });
+    }
+
+    // This must be a hyperlink
+    $(".export").on('click', function (event) {
+        // CSV
+        exportTableToCSV.apply(this, [$('#CompanyVisit'), 'export.csv']);
+        
+        // IF CSV, don't do event.preventDefault() or return false
+        // We actually need this to be a typical hyperlink
+    });
+
+});
+</script>
 <div class="table-responsive">
 <div class="companyVisits index">
 	<h3><?php echo __('Company Visits'); ?></h3>
-	<table cellpadding="0" cellspacing="0" class="table table-striped">
+	<a href="#" class="export" text="Download as Excel">Download</button>
+	<table cellpadding="0" cellspacing="0" class="table table-striped" id="CompanyVisit">
 	<tr>
 
 			
-			<th><?php echo $this->Paginator->sort('company_master_id'); ?></th>
+			<th><?php echo $this->Paginator->sort('campus_id'); ?></th>
 			<th><?php echo $this->Paginator->sort('pptdate', 'Talk Date'); ?></th>
 			<th><?php echo $this->Paginator->sort('visitdate1', 'Visit Date 1'); ?></th>
 			<th><?php echo $this->Paginator->sort('visitdate2', 'Visit Date 2'); ?></th>
@@ -14,14 +87,16 @@
 			<th><?php echo $this->Paginator->sort('placementtype', 'Placement Type'); ?></th>
 			<th><?php echo $this->Paginator->sort('placementvenue', 'Placement Venue'); ?></th>
 			<th><?php echo $this->Paginator->sort('recstatus','Status'); ?></th>
-			<th class="actions"><?php echo __('Actions'); ?></th>
+			<th class="actions"><?php
+			if (Auth::hasRoles(array('tpadmin'))){
+			echo __('Actions'); }?></th>
 	</tr>
 	<?php foreach ($companyVisits as $companyVisit): ?>
 	<tr>
 		
 		
 		<td>
-			<?php echo $this->Html->link($companyVisit['CompanyMaster']['name'], array('controller' => 'company_masters', 'action' => 'view', $companyVisit['CompanyMaster']['id'])); ?>
+			<?php echo $this->Html->link($companyVisit['CompanyCampus']['CompanyMaster']['name'], array('controller' => 'company_master', 'action' => 'view', $companyVisit['CompanyCampus']['CompanyMaster']['id'])); ?>
 		</td>
 		<td><?php echo h($this->Time->format('F jS,Y', $companyVisit['CompanyVisit']['pptdate'])); ?>&nbsp;</td>
 		<td><?php echo h($this->Time->format('F jS,Y', $companyVisit['CompanyVisit']['visitdate1'])); ?>&nbsp;</td>
@@ -37,6 +112,8 @@
 			echo "Not Active";
 		}  ?>
 	    &nbsp;</td>
+	    <?php 
+	    if (Auth::hasRoles(array('tpadmin'))){?>
 		<td class="actions">
 			<?php echo $this->Html->link(__('', true), array('action' => 'view', $companyVisit['CompanyVisit']['id']), array('class' => 'glyphicon glyphicon-search')); ?>
 			<?php echo $this->Html->link(__('', true), array('action' => 'edit', $companyVisit['CompanyVisit']['id']), array('class' => 'glyphicon glyphicon-edit')); ?>
@@ -51,6 +128,7 @@
 			}
 			?>
 		</td>
+		<?php } ?>
 	</tr>
 <?php endforeach; ?>
 	</table>

@@ -5,7 +5,7 @@
 	<tr>
 			<th><?php echo $this->Paginator->sort('institution_id','Institution'); ?></th>
 			<th><?php echo $this->Paginator->sort('department_id','Department'); ?></th>
-			<th><?php echo $this->Paginator->sort('degree_id','Degree'); ?></th>
+			<!-- <th><?php echo $this->Paginator->sort('degree_id','Degree'); ?></th> -->
 			<th><?php echo $this->Paginator->sort('company_master_id','Company'); ?></th>
 			<th><?php echo $this->Paginator->sort('academic_year_id','Academic Year'); ?></th>
 			<th><?php echo $this->Paginator->sort('recstatus','Status'); ?>
@@ -17,7 +17,7 @@
 			<?php echo $companyCampus['Institution']['name']; ?>
 		</td>
 		<td><?php echo $companyCampus['Department']['name']; ?>&nbsp;</td>
-		<td><?php echo $companyCampus['Degree']['name']; ?>&nbsp;</td>
+		<!-- <td><?php echo $companyCampus['Degree']['name']; ?>&nbsp;</td> -->
 		<td><?php echo $this->Html->link($companyCampus['CompanyMaster']['name'], array('controller' => 'company_masters', 'action' => 'view', $companyCampus['CompanyMaster']['id'])); ?>&nbsp;</td>
 		<td><?php echo $companyCampus['AcademicYear']['name']; ?>&nbsp;</td>
 		<td><?php 

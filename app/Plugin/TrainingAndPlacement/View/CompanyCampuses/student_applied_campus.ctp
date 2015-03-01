@@ -7,13 +7,14 @@
 			<th><?php echo  'Academic Year'; ?></th>
 			<th class="actions"><?php echo __('Actions'); ?></th>	
 	</tr>
+	<!--<?php debug($CompanyCampuses); ?>-->
 	<?php foreach ($CompanyCampuses as $companyCampus): ?>
 	<tr>
 		<td><?php echo $this->Html->link($companyCampus['CompanyMaster']['name'], array('controller' => 'company_masters', 'action' => 'view', $companyCampus['CompanyMaster']['id'])); ?>&nbsp;</td>
 		<td>			<?php echo $companyCampus['AcademicYear']['name']; ?>&nbsp;</td>
 		<td class="actions">
 	<?php 
-			$lastdate = $companyCampus['CompanyMaster']['CompanyVisit'][0]['lastdate'];
+			$lastdate = $companyCampus['CompanyVisit'][0]['lastdate'];
 			$date = date('d-m-Y');
 			if($student_check == 0 && strtotime($lastdate) > strtotime($date)){
 						

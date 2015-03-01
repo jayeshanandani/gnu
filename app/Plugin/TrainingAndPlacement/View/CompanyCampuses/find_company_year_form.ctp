@@ -29,12 +29,12 @@ $url             = $this->Html->url(array(
     'ext' => 'json',
     'plugin' => false
 ));
-$urla            = $this->Html->url(array(
+/*$urla            = $this->Html->url(array(
     'controller' => 'degrees',
     'action' => 'list_degrees',
     'ext' => 'json',
     'plugin' => false
-));
+));*/
 $urlc            = $this->Html->url(array(
     'controller' => 'academic_years',
     'action' => 'list_years',
@@ -45,11 +45,11 @@ $urlc            = $this->Html->url(array(
 $emptyDepartment = count($departments) > 0 ? Configure::read('Select.defaultAfter') : array(
     '0' => Configure::read('Select.naBefore') . __('Select Institution First') . Configure::read('Select.naAfter')
 );
-$emptyDegree     = count($degrees) > 0 ? Configure::read('Select.defaultAfter') : array(
+/*$emptyDegree     = count($degrees) > 0 ? Configure::read('Select.defaultAfter') : array(
     '0' => Configure::read('Select.naBefore') . __('Select Department First') . Configure::read('Select.naAfter')
-);
+);*/
 $emptyAcademicYear     = count($academic_years) > 0 ? Configure::read('Select.defaultAfter') : array(
-    '0' => Configure::read('Select.naBefore') . __('Select Degree First') . Configure::read('Select.naAfter')
+    '0' => Configure::read('Select.naBefore') . __('Select Department First') . Configure::read('Select.naAfter')
 );
 
 echo $this->Form->input('institution_id', array(
@@ -60,13 +60,13 @@ echo $this->Form->input('institution_id', array(
 echo $this->Form->input('department_id', array(
     'id' => 'departments',
     'empty' => $emptyDepartment,
-    'rel' => $urla,
+    'rel' => $urlc
 ));
-echo $this->Form->input('degree_id', array(
+/*echo $this->Form->input('degree_id', array(
     'id' => 'degrees',
     'empty' => $emptyDegree,
     'rel' => $urlc
-));
+));*/
 echo $this->Form->input('academic_year_id', array(
     'id' => 'academic_years',
     'empty' => $emptyAcademicYear

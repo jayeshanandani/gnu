@@ -30,7 +30,7 @@ class TicketsController extends SupportTicketSystemAppController {
 		$this->loadModel('Setting');
 		$data = $this->Setting->find('first');
 		$pagination_value = $data['Setting']['pagination_value'];
-		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1,'contain'=>['Staff','Category','Status','User']);
+		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1,'contain'=>['Staff','Category'=>['Institution','Department'],'Status','User']);
 		$this->set('tickets', $this->Paginator->paginate());
 	}
 
@@ -62,13 +62,14 @@ class TicketsController extends SupportTicketSystemAppController {
 			$this->request->data['Ticket']['id'] = $id;
 			if ($this->Ticket->save($this->request->data)) {
 				$this->Session->setFlash(__('The status has been saved.'));
-				return $this->redirect(array('action' => 'index'));
+				return $this->redirect(array('action' => 'manage_tickets'));
 			} else {
 				$this->Session->setFlash(__('The status could not be saved. Please, try again.'));
 			}
 		}
 		unset($this->request->data);
-		$statuses = $this->Ticket->Status->find('list');
+		$statuses = $this->Ticket->Status->find('list',['conditions'=>[
+																'Status.id'=>[1,2]]]);
 		$this->set(compact('statuses'));
 	}
 
@@ -125,17 +126,19 @@ class TicketsController extends SupportTicketSystemAppController {
               'type'  => 'right',
               'conditions' => array(
                  'TicketManage.category_id = Category.id',
-                 'TicketManage.recstatus = 1'
+                 'TicketManage.recstatus = 1' , 
               )
            )
         ),
-			'conditions' => array('Category.recstatus' => 1)
+			'conditions' => array('Category.recstatus' => 1,'Category.institution_id' => $this->Session->read('institution_id'),
+                 'Category.department_id' => $this->Session->read('department_id')),
 			));
 		$statuses = $this->Ticket->Status->find('list',['conditions'=>['Status.recstatus'=>1]]);
 		$this->set(compact('categories', 'statuses'));
+		//$this->set('ins_id',$this->Session->read('institution_id'));
+		//$this->set('dep_id',$this->Session->read('department_id'));
 		
 	}
-
 
 /**
  * edit method

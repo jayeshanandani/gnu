@@ -8,6 +8,44 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
  *
  * @var array
  */
+
+	public function company_home() {
+	}
+	public function com_home() {
+		$fullname = $this->Auth->user('fullname');
+		        $this->set(compact('fullname'));
+
+	}
+
+	public function select_department()
+	{
+			$userid = $this->Auth->user('id');
+			$data = $this->CompanyCampus->CompanyMaster->find('first',array('conditions' => array('CompanyMaster.user_id' => $userid),'fields'=>array('id','institution_id')));
+			$cmid = $data['CompanyMaster']['id'];
+			$this->request->data['CompanyCampus']['company_master_id'] = $cmid;
+			$institution_id = $data['CompanyMaster']['institution_id'];
+			$this->request->data['CompanyCampus']['institution_id'] = $institution_id;
+			$options = array('conditions' => array('AcademicYear.institution_id' => $institution_id), 'order' => array('AcademicYear.name DESC'), 'recursive' => -1);
+			$year = $this->CompanyCampus->AcademicYear->find('first',$options);
+			$academic_year_id = $year['AcademicYear']['id'];
+			$this->request->data['CompanyCampus']['academic_year_id'] = $academic_year_id;
+		
+			if ($this->request->is('post'))
+			{
+			   	$saving_dept = implode(",",$this->request->data['Department']['Department']);
+			   	$this->request->data['CompanyCampus']['department_id'] = $saving_dept;
+			  	if($this->CompanyCampus->save($this->request->data,true,array('company_master_id','academic_year_id','institution_id','department_id'))){
+					$this->Session->setFlash(__('Data saved'));
+					return $this->redirect('/users/dashboard');
+				}
+				else{
+					$this->Session->setFlash(__('Data not saved'));
+			}
+		}
+			unset($this->request->data['Department']['department_id']);
+			$departments = $this->CompanyCampus->Department->find('list',array('conditions' => array('Department.institution_id'=> $institution_id),'fields'=>array('name')));
+			$this->set(compact('departments'));		
+	}
 	public $helpers = array('Js','Csv');
 
 	public function import() {
@@ -56,7 +94,7 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
           	'conditions' => ['CompanyCampus.institution_id' => $institute, 
           					 'CompanyCampus.academic_year_id' => $year, 
           					 'CompanyCampus.recstatus' => 1],
-          	'field' => ['CompanyCampus.company_master_id']
+          	'field' => ['CompanyCampus.id']
           ]);
 
         $company = $this->CompanyCampus->CompanyMaster->find('list', [
@@ -64,8 +102,8 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
         	'fields' => ['CompanyMaster.name']
         ]);
         
-        $hire['hiring'] = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list', [
-        	'conditions' => ['CompanyJobEligibility.company_master_id' => $company_id, 'CompanyJobEligibility.recstatus' => 1],	
+        $hire['hiring'] = $this->CompanyCampus->CompanyJobEligibility->find('list', [
+        	'conditions' => ['CompanyJobEligibility.company_campus_id' => $company_id, 'CompanyJobEligibility.recstatus' => 1],	
         	'fields' => ['CompanyJobEligibility.hiring']
        	]);
 
@@ -140,8 +178,8 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
         	'fields' => ['CompanyMaster.name']
         ]);
 
-        $hire = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list', [
-        	'conditions' => ['CompanyJobEligibility.company_master_id' => $company_id, 'CompanyJobEligibility.recstatus' => 1],	
+        $hire = $this->CompanyCampus->CompanyJobEligibility->find('list', [
+        	'conditions' => ['CompanyJobEligibility.company_campus_id' => $company_id, 'CompanyJobEligibility.recstatus' => 1],	
         	'fields' => ['CompanyJobEligibility.hiring']]);
 
 		$data = [];
@@ -201,7 +239,7 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 		$this->loadModel('Setting');
 		$data = $this->Setting->find('first');
 		$pagination_value = $data['Setting']['pagination_value'];
-		$this->Paginator->settings = ['limit' => $pagination_value,'page' => 1,'contain'=>['Institution','Department','Degree','AcademicYear','CompanyMaster']];
+		$this->Paginator->settings = ['limit' => $pagination_value,'page' => 1,'contain'=>['Institution','Department',/*'Degree',*/'AcademicYear','CompanyMaster']];
 		$this->set('CompanyCampuses', $this->Paginator->paginate());
 	}
 
@@ -212,14 +250,14 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 		$this->Paginator->settings = ['limit' => $pagination_value,'page' => 1];
 		$student_id = $this->Auth->user('student_id');
 
-		$degree = $this->CompanyCampus->Degree->Student->find('list',[
+		$insti = $this->CompanyCampus->Institution->Student->find('list',[
 			'conditions'=>['Student.id'=> $student_id],
-			'fields' => ['degree_id']
+			'fields' => ['institution_id']
 			]);
 		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1,
             'contain'=>['CompanyMaster'=>['fields'=>['CompanyMaster.id','CompanyMaster.name']],
             			'AcademicYear'=>['fields'=>['AcademicYear.id','AcademicYear.name']]],
-            'conditions' => ['CompanyCampus.degree_id' => $degree,'CompanyCampus.recstatus' => 1]
+            'conditions' => ['CompanyCampus.institution_id' => $insti,'CompanyCampus.recstatus' => 1]
             );
 		$this->set('CompanyCampuses', $this->Paginator->paginate());
 	}
@@ -235,15 +273,15 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 		$this->set('student_check',$student_check);		
 
 	//To get degree id	
-		$degree_id = $this->CompanyCampus->Degree->Student->find('list',[
+		$insti_id = $this->CompanyCampus->Institution->Student->find('list',[
 			'conditions'=>['Student.id'=> $student_id],
-			'fields' => ['degree_id']
+			'fields' => ['institution_id']
 			]);
 	
 	//To get companies from related campus details	
 		$companies = $this->CompanyCampus->find('list',[
-			'conditions'=>['CompanyCampus.degree_id' => $degree_id,'CompanyCampus.recstatus' => 1],
-			'fields' => ['CompanyCampus.company_master_id']
+			'conditions'=>['CompanyCampus.institution_id' => $insti_id,'CompanyCampus.recstatus' => 1],
+			'fields' => ['CompanyCampus.id']
 		]);
 
 	//To get student's 10th percentage	
@@ -269,20 +307,20 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 		]);
 		
 	//To get companies eligibility for 10th	
-		$company_10 = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list',[
-			'conditions' => ['CompanyJobEligibility.company_master_id' => $companies],
+		$company_10 = $this->CompanyCampus->CompanyJobEligibility->find('list',[
+			'conditions' => ['CompanyJobEligibility.company_campus_id' => $companies],
 			'fields' => ['CompanyJobEligibility.min_eligible_10']
 			]);
 
 	//To get companies eligibility for 12th	
-		$company_12 = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list',[
-			'conditions' => ['CompanyJobEligibility.company_master_id' => $companies],
+		$company_12 = $this->CompanyCampus->CompanyJobEligibility->find('list',[
+			'conditions' => ['CompanyJobEligibility.company_campus_id' => $companies],
 			'fields' => ['CompanyJobEligibility.min_eligible_12']
 			]);
 
 	//To get companies eligibility for degree	
-		$company_degree = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list',[
-			'conditions' => ['CompanyJobEligibility.company_master_id' => $companies],
+		$company_degree = $this->CompanyCampus->CompanyJobEligibility->find('list',[
+			'conditions' => ['CompanyJobEligibility.company_campus_id' => $companies],
 			'fields' => ['CompanyJobEligibility.min_eligible_degree']
 			]);
 
@@ -321,19 +359,32 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 				}
 			}
 		}
-		$list = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list',[
+		$list = $this->CompanyCampus->CompanyJobEligibility->find('list',[
 			'conditions' => ['CompanyJobEligibility.min_eligible_10' => $min_student_10, 'CompanyJobEligibility.min_eligible_12' => $min_student_12, 'CompanyJobEligibility.min_eligible_degree' => $min_student_degree],
-			'fields' => ['CompanyJobEligibility.company_master_id']
+			'fields' => ['CompanyJobEligibility.company_campus_id']
 			]);
 
+		$list1 = $this->CompanyCampus->find('list',[
+			'conditions' => ['CompanyCampus.id' => $list],
+			'fields' => ['CompanyCampus.company_master_id']
+			]);
+		foreach($list as $li) {
+			$master = $this->CompanyCampus->find('first', array('conditions' => array('CompanyCampus.id' => $li), 'fields' => ['company_master_id']));
+			$master_id = $master['CompanyCampus']['company_master_id'];
+		}
+		//$master_id = $master['CompanyCampus']['company_master_id'];
+		
 		$this->loadModel('Setting');
 		$data = $this->Setting->find('first');
 		$pagination_value = $data['Setting']['pagination_value'];
-		$this->Paginator->settings = ['limit' => $pagination_value,'page' => 1,
-            'contain'=>['CompanyMaster'=>['CompanyVisit'=>['fields'=>['lastdate']],'conditions'=>['CompanyMaster.id' => $list,'CompanyMaster.recstatus' =>1],'fields'=>['CompanyMaster.id','CompanyMaster.name']],
-            			'AcademicYear'=>['fields'=>['AcademicYear.id','AcademicYear.name']]],
-            'conditions' => ['CompanyCampus.degree_id' => $degree_id,'CompanyCampus.recstatus' => 1,'CompanyCampus.company_master_id' => $list]
+		/*debug($insti_id);
+		debug($list);exit;
+		*/$this->Paginator->settings = ['limit' => $pagination_value,'page' => 1,
+            'contain'=> array('CompanyVisit'=>['fields'=>['lastdate']], 'CompanyMaster'=>['conditions'=>['CompanyMaster.id' => $list1,'CompanyMaster.recstatus' =>1],'fields'=>['CompanyMaster.id','CompanyMaster.name']],
+            	'AcademicYear'=>['fields'=>['AcademicYear.id','AcademicYear.name']]),
+            'conditions' => ['CompanyCampus.institution_id' => $insti_id,'CompanyCampus.recstatus' => 1,'CompanyCampus.company_master_id' => $list1]
             ];
+
 		$this->set('CompanyCampuses', $this->Paginator->paginate());
 	}
 
@@ -358,7 +409,8 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
  * @return void
  */
 	public function add() {
-		if ($this->request->is('post') && $this->request->data['CompanyCampus']['academic_year_id']!=0) {
+		if ($this->request->is('post'))// && $this->request->data['CompanyCampus']['academic_year_id']!=0)
+		 {
 			$this->CompanyCampus->create();			
 			if ($this->CompanyCampus->save($this->request->data)) {
 				$this->Session->setFlash(__('The company campus has been saved.'), 'alert', array(
@@ -384,25 +436,25 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 	if ($this->request->is('post') && $this->request->data['CompanyCampus']['academic_year_id']!=0) {
 		$institute = $this->request->data['CompanyCampus']['institution_id'];
 		$departments = $this->request->data['CompanyCampus']['department_id'];
-		$degrees = $this->request->data['CompanyCampus']['degree_id'];
-		$years = $this->request->data['CompanyCampus']['academic_year_id'];
-		$this->redirect(array('action' => 'find_company_year',$institute,$departments,$degrees,$years));
+		//$degrees = $this->request->data['CompanyCampus']['degree_id'];
+		$academic_years = $this->request->data['CompanyCampus']['academic_year_id'];
+		$this->redirect(array('action' => 'find_company_year',$institute,$departments,$academic_years));
 	}
 		unset($this->request->data['CompanyCampus']['institution_id']);
 		$institutions = $this->CompanyCampus->Institution->find('list');
 		$departments = [];
-		$degrees = [];
+		//$degrees = [];
 		$academic_years = [];
 		$company_masters = $this->CompanyCampus->CompanyMaster->find('list');
-		$this->set(compact('institutions', 'departments', 'degrees','company_masters', 'academic_years'));	
+		$this->set(compact('institutions', 'departments','company_masters', 'academic_years'));	
 	
 	}
 
-	public function find_company_year($institute = null, $departments = null, $degrees = null, $years = null) {
+	public function find_company_year($institute = null, $departments = null, $years = null) {
 
 		$this->set('institute',$institute);
-		$this->set('departments',$departments,$degrees);
-		$this->set('degrees',$degrees);
+		$this->set('departments',$departments);
+		//$this->set('degrees',$degrees);
 		
 		$info_institute = $this->CompanyCampus->Institution->find('all',[
 			'conditions' => ['Institution.id' => $institute],
@@ -413,7 +465,7 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 			'fields' => ['Department.name']	
 			]);
 		$info_degree = $this->CompanyCampus->Degree->find('all',[
-			'conditions' => ['Degree.id' => $degrees],
+			'conditions' => ['Degree.department_id' => $departments],
 			'fields' => ['Degree.name']	
 			]);
 		$info_academic_year = $this->CompanyCampus->AcademicYear->find('all',[
@@ -427,7 +479,7 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 		$this->set('info_academic_year', $info_academic_year);
 
 		$company_id = $this->CompanyCampus->find('list',[
-			'conditions' => ['CompanyCampus.recstatus' => 1,'CompanyCampus.institution_id' => $institute,'CompanyCampus.department_id' => $departments,'CompanyCampus.degree_id' => $degrees,'CompanyCampus.academic_year_id' => $years],
+			'conditions' => ['CompanyCampus.recstatus' => 1,'CompanyCampus.institution_id' => $institute,'CompanyCampus.department_id' => $departments,'CompanyCampus.academic_year_id' => $years],
 			'field' => ['CompanyCampus.id']]);
 
 		$companies = $this->CompanyCampus->find('list',[
@@ -448,8 +500,8 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 			 				  'CompanyMaster.recstatus' => 1],
 			'field' => ['CompanyMaster.name','CompanyMaster.id']]);
 
-        $hiring = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list',[
-        		'conditions' => ['CompanyJobEligibility.company_master_id' => $companies,
+        $hiring = $this->CompanyCampus->CompanyJobEligibility->find('list',[
+        		'conditions' => ['CompanyJobEligibility.company_campus_id' => $company_id,
         						 'CompanyJobEligibility.recstatus' => 1	],
         		'fields' => ['CompanyJobEligibility.hiring']				 
         	]);
@@ -480,7 +532,6 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 				'conditions' => ['CompanyCampus.company_master_id' => $companies,
 								 'CompanyCampus.institution_id' => $institute,
 								 'CompanyCampus.department_id' => $departments,
-								 'CompanyCampus.degree_id' => $degrees,
 								 'CompanyCampus.academic_year_id' => $years,
 								 'CompanyCampus.recstatus' => 1	
 				],'fields' => ['CompanyCampus.id']
@@ -570,7 +621,7 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
         'fields' => array('CompanyMaster.name')));
 
 
-        $hire = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list', array(
+        $hire = $this->CompanyCampus->CompanyJobEligibility->find('list', array(
             'fields' => array('CompanyJobEligibility.hiring')));
 
         $data = [];
@@ -624,7 +675,7 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
         $company = $this->CompanyCampus->CompanyMaster->find('list', array(
         'fields' => array('CompanyMaster.name')));
 
-        $hire['hiring'] = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list', array(
+        $hire['hiring'] = $this->CompanyCampus->CompanyJobEligibility->find('list', array(
         'fields' => array('CompanyJobEligibility.hiring')));
         
         $data = [];
@@ -677,8 +728,12 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
 	public function import_home() {
     }
 
-	public function company_home() {
+		
+	public function add_com()
+	{
+		
 	}
+	
 	
 	public function home() {
       
@@ -689,7 +744,7 @@ class CompanyCampusesController extends TrainingAndPlacementAppController {
         $training = $this->CompanyCampus->CompanyMaster->find('all',array('conditions' => array('CompanyMaster.training' => 1,'CompanyMaster.recstatus' => 1),'field' => array('CompanyMaster.name')));
         $job = $this->CompanyCampus->CompanyMaster->find('all',array('conditions' => array('CompanyMaster.job' => 1,'CompanyMaster.recstatus' => 1),'field' => array('CompanyMaster.name')));
 
-        $hiring = $this->CompanyCampus->CompanyMaster->CompanyJobEligibility->find('list', array(
+        $hiring = $this->CompanyCampus->CompanyJobEligibility->find('list', array(
         'conditions' => array('CompanyJobEligibility.recstatus' => 1),    
         'fields' => array('CompanyJobEligibility.hiring')));
 

@@ -13,6 +13,8 @@ class DegreesController extends AppController {
  *
  * @var array
  */
+
+
 	public $components = array('Paginator','RequestHandler');
 
 /**

@@ -80,7 +80,7 @@ class StudentResumesController extends AppController {
 			]);
 
 		//To get 10th n 12th results
-		debug(get_class($this->StudentResume->Student->ResultsBoard));exit;
+		//(get_class($this->StudentResume->Student->ResultsBoard));exit;
 		$resultsBoards = $this->StudentResume->Student->ResultsBoard->find('all',['conditions' => ['ResultsBoard.student_id' => $student_id]]);
 		$this->set('resultsBoards', $resultsBoards);
 

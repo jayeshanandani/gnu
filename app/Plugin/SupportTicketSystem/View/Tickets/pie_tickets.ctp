@@ -14,7 +14,7 @@
 
 ?>
 <div class="chart">
-	<h2>Hiring Status</h2>
+	<h2>Total Tickets</h2>
 	
 	<div id="piewrapper" style="display: block; float: left; width:90%; margin-bottom: 20px;"></div>
     <div class="clear"></div>	

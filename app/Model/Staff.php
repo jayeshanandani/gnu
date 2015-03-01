@@ -33,7 +33,7 @@ public $displayField = 'name';
  *
  * @var array
  */
-	public $hasMany = ['User'];
+	public $hasMany = ['User','ManageRole'];
 	
 
 		public function getListByDepartment($cid = null) {

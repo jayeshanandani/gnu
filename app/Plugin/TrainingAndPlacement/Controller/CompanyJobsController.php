@@ -13,7 +13,7 @@ class CompanyJobsController extends TrainingAndPlacementAppController {
 		$this->loadModel('Setting');
 		$data = $this->Setting->find('first');
 		$pagination_value = $data['Setting']['pagination_value'];
-		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1, 'contain' => ['CompanyMaster']);
+		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1, 'contain' => ['CompanyCampus'=>['CompanyMaster']]);
 		$this->set('companyJobs', $this->Paginator->paginate());
 	}
 
@@ -71,8 +71,16 @@ class CompanyJobsController extends TrainingAndPlacementAppController {
  * @return void
  */
 	public function add() {
+		$data = $this->CompanyJob->CompanyCampus->CompanyMaster->find('first',array('conditions' => array('CompanyMaster.user_id' => $this->Auth->user('id')),'fields'=>array('id')));
+			$cmid = $data['CompanyMaster']['id'];
+			$option = $this->CompanyJob->CompanyCampus->find('first',array('conditions' => array('CompanyCampus.company_master_id' => $cmid)));
+			$ccid = $option['CompanyCampus']['id'];
+			$jobid = $this->CompanyJob->find('first', array('conditions' => array('CompanyJob.company_campus_id' => $ccid)));
+			$id = $jobid['CompanyJob']['id'];
 		if ($this->request->is('post')) {
 			$this->CompanyJob->create();
+			$this->request->data['CompanyJob']['company_campus_id'] = $ccid; 
+
 			if ($this->CompanyJob->save($this->request->data)) {
 				$this->Session->setFlash('The company job has been saved & Now add Eligibility for previous given JOB.');
 				return $this->redirect( array('controller' => 'CompanyJobEligibilities', 'action' => 'add'));
@@ -80,8 +88,11 @@ class CompanyJobsController extends TrainingAndPlacementAppController {
 				$this->Session->setFlash(__('The company job could not be saved. Please, try again.'));
 			}
 		}
-		$companyMasters = $this->CompanyJob->CompanyMaster->find('list');
-		$this->set(compact('companyMasters'));
+		else
+		{
+			$options = array('conditions' => array('CompanyJob.' . $this->CompanyJob->primaryKey => $id));
+				$this->request->data = $this->CompanyJob->find('first', $options);
+		}
 	}
 
 /**

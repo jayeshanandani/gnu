@@ -14,7 +14,7 @@ class CompanyJobEligibilitiesController extends TrainingAndPlacementAppControlle
 		$this->loadModel('Setting');
 		$data = $this->Setting->find('first');
 		$pagination_value = $data['Setting']['pagination_value'];
-		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1, 'contain' => ['CompanyMaster','CompanyJob']);
+		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1, 'contain' => ['CompanyCampus'=>['CompanyMaster'],'CompanyJob']);
 		$this->set('companyJobEligibilities', $this->Paginator->paginate());
 	}
 
@@ -55,22 +55,25 @@ class CompanyJobEligibilitiesController extends TrainingAndPlacementAppControlle
 	public function company_list() {
 
 		$this->loadModel('Student');
-		$degree = $this->Student->find('list',[
+		$institution = $this->Student->find('list',[
 			'conditions'=>['Student.id'=> $this->Auth->user('student_id')],
-			'fields' => ['degree_id']
+			'fields' => ['institution_id']
 			]);
 
-		$company_ids = $this->CompanyJobEligibility->CompanyMaster->CompanyCampus->find('list',[
-			'conditions'=>['CompanyCampus.degree_id' => $degree,'CompanyCampus.recstatus' => 1],
+		$company_ids = $this->CompanyJobEligibility->CompanyCampus->find('list',[
+			'conditions'=>['CompanyCampus.instituion_id' => $institution,'CompanyCampus.recstatus' => 1],
 			'fields' => ['CompanyCampus.company_master_id']			
 		]);
+		$campus_id=$this->CompanyJobEligibility->CompanyCampus->find('list',[
+			'conditions'=>['CompanyCampus.instituion_id'=>$institution,'CompanyCampus.recstatus'=>1],
+			'fields'=>['CompanyCampus.id']]);
 		$this->loadModel('Setting');
 		$data = $this->Setting->find('first');
 		$pagination_value = $data['Setting']['pagination_value'];
 		$this->Paginator->settings = array('limit' => $pagination_value,'page' => 1,
             'contain'=>['CompanyMaster'=>['conditions'=>['CompanyMaster.id'=>$company_ids]],
             			'CompanyJob'=>['fields' => ['CompanyJob.name','CompanyJob.id']]],
-            'conditions' => ['CompanyJobEligibility.company_master_id' => $company_ids,'CompanyJobEligibility.recstatus' => 1]
+            'conditions' => ['CompanyJobEligibility.company_campus_id' => $campus_id,'CompanyJobEligibility.recstatus' => 1]
             );
 		$this->set('CompanyJobEligibilities', $this->Paginator->paginate());
 	}
@@ -96,19 +99,33 @@ class CompanyJobEligibilitiesController extends TrainingAndPlacementAppControlle
  * @return void
  */
 	public function add() {
-		if ($this->request->is('post')&& $this->request->data['CompanyJobEligibility']['company_job_id']!=0) {
+			$data = $this->CompanyJobEligibility->CompanyCampus->CompanyMaster->find('first',array('conditions' => array('CompanyMaster.user_id' => $this->Auth->user('id')),'fields'=>array('id')));
+			$cmid = $data['CompanyMaster']['id'];
+			$option = $this->CompanyJobEligibility->CompanyCampus->find('first',array('conditions' => array('CompanyCampus.company_master_id' => $cmid)));
+			$ccid = $option['CompanyCampus']['id'];
+			$job_id = $this->CompanyJobEligibility->find('first', array('conditions' => array('CompanyJobEligibility.company_campus_id' => $ccid)));
+			$id = $job_id['CompanyJobEligibility']['id'];
+
+		if ($this->request->is('post'))//&& $this->request->data['CompanyJobEligibility']['company_job_id']!=0) 
+		{
 			$this->CompanyJobEligibility->create();
+			$this->request->data['CompanyJobEligibility']['company_campus_id'] = $ccid;
+			$job = $this->CompanyJobEligibility->CompanyJob->find('first',array('conditions' => array('CompanyJob.company_campus_id' => $ccid),'fields' => array('id')));
+			$company_job=$job['CompanyJob']['id'];
+			$this->request->data['CompanyJobEligibility']['company_job_id'] = $company_job; 
+
 			if ($this->CompanyJobEligibility->save($this->request->data)) {
 				$this->Session->setFlash('The company job eligibility has been saved.');
-				return $this->redirect( array('controller' => 'CompanyCampuses', 'action' => 'add'));
+				return $this->redirect('/users/dashboard');
 			} else {
 				$this->Session->setFlash(__('The company job eligibility could not be saved. Please, try again.'));
 			}
 		}
-		unset($this->request->data['CompanyJobEligibility']['company_master_id']);
-		$company_masters = $this->CompanyJobEligibility->CompanyMaster->find('list');
-		$company_jobs = array();
-		$this->set(compact('company_masters', 'company_jobs'));
+		else
+		{
+			$options = array('conditions' => array('CompanyJobEligibility.' . $this->CompanyJobEligibility->primaryKey => $id));
+				$this->request->data = $this->CompanyJobEligibility->find('first', $options);
+		}
 	}
 
 /**

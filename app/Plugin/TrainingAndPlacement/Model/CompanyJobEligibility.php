@@ -33,7 +33,8 @@ public $useTable = 'company_job_eligibilities';
  *
  * @var array
 */
-    public $belongsTo = ['TrainingAndPlacement.CompanyMaster','TrainingAndPlacement.CompanyJob'];
+    public $belongsTo = ['TrainingAndPlacement.CompanyCampus','TrainingAndPlacement.CompanyJob'];
+
 
 /**
 * Check $_FILES[][name] length.

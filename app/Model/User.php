@@ -52,6 +52,17 @@ public $validate = [
                     'message' => 'Email already registered'
             ),
         ),
+
+        'password_repeat' => array(
+        'length' => array(
+        'rule'      => array('between', 5, 40),
+        'message'   => 'Your password must be between 8 and 40 characters.',
+    ),
+        'compare'    => array(
+        'rule'      => array('validate_passwords'),
+        'message' => 'The passwords you entered do not match.',
+    )
+)
     ];
 
      //The Associations below have been created with all possible keys, those that are not needed can be removed
@@ -60,7 +71,7 @@ public $validate = [
  * @var array
  */
 
-    public $belongsTo = ['Student','Staff'];
+    public $belongsTo = ['Student','Staff','CompanyMaster'];
 /**
  * hasMany associations
  * @var array

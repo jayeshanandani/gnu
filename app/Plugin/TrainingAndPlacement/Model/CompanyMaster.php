@@ -34,7 +34,8 @@ class CompanyMaster extends TrainingAndPlacementAppModel {
 *
 * @var array
 */
-	public $hasMany = ['TrainingAndPlacement.CompanyCampus', 'TrainingAndPlacement.CompanyJob', 'TrainingAndPlacement.CompanyJobEligibility', 'TrainingAndPlacement.CompanyVisit'];
+	public $hasMany = ['TrainingAndPlacement.CompanyCampus'];
+	public $belongsTo = ['User','Institution','AcademicYear'];
 
 /**
 * Check $_FILES[][name] length.

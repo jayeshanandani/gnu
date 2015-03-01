@@ -14,7 +14,7 @@
 
 ?>
 <div class="chart">
-	<h2>Company Vs Hiring</h2>
+	<h2>Categories Vs Counts</h2>
 	
 	<div id="columnwrapper" style="display: block; float: left; width:90%; margin-bottom: 20px;"></div>
     <div class="clear"></div>	

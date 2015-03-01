@@ -1,7 +1,81 @@
+<script type="text/javascript">
+$(function() {
+  
+      function exportTableToCSV($table, filename) {
+
+        var $rows = $table.find('tr'),
+
+            // Temporary delimiter characters unlikely to be typed by keyboard
+            // This is to avoid accidentally splitting the actual contents
+            tmpColDelim = String.fromCharCode(11), // vertical tab character
+            tmpRowDelim = String.fromCharCode(0), // null character
+
+            // actual delimiter characters for CSV format
+            colDelim = '","',
+            rowDelim = '"\r\n"',
+
+            csv1 = '"' + $rows.map(function (i, row) {
+            	if( i < 1 ) {
+                var $row = $(row),
+                    $cols = $row.find('th') ; 
+
+                return $cols.map(function (j, col) {
+                    var $col = $(col),
+                        text = $col.text();
+
+                    return text.replace('"', '""'); // escape double quotes
+
+                }).get().join(tmpColDelim);
+            }
+
+            }).get().join(tmpRowDelim)
+                .split(tmpRowDelim).join(rowDelim)
+                .split(tmpColDelim).join(colDelim) + '"',
+
+            csv = '"' + $rows.map(function (i, row) {
+                var $row = $(row),
+                    $cols = $row.find('td') ; 
+
+                return $cols.map(function (j, col) {
+                    var $col = $(col),
+                        text = $col.text();
+
+                    return text.replace('"', '""'); // escape double quotes
+
+                }).get().join(tmpColDelim);
+
+            }).get().join(tmpRowDelim)
+                .split(tmpRowDelim).join(rowDelim)
+                .split(tmpColDelim).join(colDelim) + '"',
+
+            // Data URI
+            csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv1+csv);
+
+        $(this)
+            .attr({
+            'download': filename,
+                'href': csvData,
+                'target': '_blank'
+        });
+    }
+
+    // This must be a hyperlink
+    $(".export").on('click', function (event) {
+        // CSV
+        exportTableToCSV.apply(this, [$('#CompanyJob'), 'export.csv']);
+        
+        // IF CSV, don't do event.preventDefault() or return false
+        // We actually need this to be a typical hyperlink
+    });
+
+});
+</script>
+
 <div class="table-responsive">
 <div class="companyJobs index">
 	<h3><?php echo __('Company Jobs'); ?></h3>
-	<table cellpadding="0" cellspacing="0" class="table table-striped">
+	<a href="#" class="export" text="Download">Download</button>
+	<table cellpadding="0" cellspacing="0" class="table table-striped" id="CompanyJob">
 	<tr>
 			<th><?php echo $this->Paginator->sort('company_master_id'); ?></th>
 			<th><?php echo $this->Paginator->sort('name','Designation'); ?></th>
@@ -13,7 +87,10 @@
 	<?php foreach ($companyJobs as $companyJob): ?>
 	<tr>
 		<td>
-			<?php echo $this->Html->link($companyJob['CompanyMaster']['name'], array('controller' => 'company_masters', 'action' => 'view', $companyJob['CompanyMaster']['id'])); ?>
+
+			<?php
+			
+				echo $this->Html->link($companyJob['CompanyCampus']['CompanyMaster']['name'], array('controller' => 'company_masters', 'action' => 'view', $companyJob['CompanyCampus']['CompanyMaster']['id'])); ?>
 		</td>
 		<td><?php echo h($companyJob['CompanyJob']['name']); ?>&nbsp;</td>
 		<td><?php echo h($companyJob['CompanyJob']['probationperiod']); ?>&nbsp;</td>
@@ -25,6 +102,7 @@
 			echo "Not Active";
 		} ?>&nbsp;
 		</td>
+		
 		<td class="actions">
 			<?php echo $this->Html->link(__('', true), array('action' => 'view', $companyJob['CompanyJob']['id']), array('class' => 'glyphicon glyphicon-search')); ?>
 			<?php echo $this->Html->link(__('', true), array('action' => 'edit', $companyJob['CompanyJob']['id']), array('class' => 'glyphicon glyphicon-edit')); ?>

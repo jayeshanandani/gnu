@@ -15,12 +15,13 @@ echo $this->Html->css('TrainingAndPlacement.navigation');
         <div class="navbar-collapse collapse" >
 			<ul class="nav navbar-nav">
 			<li><?php 
-			if (Auth::hasRoles(array('tpadmin','user')) ) {	
+			if (Auth::hasRoles(array('tpadmin','user','company')) ) {	
 			echo $this->Html->link(__("Home",true), [
             'plugin'=> false, 
             'controller' => 'users', 
             'action' => 'dashboard'
          ]); }?></li>
+
          <li>
          <?php  if (Auth::hasRoles(array('tpadmin')) ) {
             echo $this->Html->link(__("Dashboard",true), [
@@ -35,7 +36,70 @@ echo $this->Html->css('TrainingAndPlacement.navigation');
             'action' => 'student_home'
             ]);
             }
-         ?>
+            elseif (Auth::hasRoles(array('company')) ) {
+            echo $this->Html->link(__("Dashboard",true), [
+            'plugin'=>'training_and_placement',
+            'controller' => 'company_campuses', 
+            'action' => 'com_home'
+            ]);
+            }
+         ?></li>
+         
+         <?php  if (Auth::hasRoles(array('company')) ) { ?>
+         <li class = "dropdown menu-large">
+         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Placement<b class="caret"></b></a>
+         <ul class="dropdown-menu megamenu row">
+            <li class="col-sm-3">
+               <li>
+                  <?php echo $this->Html->link(__("Edit Profile",true), [
+                           'plugin'=>'training_and_placement',
+                           'controller' => 'company_masters', 
+                           'action' => 'comp_detail'
+                        ]); ?>
+               </li>
+               <li>
+                  <?php echo $this->Html->link(__("Select Department",true), [
+                        'plugin' => 'training_and_placement',
+                        'controller' => 'company_campuses',
+                        'action' => 'select_department']); ?>
+               </li>
+               <li>
+                  <?php echo $this->Html->link(__("Add Visit Dates",true), [
+                           'plugin'=>'training_and_placement',
+                           'controller' => 'company_visits', 
+                           'action' => 'add'
+                        ]); ?>
+               </li>
+               <li>
+                  <?php echo $this->Html->link(__("Add Job Details",true), [
+                        'plugin' => 'training_and_placement',
+                        'controller' => 'company_jobs',
+                        'action' => 'add']); ?>
+               </li>
+               <li>
+                  <?php echo $this->Html->link(__("Add Job Eligibility",true), [
+                        'plugin' => 'training_and_placement',
+                        'controller' => 'company_job_eligibilities',
+                        'action' => 'add']); ?>
+               </li>
+               <!-- <li>
+                  <?php echo $this->Html->link(__("Interested Students",true), [
+                        'plugin' => 'training_and_placement',
+                        'controller' => 'placement_results',
+                        'action' => 'form1']); ?>
+               </li> -->
+            </li>
+         </ul>    
+         </li>
+         <li>
+         <?php echo $this->Html->link('Logout',[
+            'controller' => 'users' ,
+            'action'=>'logout', 
+            'plugin' => false
+         ]); ?>
+      </li>
+         </li>
+      </ul></div></div></div><?php } ?>
       	</li><?php if (Auth::hasRoles(array('tpadmin','user')) ) { ?>
 	  	<li class="dropdown menu-large">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Campus Placement<b class="caret"></b></a>				
@@ -43,6 +107,7 @@ echo $this->Html->css('TrainingAndPlacement.navigation');
 				<li class="col-sm-3">
 					<ul>
 						<li class="dropdown-header">View Profile</li>
+
 					<?php  if (Auth::hasRoles(array('user')) && !Auth::hasRoles(array('tpadmin'))) { ?>
             			<li><?php if(Auth::user('student_id')) { echo $this->Html->link(__("Personal Profile"),array('plugin'=> 'training_and_placement','controller' => 'results_boards', 'action' => 'view', AuthComponent::user('student_id'))); } ?>
 						</li>
@@ -93,14 +158,14 @@ echo $this->Html->css('TrainingAndPlacement.navigation');
                      <?php echo $this->Html->link(__("Company Details",true), [
                         'plugin'=>'training_and_placement',
                         'controller' => 'company_job_eligibilities', 
-                        'action' => 'company_list'
+                        'action' => 'index'
                      ]); ?>
                   </li>
                   <li>
                      <?php echo $this->Html->link(__("Company Visit Dates",true), [
                         'plugin'=>'training_and_placement',
                         'controller' => 'company_visits', 
-                        'action' => 'visit_date'
+                        'action' => 'index'
                      ]); ?>
                   </li>
                   <li>
@@ -233,13 +298,13 @@ echo $this->Html->css('TrainingAndPlacement.navigation');
                'action' => 'index'
                ]); ?>
             </li>
-            <li>
+            <!-- <li>
                <?php echo $this->Html->link(__("Send Notification Mail",true), [
                   'plugin'=>'training_and_placement',
                   'controller' => 'email_notifications', 
                   'action' => 'index'
                ]); ?>
-            </li>
+            </li> -->
             <li>
                <?php echo $this->Html->link(__("Import Data",true), [
                   'plugin'=>'training_and_placement',
@@ -267,7 +332,7 @@ echo $this->Html->css('TrainingAndPlacement.navigation');
                'action' => 'column_company_hiring_form'
                ]); ?>
             </li>
-            <li><?php echo $this->Html->link(__("Pie Chart Hiring",true),[
+              <li><?php echo $this->Html->link(__("Pie Chart Hiring",true),[
                'plugin'=>'training_and_placement',
                'controller' => 'company_campuses', 
                'action' => 'pie_company_hiring_overall'

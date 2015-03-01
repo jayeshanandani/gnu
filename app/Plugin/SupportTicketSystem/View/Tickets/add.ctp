@@ -1,6 +1,7 @@
 <div class="row">
           <div class="col-lg-6">
 <div class="tickets form">
+
 <?php echo $this->Form->create('Ticket', array(
 	'inputDefaults' => array(
 		'div' => 'form-group',

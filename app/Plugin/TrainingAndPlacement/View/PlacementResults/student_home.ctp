@@ -5,6 +5,7 @@ echo "Welcome {$fullname}";
 <div class="row">
     <div class="col-lg-3">
     <h3>Your applied Companies</h3>
+
     <?php foreach ($data as $a): ?>
 		<p><?php echo $a['CompanyCampus']['CompanyMaster']['name']; ?>		
 		</p>

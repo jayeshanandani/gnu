@@ -6,6 +6,7 @@
 			<th><?php echo $this->Paginator->sort('id'); ?></th>
 			<th><?php echo $this->Paginator->sort('category_id'); ?></th>
 			<th><?php echo $this->Paginator->sort('staff_id'); ?></th>
+			<th><?php echo $this->Paginator->sort('department_id'); ?></th>
 			<th class="actions"><?php echo __('Actions'); ?></th>
 	</tr>
 	<?php foreach ($ticketManages as $ticketManage): ?>
@@ -17,6 +18,7 @@
 		<td>
 			<?php echo $this->Html->link($ticketManage['Staff']['firstname'].$ticketManage['Staff']['lastname'], array('plugin'=>false,'controller' => 'staffs', 'action' => 'view', $ticketManage['Staff']['id'])); ?>
 		</td>
+		<td><?php echo h($ticketManage['Staff']['Department']['name']); ?>&nbsp;</td>
 		<td class="actions">
 			<?php echo $this->Html->link(__('View'), array('action' => 'view', $ticketManage['TicketManage']['id'])); ?>
 			<?php

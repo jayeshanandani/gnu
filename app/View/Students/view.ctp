@@ -1,3 +1,4 @@
+
 <div class="table-responsive">
 <div class="students view">
 <h3><?php echo __('Student Profile'); ?></h3>

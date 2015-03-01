@@ -38,69 +38,11 @@ class PagesController extends SupportTicketSystemAppController {
 
     public function dashboard() {
         $this->loadModel('Ticket');
-        $fullname = $this->Auth->user('fullname');
         $tickets = $this->Ticket->find('count');
         $ticketuser = $this->Ticket->find('count',['conditions'=>['Ticket.user_id'=>$this->Auth->user('id')]]);
         $ticketopen = $this->Ticket->find('count',['conditions'=>['Ticket.user_id'=>$this->Auth->user('id'),'status_id'=> 1]]);
         $ticketclose = $this->Ticket->find('count',['conditions'=>['Ticket.user_id'=>$this->Auth->user('id'),'status_id'=> 2]]);
-        $this->set(compact('tickets','ticketuser','ticketopen','ticketclose','fullname'));
+        $this->set(compact('tickets','ticketuser','ticketopen','ticketclose'));
 
     }
-
-    public function view($id = null) {
-    	$this->loadModel('Student');
-		if (!$this->Student->exists($id)) {
-			throw new NotFoundException(__('Invalid student'));
-		}
-		$options = array('conditions' => array('Student.' . $this->Student->primaryKey => $id));
-		$this->set('student', $this->Student->find('first', $options));
-	
-		$this->loadModel('Department');
-		$this->loadModel('User');
-	
-		$institute_id = $this->Student->find('list', ['fields' => ['Student.institution_id']]);
-		$institutions = $this->Student->Institution->find('list', ['conditions' => ['Institution.id' => $institute_id]]);
-		$this->set('institutions', $institutions);
-	
-		$email = $this->User->find('list',[
-			'conditions' => ['User.student_id' => $id],
-			'fields' => ['User.email']
-			]);
-		$this->set('email', $email);
-	
-		$degree_id = $this->Student->find('list', [
-			'conditions' => ['Student.id' => $id],
-			'fields' => ['Student.degree_id']
-		]);
-		$degrees = $this->Student->Degree->find('list', ['conditions' => ['Degree.id' => $degree_id]]);
-		$this->set('degrees', $degrees);
-
-		$department = $this->Student->Degree->find('list',[
-			'conditions' => ['Degree.id' => $degree_id],
-			'fields' => ['Degree.department_id']
-		]);
-		$department_name = $this->Department->find('list',[
-			'conditions' => ['Department.id' => $department],
-			'fields' => ['Department.name']
-		]);
-		$this->set('department_name', $department_name);
-		
-	}
-
-/**
- * view method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	public function staff_view($id = null) {
-		$this->loadModel('Staff');
-		if (!$this->Staff->exists($id)) {
-			throw new NotFoundException(__('Invalid staff'));
-		}
-		$options = array('conditions' => array('Staff.' . $this->Staff->primaryKey => $id),'recursive'=>-1,'contain'=>['Institution','Department']);
-		$this->set('staff', $this->Staff->find('first', $options));
-	}
-
 }

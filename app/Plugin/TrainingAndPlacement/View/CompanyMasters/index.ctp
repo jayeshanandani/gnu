@@ -19,7 +19,10 @@
 		
 		
 		<td><?php echo h($companyMaster['CompanyMaster']['name']); ?>&nbsp;</td>
-		<td><?php echo h($companyMaster['CompanyMaster']['website']); ?>&nbsp;</td>
+		<td><?php 
+			$website = $companyMaster['CompanyMaster']['website'];
+			echo $this->Html->link($website, 'http://www.'.$website);  
+			?>&nbsp;</td>
 		<td><?php echo h($companyMaster['CompanyMaster']['email']); ?>&nbsp;</td>
 		<td><?php echo h($companyMaster['CompanyMaster']['contactno']); ?>&nbsp;</td>
 		<td><?php if($companyMaster['CompanyMaster']['training'] == 1){
