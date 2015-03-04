@@ -10,9 +10,10 @@
 			<th><?php echo $this->Paginator->sort('department_id'); ?></th>
 			<th class="actions"><?php echo __('Actions'); ?></th>
 	</tr>
+  <?php $counter  = 1; ?>
 	<?php foreach ($categories as $category): ?>
 	<tr>
-		<td><?php echo h($category['Category']['id']); ?>&nbsp;</td>
+		<td><?php echo $counter++; ?>&nbsp;</td>
 		<td><?php echo h($category['Category']['name']); ?>&nbsp;</td>
 		<td><?php echo h($category['Institution']['name']); ?>&nbsp;</td>
 		<td><?php echo h($category['Department']['name']); ?>&nbsp;</td>

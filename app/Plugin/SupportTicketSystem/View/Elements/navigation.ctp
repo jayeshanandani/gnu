@@ -27,7 +27,7 @@
             </li>
 
             <li class="dropdown menu-large">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Support Ticket<b class="caret"></b></a>				
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Support Ticket<b class="caret"></b></a>
             <ul class="dropdown-menu megamenu row">
             <li class="col-sm-2">
               <ul>
@@ -36,7 +36,7 @@
                    <li class="dropdown-header">Categories</li>
                   <?php } ?>
 
-                  <?php if(Auth::hasRoles(['developer'])) {?>         
+                  <?php if(Auth::hasRoles(['developer'])) {?>
                     <li>
                       <?php echo $this->Html->link(__("New Category",true),[
                       'plugin'=>'support_ticket_system',
@@ -45,7 +45,7 @@
                     </li>          
                     <?php } ?>
 
-                  <?php if(Auth::hasRoles(['superadmin','stadmin','deptcoordinator'])) {?>          
+                  <?php if(Auth::hasRoles(['superadmin','stadmin','deptcoordinator'])) {?>
                     <li>
                       <?php echo $this->Html->link(__("New Category",true),[
                       'plugin'=>'support_ticket_system',
@@ -54,7 +54,7 @@
                      </li>          
                     <?php } ?>
 
-                  <?php if(Auth::hasRoles(['developer'])) {?>          
+                  <?php if(Auth::hasRoles(['developer'])) {?>
                   <li>
                     <?php echo $this->Html->link(__("View Category",true),[
                     'plugin'=>'support_ticket_system',

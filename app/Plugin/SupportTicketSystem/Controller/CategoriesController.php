@@ -17,7 +17,7 @@ class CategoriesController extends SupportTicketSystemAppController {
 
 
 /**
- * index method
+ * index method for developer
  *
  * @return void
  */
@@ -33,20 +33,21 @@ class CategoriesController extends SupportTicketSystemAppController {
 		$this->set('categories', $this->Paginator->paginate());
 	}
 
+/**
+ * index method for developer
+ *
+ * @return void
+ */
 	public function index() {
 
 		$this->loadModel('Setting');
-		$this->loadModel('Staff');
 		$data = $this->Setting->find('first', array('recursive' => - 1));
-		$staffid = $this->Auth->user('staff_id');
-		$data1=$this->Staff->find('first',['conditions'=>['Staff.id'=>$staffid]]);
-		$data2 = $data1['Staff']['institution_id'];
 		$pagination_value = $data['Setting']['pagination_value'];
 		$this->Paginator->settings = array(
 			'limit' => $pagination_value,
 			'page' => 1,
 			'contain' => ['Institution','Department'],
-			'conditions'=> array('Category.institution_id'=>$data2));
+			'conditions'=> array('Category.institution_id' => $this->Session->read('institution_id')));
 		$this->set('categories', $this->Paginator->paginate());
 	}
 
@@ -76,39 +77,36 @@ class CategoriesController extends SupportTicketSystemAppController {
 			$this->Category->create();
 			$this->loadModel('Staff');
       $this->request->data['Category']['name'] = ucfirst(strtolower($this->request->data['Category']['name']));
-      $userid = $this->Auth->user('staff_id');
-			$data = $this->Staff->find('first',['conditions'=>['Staff.id'=>$userid]]);
-	    	$this->request->data['Category']['institution_id'] = $data['Staff']['institution_id'];
-			if ($this->Category->save($this->request->data,true,array('name','institution_id','department_id'))) {
-				$this->Session->setFlash(__('The category has been saved.') , 'alert', array(
-				'class' => 'alert-success'
-			));
-				return $this->redirect(array('action' => 'index'));
+	    $this->request->data['Category']['institution_id'] = $this->Session->read('institution_id');
+			
+      if ($this->Category->save($this->request->data,true,array('name','institution_id','department_id'))) {
+  				$this->Session->setFlash(__('The category has been saved.') , 'alert', array(
+          'class' => 'alert-success'));
+				  return $this->redirect(array('action' => 'index'));
 			} else {
 				$this->Session->setFlash(__('The category could not be saved. Please, try again.'));
 			}
 		}
-
 		unset($this->request->data);
-		$this->loadModel('Staff');
-					$userid = $this->Auth->user('staff_id');
-					$instid = $this->Staff->find('first', array('fields' => ['Staff.institution_id'], 'conditions' => array('Staff.id' => $userid)));
-
-		      		$departments = $this->Category->Department->find('list', array(
-		      			'conditions' => array('Department.institution_id' => $instid['Staff']['institution_id'])));
-		      		$this->set(compact('departments'));
+    $departments = $this->Category->Department->find('list',array(
+                    'conditions' => array('Department.institution_id' => $this->Session->read('institution_id'))));
+    $this->set(compact('departments'));
 	}
-	
+/**
+ * add method for developer
+ *
+ * @return void
+ */
 	public function add_developer() {
 		if ($this->request->is('post') && $this->request->data['Category']['institution_id'] != 0
 			&& $this->request->data['Category']['department_id'] != 0){
 			$this->Category->create();
 			$this->request->data['Category']['name'] = ucfirst(strtolower($this->request->data['Category']['name']));
 			if ($this->Category->save($this->request->data,true,array('name','institution_id','department_id'))) {
-				$this->Session->setFlash(__('The category has been saved.') , 'alert', array(
-				'class' => 'alert-success'
-			));
-				return $this->redirect(array('action' => 'index_developer'));
+  				$this->Session->setFlash(__('The category has been saved.') , 'alert', array(
+  				'class' => 'alert-success'
+  			));
+  				return $this->redirect(array('action' => 'index_developer'));
 			} else {
 				$this->Session->setFlash(__('The category could not be saved. Please, try again.'));
 			}
@@ -122,9 +120,9 @@ class CategoriesController extends SupportTicketSystemAppController {
 		}
 
 		unset($this->request->data);
-		      		$institutions = $this->Category->Institution->find('list');
-		      		$departments = [];
-         			$this->set(compact('institutions','departments'));
+		$institutions = $this->Category->Institution->find('list');
+		$departments = [];
+		$this->set(compact('institutions','departments'));
 	}
 
 
@@ -202,8 +200,8 @@ class CategoriesController extends SupportTicketSystemAppController {
             
             if ($this->Category->save($this->request->data,true,array('id','recstatus'))) {
                 $this->Session->setFlash(__('The category has been activated.'), 'alert', array(
-				'class' => 'alert-success'
-			));
+                                    				'class' => 'alert-success'
+                                    			));
             } else {
                 $this->Session->setFlash(__('The category cannot be activated. Please, try again.'));
             }
@@ -213,13 +211,12 @@ class CategoriesController extends SupportTicketSystemAppController {
         }
     }
     
-     public function list_category(){
+  public function list_category(){
     		$this->request->onlyAllow('ajax');
 			$id = $this->request->query('id');
 			if (!$id) {
 				throw new NotFoundException();
 			}
-
 			$this->disableCache();
 			$categories = $this->Category->getListByDepartment($id);
 			$this->set(compact('categories'));

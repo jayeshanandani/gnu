@@ -29,8 +29,8 @@
 /**
  * ...and connect the rest of 'Pages' controller's URLs.
  */
-	Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'));
-	Router::connect('/dashboard', array('controller' => 'users', 'action' => 'dashboard'));
+Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'));
+Router::connect('/dashboard', array('controller' => 'users', 'action' => 'dashboard'));
 Router::setExtensions(array('json', 'xml','pdf'));
 Router::parseExtensions('json', 'xml','pdf');
 

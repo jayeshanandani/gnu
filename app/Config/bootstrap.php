@@ -108,6 +108,7 @@ CakeLog::config('error', array(
 
 CakePlugin::load('SupportTicketSystem',array('bootstrap' => true,'routes' => false));
 CakePlugin::load('TrainingAndPlacement',array('bootstrap' => false,'routes' => false));
+CakePlugin::load('FeedbackSystem',array('bootstrap' => false,'routes' => false));
 CakePlugin::load('Tools',array('bootstrap' => true,'routes' => false));
 CakePlugin::load('DebugKit');
 CakePlugin::load('HighCharts');
@@ -129,3 +130,13 @@ Configure::write('CakePdf', array(
         'orientation' => 'landscape',
         'download' => true
     ));
+
+Configure::write('developer',1);
+Configure::write('superadmin',2);
+Configure::write('tpadmin',3);
+Configure::write('stadmin',4);
+Configure::write('fbadmin',5);
+Configure::write('deptcoordinator',6);
+Configure::write('stcoordinator',7);
+Configure::write('user',8);
+Configure::write('company',9);

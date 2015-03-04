@@ -21,31 +21,32 @@ class UsersController extends AppController {
  * @return void
  */
 	public function dashboard() {
+        //debug($this->Auth->user());
         $fullname = $this->Auth->user('fullname');
         $modified = $this->Auth->user('modified');
-        $this->set(compact('fullname','modified'));
-        $staffid = $this->Auth->user('staff_id');
-        $studentid = $this->Auth->user('student_id');
+        $staff_id = $this->Auth->user('staff_id');
+        $student_id = $this->Auth->user('student_id');
+
         if($this->Auth->user('first_login')) {
-            $first_login = 0;
-            $this->request->data['User']['first_login'] = $first_login;
+            $this->request->data['User']['first_login'] = 0;
             $this->request->data['User']['id'] = $this->Auth->user('id');
             $this->User->save($this->request->data,true,array('id','first_login'));
         }
-        if($staffid != 0)
-        {
-            $data = $this->User->Staff->find('first', array('fields' => array('Staff.institution_id','Staff.department_id'), 'conditions' => array('Staff.id' => $staffid)));
+
+        if($staff_id != 0) {
+            $data = $this->User->Staff->find('first', array('fields' => array('Staff.institution_id','Staff.department_id'), 'conditions' => array('Staff.id' => $staff_id)));
             $this->Session->write('institution_id',$data['Staff']['institution_id']);
             $this->Session->write('department_id',$data['Staff']['department_id']);
-        } 
-
-        else if ($studentid != 0) {
-            $data = $this->User->Student->find('first', array('fields' => array('Student.institution_id','Student.degree_id'), 'conditions' => array('Student.id' => $studentid)));
+        } else if ($student_id != 0) {
+            $data = $this->User->Student->find('first', array('fields' => array('Student.institution_id','Student.degree_id'), 'conditions' => array('Student.id' => $student_id)));
             $this->Session->write('institution_id',$data['Student']['institution_id']);
-            $data1 = $this->User->Student->Degree->find('first', array('fields' => array('Degree.department_id'), 'conditions' => array('Degree.id' => $data['Student']['degree_id'])));
-            $this->Session->write('department_id',$data1['Degree']['department_id']);
+            $this->Session->write('degree_id',$data['Student']['degree_id']);
+            $content = $this->User->Student->Degree->find('first', array('fields' => array('Degree.department_id'), 'conditions' => array('Degree.id' => $data['Student']['degree_id'])));
+            $this->Session->write('department_id',$content['Degree']['department_id']);
         }
-	}
+
+        $this->set(compact('fullname','modified'));
+    }
 
 
 
@@ -60,14 +61,10 @@ class UsersController extends AppController {
 		if ($this->request->is('post')) {
 			$this->User->create();
 			if ($this->User->save($this->request->data,true,array('username','pwd','pwd_repeat','fullname'))) {
-				
-                $lastid = $this->User->getLastInsertId();
-                $this->request->data['UserRole']['user_id'] = $lastid;
+                $this->request->data['UserRole']['user_id'] = $this->User->getLastInsertId();
                 $this->request->data['UserRole']['role_id'] = Configure::read('user');
                 if ($this->User->UserRole->save($this->request->data)) {
-
                     $this->Session->setFlash(__('The user has been saved.'));
-				
 			} else {
 				$this->Session->setFlash(__('The user could not be saved. Please, try again.'));
 			}

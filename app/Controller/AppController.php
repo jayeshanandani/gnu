@@ -56,17 +56,18 @@ class AppController extends Controller {
                 'controller' => 'users',
                 'action' => 'dashboard'
             ),
-           'authorize' => ['Tools.Tiny']
+          // 'authorize' => ['Tools.Tiny']
         ),
     );
 
     public function beforeFilter() {
-         $this->layout = 'bootstrap';
-        parent::beforeFilter();
+       $this->layout = 'bootstrap';
+       parent::beforeFilter();
 
-   if (Auth::hasRoles(array('superadmin')) ) {
-    	$this->Auth->allow();
-   }
+       if (Auth::hasRoles(array('developer'))) {
+          $this->Auth->allow();
+       }
+   
         $this->Auth->allow('login','lost_password','change_password_init','change_password','logout');
     }
 
