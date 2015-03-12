@@ -91,6 +91,7 @@ public $validate = [
                 'foreignKey' => 'user_id',
                 'associationForeignKey' => 'role_id',
                 'unique' => true,
+                'conditions' => ['UserRole.recstatus'=>1],
             ]
     ];
 }

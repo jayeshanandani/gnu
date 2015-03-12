@@ -56,7 +56,7 @@ class UsersController extends AppController {
  *
  * @return void
  */
-    public function add() {
+   public function add() {
     $this->User->Behaviors->load('Tools.Passwordable', array());
 		if ($this->request->is('post')) {
 			$this->User->create();
@@ -87,6 +87,9 @@ class UsersController extends AppController {
  * @return void
  */
 	public function login() {
+        if ($this->Session->read('Auth.User.id')) {
+                return $this->redirect('/dashboard');
+        }
         if ($this->request->is('post')) {
             if ($this->Auth->login()) {
                 if ($this->Auth->user('recstatus') == 0) {

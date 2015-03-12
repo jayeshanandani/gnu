@@ -3,7 +3,7 @@ App::uses('AppController', 'Controller');
 /**
  * User Roles Controller
  *
- * @property ManageRoles $Manageroles
+ * @property UserRoles $Manageroles
  * @property PaginatorComponent $Paginator
  */
 class UserRolesController extends AppController {
@@ -14,20 +14,19 @@ public $components = array('Paginator');
 *
 * View , Index , Deactivate and Add Function Of SuperAdmin Starts From Here.
 *
-**/
-public function view_superadmin($id = null)
-{
-  if (!$this->ManageRole->exists($id)) {
+*/
+public function view_superadmin($id = null) {
+  if (!$this->UserRole->exists($id)) {
     throw new NotFoundException(__('Invalid Role'));
   }
 
   $options = array(
     'recursive' => - 1,
     'contain' => ['Staff','Institution','Department','Role'],
-    'conditions' => array('ManageRole.' . $this->ManageRole->primaryKey => $id
+    'conditions' => array('UserRole.' . $this->UserRole->primaryKey => $id
     )
   );
-  $this->set('superadmin', $this->ManageRole->find('first', $options));
+  $this->set('superadmin', $this->UserRole->find('first', $options));
 }
 
 public function index_superadmin()
@@ -41,21 +40,21 @@ public function index_superadmin()
     'limit' => $pagination_value,
     'page' => 1,
     'contain' => ['Staff','Institution','Department','Role'],
-    'conditions'=>['ManageRole.role_id'=> array(Configure::read('superadmin'))]);
+    'conditions'=>['UserRole.role_id'=> array(Configure::read('superadmin'))]);
   $this->set('superadmins', $this->Paginator->paginate());
 }
 
 public function deactivate_superadmin($id = null)
 {
   if ($this->request->is(array('post','put'))) {
-    $this->ManageRole->id = $id;
-    if (!$this->ManageRole->exists()) {
+      $this->UserRole->id = $id;
+    if (!$this->UserRole->exists()) {
       throw new NotFoundException(__('Invalid Role'));
     }
 
-    $this->request->data['ManageRole']['id'] = $id;
-    $this->request->data['ManageRole']['recstatus'] = 0;
-    if ($this->ManageRole->save($this->request->data, true, array('id','recstatus')))
+    $this->request->data['UserRole']['id'] = $id;
+    $this->request->data['UserRole']['recstatus'] = 0;
+    if ($this->UserRole->save($this->request->data, true, array('id','recstatus')))
      {
       $this->Session->setFlash(__('It has been deactivated.') , 'alert', array(
         'class' => 'alert-success'
@@ -72,16 +71,16 @@ public function deactivate_superadmin($id = null)
 }
 public function add_superadmin()
 {
-  if($this->request->is('post') && $this->request->data['ManageRole']['staff_id'] != 0){
-      $this->ManageRole->create();
-                        $this->request->data['ManageRole']['role_id'] = Configure::read('superadmin');
-                         $this->request->data['ManageRole']['recstatus'] = 1 ;
-      if ($this->ManageRole->save($this->request->data)){ 
-        $staff_id = $this->request->data['ManageRole']['staff_id']; 
-          $data = $this->ManageRole->Role->UserRole->User->find('first',['conditions'=>['User.staff_id'=>$staff_id]]);
+  if($this->request->is('post') && $this->request->data['UserRole']['staff_id'] != 0){
+      $this->UserRole->create();
+                        $this->request->data['UserRole']['role_id'] = Configure::read('superadmin');
+                         $this->request->data['UserRole']['recstatus'] = 1 ;
+      if ($this->UserRole->save($this->request->data)){ 
+        $staff_id = $this->request->data['UserRole']['staff_id']; 
+          $data = $this->UserRole->Role->UserRole->User->find('first',['conditions'=>['User.staff_id'=>$staff_id]]);
           $this->request->data['UserRole']['user_id'] = $data['User']['id']; 
           $this->request->data['UserRole']['role_id'] = Configure::read('superadmin'); 
-         if($this->ManageRole->Role->UserRole->save($this->request->data)){
+         if($this->UserRole->Role->UserRole->save($this->request->data)){
         
             $this->Session->setFlash(__('The Super Admin has been saved.'), 'alert', array(
      'class' => 'alert-success'
@@ -95,7 +94,7 @@ public function add_superadmin()
             }
     }
             unset($this->request->data);  
-                     $institutions = $this->ManageRole->Institution->find('list');
+                     $institutions = $this->UserRole->Institution->find('list');
                      $departments = [];
                   $staffs = [];
                 $this->set(compact('institutions', 'departments', 'staffs'));
@@ -109,17 +108,17 @@ public function add_superadmin()
 **/
 public function view_admin($id = null)
 {
-  if (!$this->ManageRole->exists($id)) {
+  if (!$this->UserRole->exists($id)) {
     throw new NotFoundException(__('Invalid Role'));
   }
 
   $options = array(
     'recursive' => - 1,
     'contain' => ['Staff','Institution','Department','Role'],
-    'conditions' => array('ManageRole.' . $this->ManageRole->primaryKey => $id
+    'conditions' => array('UserRole.' . $this->UserRole->primaryKey => $id
     )
   );
-  $this->set('admin', $this->ManageRole->find('first', $options));
+  $this->set('admin', $this->UserRole->find('first', $options));
 }
 
 public function index_admin_developer()
@@ -131,7 +130,7 @@ public function index_admin_developer()
     'limit' => $pagination_value,
     'page' => 1,
     'contain' => ['Staff','Institution','Department','Role'],
-    'conditions'=>['ManageRole.role_id'=> array(Configure::read('stadmin'),Configure::read('tpadmin'),Configure::read('fbadmin'))]);
+    'conditions'=>['UserRole.role_id'=> array(Configure::read('stadmin'),Configure::read('tpadmin'),Configure::read('fbadmin'))]);
   $this->set('admins', $this->Paginator->paginate());
 }
 
@@ -148,21 +147,21 @@ public function index_admin()
     'limit' => $pagination_value,
     'page' => 1,
     'contain' => ['Staff','Institution','Department','Role'],
-    'conditions'=> array('ManageRole.role_id'=> array(Configure::read('stadmin'),Configure::read('tpadmin'),Configure::read('fbadmin')), 'ManageRole.institution_id'=>$data2));
+    'conditions'=> array('UserRole.role_id'=> array(Configure::read('stadmin'),Configure::read('tpadmin'),Configure::read('fbadmin')), 'UserRole.institution_id'=>$data2));
   $this->set('admins', $this->Paginator->paginate());
 }
 
 public function deactivate_admin_developer($id = null)
 {
   if ($this->request->is(array('post','put'))) {
-    $this->ManageRole->id = $id;
-    if (!$this->ManageRole->exists()) {
+    $this->UserRole->id = $id;
+    if (!$this->UserRole->exists()) {
       throw new NotFoundException(__('Invalid Role'));
     }
 
-    $this->request->data['ManageRole']['id'] = $id;
-    $this->request->data['ManageRole']['recstatus'] = 0;
-    if ($this->ManageRole->save($this->request->data, true, array('id','recstatus')))
+    $this->request->data['UserRole']['id'] = $id;
+    $this->request->data['UserRole']['recstatus'] = 0;
+    if ($this->UserRole->save($this->request->data, true, array('id','recstatus')))
      {
       $this->Session->setFlash(__('It has been deactivated.') , 'alert', array(
         'class' => 'alert-success'
@@ -181,14 +180,14 @@ public function deactivate_admin_developer($id = null)
 public function deactivate_admin($id = null)
 {
   if ($this->request->is(array('post','put'))) {
-    $this->ManageRole->id = $id;
-    if (!$this->ManageRole->exists()) {
+    $this->UserRole->id = $id;
+    if (!$this->UserRole->exists()) {
       throw new NotFoundException(__('Invalid Role'));
     }
 
-    $this->request->data['ManageRole']['id'] = $id;
-    $this->request->data['ManageRole']['recstatus'] = 0;
-    if ($this->ManageRole->save($this->request->data, true, array('id','recstatus')))
+    $this->request->data['UserRole']['id'] = $id;
+    $this->request->data['UserRole']['recstatus'] = 0;
+    if ($this->UserRole->save($this->request->data, true, array('id','recstatus')))
      {
       $this->Session->setFlash(__('It has been deactivated.') , 'alert', array(
         'class' => 'alert-success'
@@ -208,14 +207,14 @@ public function deactivate_admin($id = null)
 **/
 public function add_developer_admin()
 {
-  if($this->request->is('post') && $this->request->data['ManageRole']['staff_id'] != 0){
-      $this->ManageRole->create();
-      if ($this->ManageRole->save($this->request->data)){ 
-        $staffid = $this->request->data['ManageRole']['staff_id']; //staff which we have selected itz id is stored in variable staffid
-          $data = $this->ManageRole->Role->UserRole->User->find('first',['conditions'=>['User.staff_id'=>$staffid]]); // finding that id in USER table
+  if($this->request->is('post') && $this->request->data['UserRole']['staff_id'] != 0){
+      $this->UserRole->create();
+      if ($this->UserRole->save($this->request->data)){ 
+        $staffid = $this->request->data['UserRole']['staff_id']; //staff which we have selected itz id is stored in variable staffid
+          $data = $this->UserRole->Role->UserRole->User->find('first',['conditions'=>['User.staff_id'=>$staffid]]); // finding that id in USER table
           $this->request->data['UserRole']['user_id'] = $data['User']['id']; // appending the user id after findind itz User
-          $this->request->data['UserRole']['role_id'] = $this->request->data['ManageRole']['role_id'];//copy role_id value from managerole to userrole table
-          if($this->ManageRole->Role->UserRole->save($this->request->data)){ // save data in USERROLE table     
+          $this->request->data['UserRole']['role_id'] = $this->request->data['UserRole']['role_id'];//copy role_id value from managerole to userrole table
+          if($this->UserRole->Role->UserRole->save($this->request->data)){ // save data in USERROLE table     
  
             $this->Session->setFlash(__('The  Admin has been saved.'), 'alert', array(
      'class' => 'alert-success'
@@ -230,10 +229,10 @@ public function add_developer_admin()
             }
     }
         unset($this->request->data);
-                                 $institutions = $this->ManageRole->Institution->find('list');
+                                 $institutions = $this->UserRole->Institution->find('list');
                                  $departments = [];
                          $staffs = [];
-                       $roles = $this->ManageRole->Role->find('list',array(
+                       $roles = $this->UserRole->Role->find('list',array(
                          'conditions'=>array('Role.id'=>array(Configure::read('stadmin'),Configure::read('tpadmin'),Configure::read('fbadmin')))));
                        $this->set(compact('institutions', 'departments', 'staffs','roles'));
  
@@ -243,18 +242,18 @@ public function add_developer_admin()
 **/
 public function add_admin()
 {
-  if($this->request->is('post') && $this->request->data['ManageRole']['staff_id'] != 0){
-      $this->ManageRole->create();
+  if($this->request->is('post') && $this->request->data['UserRole']['staff_id'] != 0){
+      $this->UserRole->create();
       $this->loadModel('Staff');
       $userid = $this->Auth->user('staff_id');
       $data = $this->Staff->find('first',['conditions'=>['Staff.id'=>$userid]]);
-        $this->request->data['ManageRole']['institution_id'] = $data['Staff']['institution_id'];
-      if ($this->ManageRole->save($this->request->data,true,array('institution_id','department_id','role_id','staff_id'))){ 
-        $staffid = $this->request->data['ManageRole']['staff_id']; //staff which we have selected itz id is stored in variable staffid
-          $data = $this->ManageRole->Role->UserRole->User->find('first',['conditions'=>['User.staff_id'=>$staffid]]); // finding that id in USER table
+        $this->request->data['UserRole']['institution_id'] = $data['Staff']['institution_id'];
+      if ($this->UserRole->save($this->request->data,true,array('institution_id','department_id','role_id','staff_id'))){ 
+        $staffid = $this->request->data['UserRole']['staff_id']; //staff which we have selected itz id is stored in variable staffid
+          $data = $this->UserRole->Role->UserRole->User->find('first',['conditions'=>['User.staff_id'=>$staffid]]); // finding that id in USER table
           $this->request->data['UserRole']['user_id'] = $data['User']['id']; // appending the user id after findind itz User
-          $this->request->data['UserRole']['role_id'] = $this->request->data['ManageRole']['role_id'];//copy role_id value from managerole to userrole table
-          if($this->ManageRole->Role->UserRole->save($this->request->data)){ // save data in USERROLE table     
+          $this->request->data['UserRole']['role_id'] = $this->request->data['UserRole']['role_id'];//copy role_id value from managerole to userrole table
+          if($this->UserRole->Role->UserRole->save($this->request->data)){ // save data in USERROLE table     
  
             $this->Session->setFlash(__('The  Admin has been saved.'), 'alert', array(
      'class' => 'alert-success'
@@ -273,10 +272,10 @@ public function add_admin()
     }
         unset($this->request->data);
                     $userid = $this->Auth->user('staff_id');
-                    $instid = $this->ManageRole->Staff->find('first', array('fields' => array('Staff.institution_id'), 'conditions' => array('Staff.id' => $userid)));
-                    $departments = $this->ManageRole->Department->find('list',array('conditions'=>array('Department.institution_id'=>$instid['Staff']['institution_id'])));
+                    $instid = $this->UserRole->Staff->find('first', array('fields' => array('Staff.institution_id'), 'conditions' => array('Staff.id' => $userid)));
+                    $departments = $this->UserRole->Department->find('list',array('conditions'=>array('Department.institution_id'=>$instid['Staff']['institution_id'])));
                         $staffs = [];
-                        $roles = $this->ManageRole->Role->find('list',array(
+                        $roles = $this->UserRole->Role->find('list',array(
                         'conditions'=>array('Role.id'=>array(Configure::read('stadmin'),Configure::read('tpadmin'),Configure::read('fbadmin')))));
                 $this->set(compact( 'departments', 'staffs','roles'));
 }
