@@ -33,21 +33,6 @@ class UserRole extends AppModel {
  *
  * @var array
  */
-	public $belongsTo = [
-		'User' => [
-			'className' => 'User',
-			'foreignKey' => 'user_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		],
-		'Role' => [
-			'className' => 'Role',
-			'foreignKey' => 'role_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		]
-	];
+	public $belongsTo = ['Institution','Department','Staff','Role','User'];
 
 }

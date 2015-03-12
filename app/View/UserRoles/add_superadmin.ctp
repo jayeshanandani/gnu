@@ -1,11 +1,10 @@
-
 <div class="row">
           <div class="col-lg-6">
 			<div class="tickets form">
 				<?php echo $this->Html->script('manage_role'); ?>
 
 				<?php
-				echo $this->Form->create('ManageRole', array('inputDefaults' => array(
+				echo $this->Form->create('UserRole', array('inputDefaults' => array(
 																			'div' => 'form-group',
 																			'wrapInput' => false,
 																			'class' => 'form-control'),

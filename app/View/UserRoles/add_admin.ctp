@@ -3,7 +3,7 @@
 <div class="tickets form">
 	<?php echo $this->Html->script('manage_role');?>
 
-<?php echo $this->Form->create('ManageRole', array(
+<?php echo $this->Form->create('UserRole', array(
 	'inputDefaults' => array(
 		'div' => 'form-group',
 		'wrapInput' => false,
@@ -12,8 +12,9 @@
 	'class' => 'well form-horizontal'
 )); ?>
 
+
 <fieldset>
-		<legend><?php echo __('Manage Department Co-ordinator'); ?></legend>
+		<legend><?php echo __('Manage Various Admins'); ?></legend>
 		<?php
 		$url             = $this->Html->url(array('controller' => 'departments','plugin'=>false,
 'action' => 'list_departments',
@@ -23,14 +24,23 @@ $urla            = $this->Html->url(array('controller' => 'staffs', 'plugin'=>fa
 'action' => 'list_staff',
 'ext' => 'json'
 ));
+// $urlb           = $this->Html->url(array('controller' => 'roles', 'plugin'=>false,
+// 'action' => 'list_roles',
+// 'ext' => 'json'
+// ));
+
 		
 		
 $emptyStaff     = count($staffs) > 0 ? Configure::read('Select.defaultAfter') : array('0' => Configure::read('Select.naBefore') . __('Select Department First') . Configure::read('Select.naAfter')
 );
 
+$emptyRole		= count($roles) > 0 ? Configure::read('Select.defaultAfter') : array('0' => Configure::read('Select.naBefore') . __('Select Staff 
+	First'). Configure::read('Select.naAfter')
+);
+
 echo $this->Form->input('department_id', array('id' => 'departments','empty' => 'Please Select First','rel' => $urla));
 echo $this->Form->input('staff_id', array('id' => 'staffs','empty' => $emptyStaff));
-echo $this->Form->input('role_id');
+echo $this->Form->input('role_id', array('id' => 'roles','empty' => $emptyRole));
 
 		?>
 <?php echo $this->Form->submit('Submit', array(

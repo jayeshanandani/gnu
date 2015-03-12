@@ -51,13 +51,13 @@
                   <li>
                     <?php echo $this->Html->link(__("New Super Admin",true),[
                     'plugin'=>false,
-                    'controller' => 'manage_roles', 
+                    'controller' => 'user_roles', 
                     'action' => 'add_superadmin']); ?>
                   </li>
                   <li>
                     <?php echo $this->Html->link(__("View Super Admins",true),[
                     'plugin'=>false,
-                    'controller' => 'manage_roles', 
+                    'controller' => 'user_roles', 
                     'action' => 'index_superadmin']);?>
                   </li>
                   <li class="divider"></li>
@@ -68,7 +68,7 @@
                   <li>
                     <?php echo $this->Html->link(__("New Admin",true),[
                     'plugin'=>false,
-                    'controller' => 'manage_roles', 
+                    'controller' => 'user_roles', 
                     'action' => 'add_developer_admin']); ?>
                   </li>
               <?php } ?>
@@ -79,7 +79,7 @@
                   <li>
                     <?php echo $this->Html->link(__("New Admin",true),[
                     'plugin'=>false,
-                    'controller' => 'manage_roles', 
+                    'controller' => 'user_roles', 
                     'action' => 'add_admin']); ?>
                   </li>
               <?php } ?>
@@ -88,7 +88,7 @@
               <li>
                 <?php echo $this->Html->link(__("View Admins",true),[
                 'plugin'=>false,
-                'controller' => 'manage_roles', 
+                'controller' => 'user_roles', 
                 'action' => 'index_admin_developer']);?>
               </li>
               <?php } ?>
@@ -97,7 +97,7 @@
               <li>
                 <?php echo $this->Html->link(__("View Admins",true),[
                 'plugin'=>false,
-                'controller' => 'manage_roles',
+                'controller' => 'user_roles',
                 'action' => 'index_admin']); ?>
               </li>
               <?php } ?>
