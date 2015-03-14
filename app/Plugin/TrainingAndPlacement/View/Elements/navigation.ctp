@@ -15,7 +15,7 @@ echo $this->Html->css('TrainingAndPlacement.navigation');
         <div class="navbar-collapse collapse" >
 			<ul class="nav navbar-nav">
 			<li><?php 
-			if (Auth::hasRoles(array('tpadmin','user','company')) ) {	
+			if (Auth::hasRoles(array('developer','tpadmin','user','company')) ) {	
 			echo $this->Html->link(__("Home",true), [
             'plugin'=> false, 
             'controller' => 'users', 
@@ -23,7 +23,7 @@ echo $this->Html->css('TrainingAndPlacement.navigation');
          ]); }?></li>
 
          <li>
-         <?php  if (Auth::hasRoles(array('tpadmin')) ) {
+         <?php  if (Auth::hasRoles(array('developer','tpadmin')) ) {
             echo $this->Html->link(__("Dashboard",true), [
             'plugin'=>'training_and_placement',
             'controller' => 'company_campuses', 
@@ -45,7 +45,7 @@ echo $this->Html->css('TrainingAndPlacement.navigation');
             }
          ?></li>
          
-         <?php  if (Auth::hasRoles(array('company')) ) { ?>
+         <?php  if (Auth::hasRoles(array('developer','company')) ) { ?>
          <li class = "dropdown menu-large">
          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Placement<b class="caret"></b></a>
          <ul class="dropdown-menu megamenu row">
@@ -100,7 +100,7 @@ echo $this->Html->css('TrainingAndPlacement.navigation');
       </li>
          </li>
       </ul></div></div></div><?php } ?>
-      	</li><?php if (Auth::hasRoles(array('tpadmin','user')) ) { ?>
+      	</li><?php if (Auth::hasRoles(array('developer','tpadmin','user')) ) { ?>
 	  	<li class="dropdown menu-large">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Campus Placement<b class="caret"></b></a>				
 			<ul class="dropdown-menu megamenu row">
@@ -177,7 +177,7 @@ echo $this->Html->css('TrainingAndPlacement.navigation');
                   </li>
 
                		<?php } ?>	
-						 <?php  if (Auth::hasRoles(array('tpadmin')) ) { ?>
+						 <?php  if (Auth::hasRoles(array('developer','tpadmin')) ) { ?>
 						<li class="dropdown-header">Company Master</li>		
                   		<li>
 	                     <?php echo $this->Html->link(__("Add New Company",true), [
@@ -227,7 +227,7 @@ echo $this->Html->css('TrainingAndPlacement.navigation');
             	</li>
         </li>
 					<?php } ?>	
-						 <?php  if (Auth::hasRoles(array('tpadmin')) ) { ?>
+						 <?php  if (Auth::hasRoles(array('developer','tpadmin')) ) { ?>
 					<li class="col-sm-3">
 						<ul>
 							<li class="dropdown-header">Lists Of</li>
@@ -276,7 +276,7 @@ echo $this->Html->css('TrainingAndPlacement.navigation');
             </li>
             <?php } ?>	
 
-						 <?php  if (Auth::hasRoles(array('tpadmin')) ) { ?>
+						 <?php  if (Auth::hasRoles(array('developer','tpadmin')) ) { ?>
 
 							<li class="divider"></li>
 							<li class="dropdown-header">Training and Placement Status</li>
@@ -289,7 +289,7 @@ echo $this->Html->css('TrainingAndPlacement.navigation');
                ]); ?>
             </li>
             <?php }?>
-            <?php  if (Auth::hasRoles(array('tpadmin')) ) { ?>
+            <?php  if (Auth::hasRoles(array('developer','tpadmin')) ) { ?>
 								<li class="divider"></li>
 							<li class="dropdown-header">Extra</li>
 							 <li><?php echo $this->Html->link(__("TODO List",true), [
@@ -317,7 +317,7 @@ echo $this->Html->css('TrainingAndPlacement.navigation');
 					<li class="col-sm-3">
 						<ul>
 						 
-						 <?php  if (Auth::hasRoles(array('tpadmin')) ) { ?>
+						 <?php  if (Auth::hasRoles(array('developer','tpadmin')) ) { ?>
 							<li class="dropdown-header">Charts & Reports</li>
 							
 						<li><?php echo $this->Html->link(__("Column Chart Hiring",true),[
@@ -382,7 +382,7 @@ echo $this->Html->css('TrainingAndPlacement.navigation');
 						</ul>
 					</li>
 			
-				</ul> <?php  if (Auth::hasRoles(array('tpadmin','user')) ) { ?>
+				</ul> <?php  if (Auth::hasRoles(array('developer','tpadmin','user')) ) { ?>
 <li>
          <?php echo $this->Html->link('Logout',[
             'controller' => 'users' ,

@@ -56,7 +56,7 @@ class AppController extends Controller {
                 'controller' => 'users',
                 'action' => 'dashboard'
             ),
-          // 'authorize' => ['Tools.Tiny']
+           'authorize' => ['Tools.Tiny']
         ),
     );
 

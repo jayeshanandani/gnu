@@ -69,17 +69,6 @@
                     <?php echo $this->Html->link(__("New Admin",true),[
                     'plugin'=>false,
                     'controller' => 'user_roles', 
-                    'action' => 'add_developer_admin']); ?>
-                  </li>
-              <?php } ?>
-
-
-              <?php if(Auth::hasRoles(['admin'])) {?>
-              <li class="dropdown-header">Manage Module Admin</li>
-                  <li>
-                    <?php echo $this->Html->link(__("New Admin",true),[
-                    'plugin'=>false,
-                    'controller' => 'user_roles', 
                     'action' => 'add_admin']); ?>
                   </li>
               <?php } ?>
@@ -89,16 +78,7 @@
                 <?php echo $this->Html->link(__("View Admins",true),[
                 'plugin'=>false,
                 'controller' => 'user_roles', 
-                'action' => 'index_admin_developer']);?>
-              </li>
-              <?php } ?>
-
-              <?php if(Auth::hasRoles(['admin'])) {?>
-              <li>
-                <?php echo $this->Html->link(__("View Admins",true),[
-                'plugin'=>false,
-                'controller' => 'user_roles',
-                'action' => 'index_admin']); ?>
+                'action' => 'index_admin']);?>
               </li>
               <?php } ?>
             </ul>

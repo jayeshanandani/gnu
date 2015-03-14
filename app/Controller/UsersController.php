@@ -21,7 +21,6 @@ class UsersController extends AppController {
  * @return void
  */
 	public function dashboard() {
-        //debug($this->Auth->user());
         $fullname = $this->Auth->user('fullname');
         $modified = $this->Auth->user('modified');
         $staff_id = $this->Auth->user('staff_id');

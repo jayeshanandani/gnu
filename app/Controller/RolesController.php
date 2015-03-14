@@ -49,10 +49,12 @@ class RolesController extends AppController {
 		if ($this->request->is('post')) {
 			$this->Role->create();
 			if ($this->Role->save($this->request->data)) {
-				$this->Session->setFlash(__('The role has been saved.'));
+				$this->Session->setFlash(__('The role has been saved.'),'alert', array(
+    'class' => 'alert-success'));
 				return $this->redirect(array('action' => 'index'));
 			} else {
-				$this->Session->setFlash(__('The role could not be saved. Please, try again.'));
+				$this->Session->setFlash(__('The role could not be saved. Please, try again.'),'alert', array(
+    'class' => 'alert-danger'));
 			}
 		}
 	}
@@ -70,10 +72,14 @@ class RolesController extends AppController {
 		}
 		if ($this->request->is(array('post', 'put'))) {
 			if ($this->Role->save($this->request->data)) {
-				$this->Session->setFlash(__('The role has been saved.'));
+				$this->Session->setFlash(__('The role has been saved.'),'alert', array(
+    'class' => 'alert-success'
+));
 				return $this->redirect(array('action' => 'index'));
 			} else {
-				$this->Session->setFlash(__('The role could not be saved. Please, try again.'));
+				$this->Session->setFlash(__('The role could not be saved. Please, try again.'),'alert', array(
+    'class' => 'alert-danger'
+));
 			}
 		} else {
 			$options = array('conditions' => array('Role.' . $this->Role->primaryKey => $id));

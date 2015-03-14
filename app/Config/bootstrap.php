@@ -133,10 +133,11 @@ Configure::write('CakePdf', array(
 
 Configure::write('developer',1);
 Configure::write('superadmin',2);
-Configure::write('tpadmin',3);
-Configure::write('stadmin',4);
-Configure::write('fbadmin',5);
-Configure::write('deptcoordinator',6);
-Configure::write('stcoordinator',7);
-Configure::write('user',8);
-Configure::write('company',9);
+Configure::write('admin',3);
+Configure::write('tpadmin',4);
+Configure::write('stadmin',5);
+Configure::write('fbadmin',6);
+Configure::write('deptcoordinator',7);
+Configure::write('stcoordinator',8);
+Configure::write('user',9);
+Configure::write('company',10);

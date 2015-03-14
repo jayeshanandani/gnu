@@ -1,4 +1,3 @@
-
 <div class="table-responsive">
 <div class="superadmins view">
 <h2><?php echo __('Super Admin'); ?></h2>

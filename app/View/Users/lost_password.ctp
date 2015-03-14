@@ -1,9 +1,4 @@
 <div class="row">
-<style type="text/css">
-	.div{
-		background-color: 
-	}
-</style>
           <div class="col-lg-4 col-lg-offset-4">
 <h2><?php echo __('Password lost?');?></h2>
 <div class="users form">

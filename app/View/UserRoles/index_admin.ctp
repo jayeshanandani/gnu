@@ -27,10 +27,10 @@
 			<?php echo h($admin['Role']['alias']); ?>
 		</td>
 		<td class="actions">
-			<?php echo $this->Html->link(__('', true), array('action' => 'view_admin', $admin['ManageRole']['id']), array('class' => 'glyphicon glyphicon-eye-open')); ?>
+			<?php echo $this->Html->link(__('', true), array('action' => 'view_admin', $admin['UserRole']['id']), array('class' => 'glyphicon glyphicon-eye-open')); ?>
 			<?php 
-			if($admin['ManageRole']['recstatus'] == 1){
-				echo $this->Form->postLink(__('', true), array('action' => 'deactivate_admin', $admin['ManageRole']['id']),array('class' => 'glyphicon glyphicon-remove', 'escape' => false), null, __('Are you sure you want to Deactivate # %s?', $admin['ManageRole']['id'])); 
+			if($admin['UserRole']['recstatus'] == 1){
+				echo $this->Form->postLink(__('', true), array('action' => 'deactivate_admin_developer', $admin['UserRole']['id']),array('class' => 'glyphicon glyphicon-remove', 'escape' => false), null, __('Are you sure you want to Deactivate # %s?', $admin['UserRole']['id'])); 
 			}
 		?>
 		

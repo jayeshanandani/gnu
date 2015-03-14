@@ -24,23 +24,17 @@ $urla            = $this->Html->url(array('controller' => 'staffs', 'plugin'=>fa
 'action' => 'list_staff',
 'ext' => 'json'
 ));
-// $urlb           = $this->Html->url(array('controller' => 'roles', 'plugin'=>false,
-// 'action' => 'list_roles',
-// 'ext' => 'json'
-// ));
 
-		
-		
+		$emptyDepartment = count($departments) > 0 ? Configure::read('Select.defaultAfter') : array('0' => Configure::read('Select.naBefore') . __('Select Institution First') . Configure::read('Select.naAfter')
+);
 $emptyStaff     = count($staffs) > 0 ? Configure::read('Select.defaultAfter') : array('0' => Configure::read('Select.naBefore') . __('Select Department First') . Configure::read('Select.naAfter')
 );
 
-$emptyRole		= count($roles) > 0 ? Configure::read('Select.defaultAfter') : array('0' => Configure::read('Select.naBefore') . __('Select Staff 
-	First'). Configure::read('Select.naAfter')
-);
-
-echo $this->Form->input('department_id', array('id' => 'departments','empty' => 'Please Select First','rel' => $urla));
+echo $this->Form->input('institution_id', array('id' => 'institutions','empty' => 'Please Select First',
+'rel' => $url
+));
+echo $this->Form->input('department_id', array('id' => 'departments','empty' => $emptyDepartment,'rel' => $urla));
 echo $this->Form->input('staff_id', array('id' => 'staffs','empty' => $emptyStaff));
-echo $this->Form->input('role_id', array('id' => 'roles','empty' => $emptyRole));
 
 		?>
 <?php echo $this->Form->submit('Submit', array(
